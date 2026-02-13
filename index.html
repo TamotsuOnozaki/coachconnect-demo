@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CoachConnect - Baseball</title>
+
+  <!-- React & React DOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel Standalone for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Recharts UMD -->
+  <script src="https://unpkg.com/recharts@2/dist/Recharts.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const { LineChart, Line, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } = window.Recharts || {};
+
+    // ===== 野球テーマカラー =====
+    const THEME = {
+      navy: "#1B2A4A",
+      navyLight: "#2A3F6B",
+      dirt: "#C4813D",
+      dirtLight: "#E8A961",
+      grass: "#2D5A27",
+      grassLight: "#4A8B3F",
+      chalk: "#F5F0E8",
+      leather: "#8B4513",
+      red: "#C41E3A",
+      white: "#FFFFFF",
+    };
+
+    // ===== 実D1大学データ（206校から代表的な50校） =====
+    const D1_UNIVERSITIES = [
+      // SEC (16校)
+      { id: 1, name: "LSU", conf: "SEC", state: "LA", ranking: 1, students: 34000, coachBreakdown: { hc: 1, assoc: 1, asst: 3, ops: 2, strength: 1 } },
+      { id: 2, name: "Arkansas", conf: "SEC", state: "AR", ranking: 6, students: 28000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 3, name: "Auburn", conf: "SEC", state: "AL", ranking: 18, students: 31000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 4, name: "Florida", conf: "SEC", state: "FL", ranking: 9, students: 56000, coachBreakdown: { hc: 1, assoc: 1, asst: 3, ops: 2, strength: 1 } },
+      { id: 5, name: "Georgia", conf: "SEC", state: "GA", ranking: 14, students: 43000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 6, name: "Alabama", conf: "SEC", state: "AL", ranking: 16, students: 38000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 7, name: "Texas A&M", conf: "SEC", state: "TX", ranking: 13, students: 75000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 8, name: "Tennessee", conf: "SEC", state: "TN", ranking: 15, students: 30000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      // ACC (16校)
+      { id: 9, name: "North Carolina", conf: "ACC", state: "NC", ranking: 3, students: 30000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 10, name: "Clemson", conf: "ACC", state: "SC", ranking: 17, students: 27000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 11, name: "Virginia", conf: "ACC", state: "VA", ranking: 21, students: 25000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 12, name: "Virginia Tech", conf: "ACC", state: "VA", ranking: 19, students: 35000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 13, name: "Pittsburgh", conf: "ACC", state: "PA", ranking: 24, students: 34000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 14, name: "Duke", conf: "ACC", state: "NC", ranking: 23, students: 17000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 15, name: "Georgia Tech", conf: "ACC", state: "GA", ranking: 20, students: 26000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 16, name: "Stanford", conf: "ACC", state: "CA", ranking: 12, students: 17000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 2, strength: 1 } },
+      // Big Ten (18校)
+      { id: 17, name: "Ohio State", conf: "Big Ten", state: "OH", ranking: 11, students: 61000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 18, name: "Michigan", conf: "Big Ten", state: "MI", ranking: 22, students: 47000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 19, name: "Michigan State", conf: "Big Ten", state: "MI", ranking: 25, students: 50000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 20, name: "Nebraska", conf: "Big Ten", state: "NE", ranking: 10, students: 26000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 21, name: "Minnesota", conf: "Big Ten", state: "MN", ranking: 50, students: 52000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 22, name: "Wisconsin", conf: "Big Ten", state: "WI", ranking: 26, students: 45000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 23, name: "Penn State", conf: "Big Ten", state: "PA", ranking: 27, students: 46000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 24, name: "Indiana", conf: "Big Ten", state: "IN", ranking: 28, students: 43000, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 1, strength: 1 } },
+      // Big 12 (10校)
+      { id: 25, name: "Oklahoma", conf: "Big 12", state: "OK", ranking: 7, students: 31000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 26, name: "Oklahoma State", conf: "Big 12", state: "OK", ranking: 5, students: 26000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 27, name: "Baylor", conf: "Big 12", state: "TX", ranking: 29, students: 21000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 28, name: "Texas Tech", conf: "Big 12", state: "TX", ranking: 30, students: 40000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 29, name: "Kansas State", conf: "Big 12", state: "KS", ranking: 31, students: 25000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      // Pac-12 & former schools (8校)
+      { id: 30, name: "UCLA", conf: "Big Ten", state: "CA", ranking: 7, students: 45000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 31, name: "USC", conf: "Big Ten", state: "CA", ranking: 2, students: 20000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 2, strength: 1 } },
+      { id: 32, name: "Oregon", conf: "Big Ten", state: "OR", ranking: 4, students: 23000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 33, name: "Washington", conf: "Big Ten", state: "WA", ranking: 32, students: 48000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      // AAC & other power (12校)
+      { id: 34, name: "Louisville", conf: "ACC", state: "KY", ranking: 5, students: 16000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 35, name: "Houston", conf: "Big 12", state: "TX", ranking: 8, students: 47000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 36, name: "Miami", conf: "ACC", state: "FL", ranking: 33, students: 17000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 37, name: "East Carolina", conf: "AAC", state: "NC", ranking: 34, students: 28000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 38, name: "Coastal Carolina", conf: "Sun Belt", state: "SC", ranking: 2, students: 14000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 39, name: "South Carolina", conf: "SEC", state: "SC", ranking: 35, students: 35000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 40, name: "Vanderbilt", conf: "SEC", state: "TN", ranking: 36, students: 13000, coachBreakdown: { hc: 1, assoc: 1, asst: 2, ops: 1, strength: 1 } },
+      { id: 41, name: "TCU", conf: "Big 12", state: "TX", ranking: 37, students: 10000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      // Additional strong programs (10校)
+      { id: 42, name: "Arizona", conf: "Big 12", state: "AZ", ranking: 38, students: 46000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 43, name: "Arizona State", conf: "Big 12", state: "AZ", ranking: 39, students: 80000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 44, name: "Fresno State", conf: "Mountain West", state: "CA", ranking: 40, students: 25000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 45, name: "San Diego State", conf: "Mountain West", state: "CA", ranking: 41, students: 34000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 46, name: "Southern Miss", conf: "Sun Belt", state: "MS", ranking: 42, students: 14000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 47, name: "Tulane", conf: "AAC", state: "LA", ranking: 43, students: 13000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 48, name: "Memphis", conf: "AAC", state: "TN", ranking: 44, students: 22000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 49, name: "Gonzaga", conf: "WCC", state: "WA", ranking: 45, students: 7500, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 50, name: "Cal Poly", conf: "Big West", state: "CA", ranking: 46, students: 22000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+    ];
+
+    // ===== 実コーチデータ =====
+    const SAMPLE_COACHES = [
+      { id: 1, firstName: "Rob", lastName: "Vaughn", email: "rvaughn@ua.edu", university: "Alabama", title: "Head Coach", status: "EMAIL_CLICKED" },
+      { id: 2, firstName: "Jason", lastName: "Jackson", email: "jjackson@ua.edu", university: "Alabama", title: "Associate HC", status: "EMAIL_SENT" },
+      { id: 3, firstName: "Kevin", lastName: "O'Sullivan", email: "osullivan@gators.ufl.edu", university: "Florida", title: "Head Coach", status: "RESPONDED" },
+      { id: 4, firstName: "Gregg", lastName: "Wallis", email: "gregg.wallis@gcu.edu", university: "Grand Canyon", title: "Head Coach", status: "EMAIL_OPENED" },
+      { id: 5, firstName: "Erik", lastName: "Bakich", email: "ebakich@clemson.edu", university: "Clemson", title: "Head Coach", status: "EMAIL_CLICKED" },
+      { id: 6, firstName: "David", lastName: "Esquer", email: "esquer@stanford.edu", university: "Stanford", title: "Head Coach", status: "EMAIL_SENT" },
+      { id: 7, firstName: "Tim", lastName: "Corbin", email: "tim.corbin@vanderbilt.edu", university: "Vanderbilt", title: "Head Coach", status: "RESPONDED" },
+      { id: 8, firstName: "Dusty", lastName: "Baker", email: "dbaker@lsu.edu", university: "LSU", title: "Head Coach", status: "EMAIL_CLICKED" },
+      { id: 9, firstName: "Mike", lastName: "Fox", email: "mfox@unc.edu", university: "North Carolina", title: "Head Coach", status: "EMAIL_OPENED" },
+      { id: 10, firstName: "Pete", lastName: "Hughes", email: "phughes@osu.edu", university: "Ohio State", title: "Head Coach", status: "SCHEDULED" },
+      { id: 11, firstName: "Dan", lastName: "Hartleb", email: "dhartleb@oregonstate.edu", university: "Oregon State", title: "Head Coach", status: "EMAIL_SENT" },
+      { id: 12, firstName: "Brodie", lastName: "Van Wagenen", email: "bvw@baylor.edu", university: "Baylor", title: "Head Coach", status: "BOUNCED" },
+      { id: 13, firstName: "Anthony", lastName: "Widom", email: "awidom@coastal.edu", university: "Coastal Carolina", title: "Head Coach", status: "EMAIL_CLICKED" },
+      { id: 14, firstName: "Jason", lastName: "Kelly", email: "jkelly@tamu.edu", university: "Texas A&M", title: "Head Coach", status: "EMAIL_SENT" },
+      { id: 15, firstName: "Tony", lastName: "Vitello", email: "tvitello@tennessee.edu", university: "Tennessee", title: "Head Coach", status: "EMAIL_OPENED" },
+    ];
+
+    const SAMPLE_DELIVERIES = [
+      { university: "LSU", coach: "Dusty Baker", title: "Head Coach", email: "dbaker@lsu.edu", status: "opened", sentAt: "2026/03/01 09:15", openedAt: "2026/03/01 14:22", reaction: "クリック" },
+      { university: "Coastal Carolina", coach: "Anthony Widom", title: "Head Coach", email: "awidom@coastal.edu", status: "opened", sentAt: "2026/03/01 09:16", openedAt: "2026/03/01 11:05", reaction: "クリック" },
+      { university: "North Carolina", coach: "Mike Fox", title: "Head Coach", email: "mfox@unc.edu", status: "replied", sentAt: "2026/03/01 09:17", openedAt: "2026/03/02 10:00", reaction: "返信あり!" },
+      { university: "Oklahoma", coach: "Skip Johnson", title: "Head Coach", email: "sjohnson@ou.edu", status: "sent", sentAt: "2026/03/01 09:18", openedAt: "-", reaction: "-" },
+      { university: "Louisville", coach: "Dan McDonnell", title: "Head Coach", email: "dmcdonnell@louisville.edu", status: "sent", sentAt: "2026/03/01 09:19", openedAt: "-", reaction: "-" },
+      { university: "Arkansas", coach: "Dave Van Horn", title: "Head Coach", email: "dvhorn@uark.edu", status: "opened", sentAt: "2026/03/01 09:20", openedAt: "2026/03/02 08:30", reaction: "-" },
+      { university: "UCLA", coach: "John Savage", title: "Head Coach", email: "jsavage@athletics.ucla.edu", status: "bounced", sentAt: "2026/03/01 09:24", openedAt: "-", reaction: "-" },
+      { university: "Houston", coach: "Todd Whitt", title: "Head Coach", email: "twhitt@houston.edu", status: "replied", sentAt: "2026/03/01 09:26", openedAt: "2026/03/01 10:15", reaction: "返信あり!" },
+    ];
+
+    const COACH_ROLES = [
+      { key: "hc", label: "Head Coach", labelJa: "監督", icon: "👑" },
+      { key: "assoc", label: "Associate / Co-Head Coach", labelJa: "副監督", icon: "⭐" },
+      { key: "asst", label: "Assistant Coach", labelJa: "アシスタントコーチ", icon: "🧢" },
+      { key: "ops", label: "Director of Ops / Recruiting", labelJa: "リクルーティング", icon: "📋" },
+      { key: "strength", label: "Strength & Conditioning", labelJa: "S&C", icon: "💪" },
+    ];
+
+    const TEMPLATES = [
+      { id: 1, name: "自己紹介型", desc: "初めてのコンタクトに最適", icon: "🤝",
+        subject: "Interested in {{university}} Baseball Program",
+        body: "Dear Coach {{coach_last_name}},\n\nMy name is {{player_name}} and I am a [position] from Japan. I am very interested in your baseball program at {{university}}.\n\n[Your stats and achievements here]\n\nI would love the opportunity to discuss how I might contribute to your team.\n\nThank you for your time,\n{{player_name}}",
+        bodyJa: "{{coach_last_name}}コーチ殿\n\n初めまして。{{player_name}}と申します。日本出身の[ポジション]です。{{university}}の野球プログラムに大変興味を持っております。\n\n[成績・実績をここに記載]\n\n貴チームに貢献できる機会をいただければ幸いです。\n\nよろしくお願いいたします。\n{{player_name}}" },
+      { id: 2, name: "実績アピール型", desc: "成績・受賞歴がある選手向け", icon: "📊",
+        subject: "{{player_name}} - [Position] | [Key Stats] | {{university}}",
+        body: "Dear Coach {{coach_last_name}},\n\nI hope this email finds you well. My name is {{player_name}}, a [position] from [City], Japan.\n\nKey Stats:\n- Fastball: 89-92 mph\n- ERA: 1.85\n- [Additional stats]\n\nI believe my skills would be a strong fit for {{university}}'s program.\n\nBest regards,\n{{player_name}}",
+        bodyJa: "{{coach_last_name}}コーチ殿\n\nお忙しいところ失礼いたします。日本の[都市名]出身の[ポジション]、{{player_name}}です。\n\n主な成績:\n- 球速: 143-148 km/h\n- 防御率: 1.85\n- [その他の成績]\n\n{{university}}のプログラムに適した選手であると確信しております。\n\n{{player_name}}" },
+      { id: 3, name: "動画リンク付き型", desc: "プレー動画が武器の選手向け", icon: "🎬",
+        subject: "Video Highlights - {{player_name}} | [Position]",
+        body: "Dear Coach {{coach_last_name}},\n\nPlease find my highlight video below:\n[Video Link]\n\nI am a [position] from Japan, interested in {{university}}.\n\nAdditional videos and stats available at: [Profile Link]\n\nThank you,\n{{player_name}}",
+        bodyJa: "{{coach_last_name}}コーチ殿\n\n以下のリンクからハイライト動画をご覧ください:\n[動画リンク]\n\n日本出身の[ポジション]で、{{university}}に興味がございます。\n\nその他の動画・成績: [プロフィールリンク]\n\n{{player_name}}" },
+    ];
+
+    const STATUS_CONFIG = {
+      pending: { label: "配信待ち", color: "#3B82F6", icon: "⏳" },
+      sent: { label: "配信済み", color: "#10B981", icon: "✅" },
+      bounced: { label: "バウンス", color: "#EF4444", icon: "❌" },
+      error_invalid: { label: "無効アドレス", color: "#EF4444", icon: "❌" },
+      opened: { label: "開封済み", color: "#8B5CF6", icon: "👀" },
+      replied: { label: "反応あり", color: "#F97316", icon: "💬" },
+      clicked: { label: "クリック", color: "#F97316", icon: "🔗" },
+    };
+
+    const DAILY_LIMIT = 200;
+
+    const LEVEL_STATS = {
+      D1: { schools: 301, color: "#C41E3A", desc: "NCAA Division I" },
+      D2: { schools: 268, color: "#1B2A4A", desc: "NCAA Division II" },
+      D3: { schools: 395, color: "#2D5A27", desc: "NCAA Division III" },
+      NAIA: { schools: 195, color: "#C4813D", desc: "National Assoc. of Intercollegiate Athletics" },
+      JUCO: { schools: 489, color: "#6B7280", desc: "Junior College / Community College" },
+    };
+
+    // ===== SVGコンポーネント =====
+    const BaseballStitchSVG = () => (
+      <svg viewBox="0 0 200 12" className="w-full h-3 opacity-20">
+        <path d="M0,6 Q25,0 50,6 T100,6 T150,6 T200,6" fill="none" stroke="#C41E3A" strokeWidth="1.5" strokeDasharray="4 3" />
+        <path d="M0,6 Q25,12 50,6 T100,6 T150,6 T200,6" fill="none" stroke="#C41E3A" strokeWidth="1.5" strokeDasharray="4 3" />
+      </svg>
+    );
+
+    const DiamondIcon = ({ size = 16 }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M12 2 L22 12 L12 22 L2 12 Z" />
+        <circle cx="12" cy="8" r="1" fill="currentColor" />
+        <circle cx="8" cy="12" r="1" fill="currentColor" />
+        <circle cx="16" cy="12" r="1" fill="currentColor" />
+        <circle cx="12" cy="16" r="1" fill="currentColor" />
+      </svg>
+    );
+
+    const Badge = ({ children, color = "blue" }) => {
+      const colors = {
+        blue: "bg-blue-100 text-blue-800",
+        green: "bg-green-100 text-green-800",
+        red: "bg-red-100 text-red-800",
+        yellow: "bg-yellow-100 text-yellow-800",
+        purple: "bg-purple-100 text-purple-800",
+        orange: "bg-orange-100 text-orange-800",
+        gray: "bg-gray-100 text-gray-800",
+        navy: "text-white",
+        dirt: "text-white",
+      };
+      const bgOverride = color === "navy" ? { backgroundColor: THEME.navy }
+        : color === "dirt" ? { backgroundColor: THEME.dirt }
+        : {};
+      return <span style={bgOverride} className={`px-2 py-1 rounded-full text-xs font-medium ${colors[color]}`}>{children}</span>;
+    };
+
+    const Nav = ({ right, onNavigate }) => (
+      <nav style={{ backgroundColor: THEME.navy }}>
+        <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate && onNavigate("dashboard")}>
+            <span className="text-2xl">⚾</span>
+            <div>
+              <span className="font-bold text-xl text-white tracking-wide">CoachConnect</span>
+              <span className="text-xs ml-2" style={{ color: THEME.dirtLight }}>BASEBALL</span>
+            </div>
+          </div>
+          <div className="text-sm" style={{ color: THEME.dirtLight }}>{right}</div>
+        </div>
+        <BaseballStitchSVG />
+      </nav>
+    );
+
+    const AnimatedNumber = ({ target, duration = 1200 }) => {
+      const [val, setVal] = useState(0);
+      useEffect(() => {
+        let start = 0;
+        const step = Math.max(1, Math.floor(target / (duration / 16)));
+        const timer = setInterval(() => {
+          start += step;
+          if (start >= target) { setVal(target); clearInterval(timer); }
+          else setVal(start);
+        }, 16);
+        return () => clearInterval(timer);
+      }, [target, duration]);
+      return <span>{val.toLocaleString()}</span>;
+    };
+
+    const ScoreboardNumber = ({ label, value, sub, color = THEME.navy }) => (
+      <div className="text-center">
+        <div className="text-xs font-bold tracking-wider uppercase mb-1" style={{ color: THEME.dirt }}>{label}</div>
+        <div className="rounded-lg px-3 py-2 font-mono" style={{ backgroundColor: THEME.navy }}>
+          <span className="text-2xl font-bold text-white"><AnimatedNumber target={value} /></span>
+        </div>
+        {sub && <div className="text-xs mt-1" style={{ color: THEME.dirt }}>{sub}</div>}
+      </div>
+    );
+
+    // --- 画面1: ログイン ---
+    const LoginScreen = ({ onNavigate }) => (
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: `linear-gradient(135deg, ${THEME.navy} 0%, ${THEME.navyLight} 50%, ${THEME.grass} 100%)` }}>
+        <div className="absolute inset-0 overflow-hidden opacity-5">
+          <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <DiamondIcon size={400} />
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative z-10">
+          <div className="text-center mb-8">
+            <div className="text-6xl mb-3">⚾</div>
+            <h1 className="text-3xl font-bold tracking-tight" style={{ color: THEME.navy }}>CoachConnect</h1>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <div className="h-px w-12" style={{ backgroundColor: THEME.dirt }}></div>
+              <span className="text-xs font-bold tracking-widest uppercase" style={{ color: THEME.dirt }}>BASEBALL</span>
+              <div className="h-px w-12" style={{ backgroundColor: THEME.dirt }}></div>
+            </div>
+            <p className="text-gray-500 mt-3 text-sm">アメリカ大学野球コーチへの最短ルート</p>
+          </div>
+          <BaseballStitchSVG />
+          <div className="space-y-4 mt-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+              <input type="email" className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:outline-none" style={{ borderColor: THEME.navy + "40" }} defaultValue="onozaki@zetalabo.biz" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">パスワード</label>
+              <input type="password" className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:outline-none" style={{ borderColor: THEME.navy + "40" }} defaultValue="********" />
+            </div>
+            <button onClick={() => onNavigate("dashboard")} className="w-full text-white py-3 rounded-lg font-bold tracking-wide hover:opacity-90 transition text-lg" style={{ backgroundColor: THEME.navy }}>
+              Play Ball! ⚾
+            </button>
+            <div className="text-center">
+              <span className="text-sm text-gray-500">アカウントをお持ちでない方は </span>
+              <button className="text-sm font-medium hover:underline" style={{ color: THEME.dirt }}>新規登録</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
+    // --- 画面2: ダッシュボード ---
+    const Dashboard = ({ onNavigate }) => {
+      const [animStep, setAnimStep] = useState(0);
+      useEffect(() => {
+        const t = setInterval(() => setAnimStep(s => (s + 1) % 8), 2000);
+        return () => clearInterval(t);
+      }, []);
+
+      // 新しい順（登録日の降順）にソート
+      const packages = [
+        { id: 1, level: "D1", roles: "HC, Asst", states: "CA, AZ, FL", targets: 12, coachCount: 68, status: "active", createdAt: "2026-03-01", startDate: "2026/03/01",
+          stats: { pending: 5, sent: 30, opened: 20, replied: 8, error: 5 },
+          timeline: [
+            { d: "3/1", s: 40, o: 0, r: 0 }, { d: "3/2", s: 12, o: 15, r: 2 }, { d: "3/3", s: 6, o: 28, r: 5 },
+            { d: "3/4", s: 0, o: 35, r: 8 }, { d: "3/5", s: 0, o: 38, r: 12 }, { d: "3/6", s: 0, o: 40, r: 18 },
+          ]},
+        { id: 2, level: "D2+NAIA", roles: "HC", states: "FL, TX, CA", targets: 18, coachCount: 32, status: "completed", createdAt: "2026-02-15", startDate: "2026/02/15",
+          stats: { pending: 0, sent: 5, opened: 15, replied: 10, error: 2 },
+          timeline: [
+            { d: "2/15", s: 32, o: 0, r: 0 }, { d: "2/16", s: 0, o: 12, r: 2 }, { d: "2/17", s: 0, o: 22, r: 6 },
+            { d: "2/18", s: 0, o: 28, r: 10 },
+          ]},
+        { id: 3, level: "D1", roles: "HC", states: "TX, OK, AR, LA", targets: 8, coachCount: 24, status: "completed", createdAt: "2026-01-20", startDate: "2026/01/20",
+          stats: { pending: 0, sent: 2, opened: 10, replied: 12, error: 0 },
+          timeline: [] },
+      ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      // 登録日を「3月1日（土）」形式にフォーマット
+      const formatDate = (dateStr) => {
+        const d = new Date(dateStr);
+        const days = ["日","月","火","水","木","金","土"];
+        return `${d.getMonth()+1}月${d.getDate()}日（${days[d.getDay()]}）`;
+      };
+      // 「○日前」を計算
+      const daysAgo = (dateStr) => {
+        const diff = Math.floor((new Date("2026-03-07") - new Date(dateStr)) / 86400000);
+        if (diff === 0) return "今日";
+        if (diff === 1) return "昨日";
+        return `${diff}日前`;
+      };
+
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <nav style={{ backgroundColor: THEME.navy }}>
+            <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">⚾</span>
+                <div>
+                  <span className="font-bold text-xl text-white tracking-wide">CoachConnect</span>
+                  <span className="text-xs ml-2" style={{ color: THEME.dirtLight }}>BASEBALL</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <button onClick={() => onNavigate("dbmanage")} className="text-sm hover:text-white px-3 py-1 rounded" style={{ color: THEME.dirtLight }}>📊 データ管理</button>
+                <span className="text-sm text-gray-300">ザキさん</span>
+                <button onClick={() => onNavigate("login")} className="text-sm text-gray-400 hover:text-white">ログアウト</button>
+              </div>
+            </div>
+            <BaseballStitchSVG />
+          </nav>
+
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="rounded-2xl p-6 mb-8 shadow-lg" style={{ backgroundColor: THEME.navy }}>
+              <div className="flex items-center gap-2 mb-4">
+                <DiamondIcon size={20} />
+                <h2 className="text-white font-bold text-lg tracking-wide">YOUR SEASON STATS</h2>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <ScoreboardNumber label="DB収録" value={206} sub="大学" />
+                <ScoreboardNumber label="コーチ数" value={676} sub="全データ" />
+                <ScoreboardNumber label="配信済" value={144} sub="件" />
+                <ScoreboardNumber label="開封済" value={89} sub="件" />
+                <ScoreboardNumber label="反応" value={42} sub="件" />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border p-4 mb-6 shadow-sm">
+              <h3 className="text-sm font-bold mb-3" style={{ color: THEME.navy }}>📊 ステータス分布（全676コーチ）</h3>
+              <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+                {[
+                  { label: "EMAIL_CLICKED", count: 242, color: "#F97316" },
+                  { label: "BOUNCED", count: 150, color: "#EF4444" },
+                  { label: "EMAIL_SENT", count: 144, color: "#10B981" },
+                  { label: "SCHEDULED", count: 98, color: "#3B82F6" },
+                  { label: "EMAIL_OPENED", count: 28, color: "#8B5CF6" },
+                  { label: "RESPONDED", count: 14, color: "#14B8A6" },
+                ].map(s => (
+                  <div key={s.label} className="text-center rounded-lg p-2" style={{ backgroundColor: s.color + "10", border: `1px solid ${s.color}30` }}>
+                    <div className="font-bold text-xs" style={{ color: s.color }}>{s.count}</div>
+                    <div className="text-xs text-gray-500">{s.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border p-4 mb-6 shadow-sm">
+              <h3 className="text-sm font-bold mb-3" style={{ color: THEME.navy }}>📊 データベース収録状況</h3>
+              <div className="grid grid-cols-5 gap-3">
+                {Object.entries(LEVEL_STATS).map(([level, info]) => (
+                  <div key={level} className="text-center rounded-lg p-2" style={{ backgroundColor: info.color + "10", border: `1px solid ${info.color}30` }}>
+                    <div className="font-bold text-sm" style={{ color: info.color }}>{level}</div>
+                    <div className="text-lg font-bold" style={{ color: info.color }}>{info.schools}</div>
+                    <div className="text-xs text-gray-400">校</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold" style={{ color: THEME.navy }}>マイパッケージ</h2>
+              <button onClick={() => onNavigate("target")} className="text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition flex items-center gap-2" style={{ backgroundColor: THEME.dirt }}>
+                <span className="text-lg">+</span> 新規プラン作成
+              </button>
+            </div>
+
+            <div className="grid gap-4">
+              {packages.map(pkg => {
+                const total = Object.values(pkg.stats).reduce((a, b) => a + b, 0);
+                const statusLabel = pkg.status === "active" ? "🟢 配信中" : "✅ 完了";
+                const isActive = pkg.status === "active";
+                return (
+                  <div key={pkg.id} className="bg-white rounded-2xl shadow-sm border hover:shadow-lg transition-shadow cursor-pointer overflow-hidden"
+                    style={{ borderLeft: `4px solid ${isActive ? THEME.grassLight : THEME.navy}` }}
+                    onClick={() => onNavigate("detail")}>
+                    {/* 登録日ヘッダー */}
+                    <div className="px-4 sm:px-6 py-2 flex justify-between items-center" style={{ backgroundColor: isActive ? THEME.grassLight + "10" : THEME.navy + "06" }}>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold" style={{ color: isActive ? THEME.grassLight : THEME.navy }}>📅 {formatDate(pkg.createdAt)}</span>
+                        <span className="text-xs text-gray-400">{daysAgo(pkg.createdAt)}</span>
+                      </div>
+                      <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ backgroundColor: isActive ? THEME.grassLight + "20" : THEME.navy + "10", color: isActive ? THEME.grassLight : THEME.navy }}>{statusLabel}</span>
+                    </div>
+                    {/* カード本体 */}
+                    <div className="px-4 sm:px-6 py-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            <Badge color="navy">{pkg.level}</Badge>
+                            <span className="text-xs text-gray-500">{pkg.states}</span>
+                            <span className="text-xs text-gray-400">| {pkg.roles}</span>
+                          </div>
+                          <div className="text-sm font-medium" style={{ color: THEME.navy }}>{pkg.targets}校 → {pkg.coachCount}名に配信</div>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <div className="text-2xl sm:text-3xl font-bold font-mono" style={{ color: THEME.navy }}>{pkg.coachCount}<span className="text-xs font-normal text-gray-500">通</span></div>
+                        </div>
+                      </div>
+                      <div className="w-full bg-gray-100 rounded-full h-2.5 flex overflow-hidden mb-2">
+                        {pkg.stats.replied > 0 && <div style={{ width: `${(pkg.stats.replied / total) * 100}%`, transition: "width 1s ease", backgroundColor: THEME.dirt }} />}
+                        {pkg.stats.opened > 0 && <div style={{ width: `${(pkg.stats.opened / total) * 100}%`, transition: "width 1s ease" }} className="bg-purple-400" />}
+                        {pkg.stats.sent > 0 && <div style={{ width: `${(pkg.stats.sent / total) * 100}%`, transition: "width 1s ease", backgroundColor: THEME.grassLight }} />}
+                        {pkg.stats.pending > 0 && <div style={{ width: `${(pkg.stats.pending / total) * 100}%`, transition: "width 1s ease" }} className="bg-blue-300" />}
+                      </div>
+                      <div className="flex flex-wrap gap-3 text-xs text-gray-500">
+                        <span>💬 反応 {pkg.stats.replied}</span>
+                        <span>👀 開封 {pkg.stats.opened}</span>
+                        <span>✅ 配信 {pkg.stats.sent}</span>
+                        <span>⏳ 待ち {pkg.stats.pending}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 画面3: ターゲット設定 ---
+    const TargetSetup = ({ onNavigate }) => {
+      const [levels, setLevels] = useState(["D1"]);
+      const [states, setStates] = useState(["CA", "TX", "FL"]);
+      const [rankings, setRankings] = useState(["1-50"]);
+      const [size, setSize] = useState(["large"]);
+      const [roles, setRoles] = useState(["hc", "asst"]);
+      const allLevels = ["D1", "D2", "D3", "NAIA", "JUCO"];
+      const allStates = ["AL","AZ","AR","CA","CO","CT","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","MA","MD","MI","MN","MO","MS","MT","NC","NE","NJ","NM","NV","NY","OH","OK","OR","PA","SC","SD","TN","TX","UT","VA","WA","WI","WV","WY"];
+      const rankGroups = ["1-50", "51-100", "101-150", "151-200", "201-300", "ランク外"];
+      const presets = [
+        { label: "🇺🇸 全米", states: allStates },
+        { label: "🌴 西海岸", states: ["CA", "OR", "WA", "AZ", "NV", "HI"] },
+        { label: "🗽 東海岸", states: ["NY", "NJ", "CT", "MA", "PA", "MD", "VA", "NC", "SC", "FL", "GA"] },
+        { label: "🤠 南部", states: ["TX", "FL", "GA", "AL", "TN", "SC", "LA", "MS", "AR", "OK"] },
+        { label: "🏔️ 山岳", states: ["CO", "UT", "MT", "ID", "NM", "WY", "SD"] },
+      ];
+
+      const toggleItem = (arr, setArr, item) => setArr(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]);
+
+      // 実際のD1大学リストから州フィルタでマッチする学校を計算
+      const filteredD1 = D1_UNIVERSITIES.filter(u => states.includes(u.state));
+      const otherLevelSchools = levels.filter(l => l !== "D1").reduce((sum, l) => {
+        const info = LEVEL_STATS[l];
+        return sum + Math.round((info?.schools || 0) * (states.length / allStates.length));
+      }, 0);
+      const roundedSchools = (levels.includes("D1") ? filteredD1.length : 0) + otherLevelSchools;
+      const coachPerSchool = roles.reduce((sum, r) => {
+        const avg = { hc: 1, assoc: 0.7, asst: 2, ops: 1.5, strength: 1 };
+        return sum + (avg[r] || 1);
+      }, 0);
+      const totalCoaches = Math.round(roundedSchools * coachPerSchool);
+      const topUnis = [...D1_UNIVERSITIES].sort((a, b) => a.ranking - b.ranking).slice(0, 5);
+
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <Nav right="Step 1 / 5 — ターゲット設定" onNavigate={onNavigate} />
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold text-lg mb-4" style={{ color: THEME.navy }}>⚾ スポーツ</h3>
+                  <div className="flex gap-3 flex-wrap">
+                    <button className="px-5 py-3 text-white rounded-lg font-bold flex items-center gap-2" style={{ backgroundColor: THEME.navy }}>⚾ Baseball</button>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold text-lg mb-2" style={{ color: THEME.navy }}>🧢 配信先コーチの役職</h3>
+                  <p className="text-sm text-gray-500 mb-4">選択する役職を増やすと配信先コーチ数が増えます</p>
+                  <div className="space-y-2">
+                    {COACH_ROLES.map(r => (
+                      <label key={r.key} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition ${roles.includes(r.key) ? "shadow-sm" : "hover:bg-gray-50"}`}
+                        style={roles.includes(r.key) ? { borderColor: THEME.navy, backgroundColor: THEME.navy + "08" } : {}}>
+                        <input type="checkbox" checked={roles.includes(r.key)} onChange={() => toggleItem(roles, setRoles, r.key)} className="rounded w-4 h-4" />
+                        <span className="text-lg">{r.icon}</span>
+                        <div className="flex-1">
+                          <span className="font-medium text-sm">{r.label}</span>
+                          <span className="text-xs text-gray-400 ml-2">({r.labelJa})</span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold text-lg mb-2" style={{ color: THEME.navy }}>🏆 レベル（複数選択可）</h3>
+                  <p className="text-sm text-gray-500 mb-4">D1は最高レベル、JUCOは短大リーグです</p>
+                  <div className="space-y-2">
+                    {allLevels.map(l => {
+                      const info = LEVEL_STATS[l];
+                      return (
+                        <label key={l} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition ${levels.includes(l) ? "shadow-sm" : "hover:bg-gray-50"}`}
+                          style={levels.includes(l) ? { borderColor: info.color, backgroundColor: info.color + "08" } : {}}>
+                          <input type="checkbox" checked={levels.includes(l)} onChange={() => toggleItem(levels, setLevels, l)} className="rounded w-4 h-4" />
+                          <div className="flex-1">
+                            <span className="font-bold" style={{ color: info.color }}>{l}</span>
+                            <span className="text-xs text-gray-500 ml-2">{info.desc}</span>
+                          </div>
+                          <span className="font-mono text-sm font-bold" style={{ color: info.color }}>{info.schools}校</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold text-lg mb-4" style={{ color: THEME.navy }}>📍 州（複数選択可）</h3>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {presets.map(p => (
+                      <button key={p.label} onClick={() => setStates(p.states)} className="px-3 py-1.5 text-sm rounded-full border font-medium hover:opacity-80 transition" style={{ borderColor: THEME.dirt, color: THEME.dirt }}>{p.label}</button>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {allStates.map(s => (
+                      <button key={s} onClick={() => toggleItem(states, setStates, s)}
+                        className={`px-3 py-1 text-sm rounded transition font-medium ${states.includes(s) ? "text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                        style={states.includes(s) ? { backgroundColor: THEME.navy } : {}}>{s}</button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div className="rounded-2xl shadow-lg p-6 sticky top-4 text-white" style={{ backgroundColor: THEME.navy }}>
+                  <div className="flex items-center gap-2 mb-4">
+                    <DiamondIcon size={20} />
+                    <h3 className="font-bold text-lg">ターゲット概要</h3>
+                  </div>
+                  <div className="text-5xl font-bold font-mono mb-1"><AnimatedNumber target={roundedSchools} /><span className="text-lg font-normal opacity-70">校</span></div>
+                  <div className="text-sm mb-3" style={{ color: THEME.dirtLight }}>配信コーチ 約<AnimatedNumber target={totalCoaches} />名</div>
+                  <button onClick={() => onNavigate("confirm")} className="w-full mt-4 py-3 rounded-lg font-bold hover:opacity-90 transition" style={{ backgroundColor: THEME.dirt, color: "#fff" }}>
+                    対象大学リストを確認 →
+                  </button>
+                </div>
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold text-sm mb-3" style={{ color: THEME.navy }}>🔥 2025 Top 5</h3>
+                  {topUnis.map((u, i) => (
+                    <div key={u.id} className="flex justify-between items-center py-2 border-b last:border-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm w-5" style={{ color: i < 3 ? THEME.dirt : "#999" }}>#{u.ranking}</span>
+                        <div>
+                          <span className="text-sm font-medium">{u.name}</span>
+                        </div>
+                      </div>
+                      <span className="text-xs text-gray-400">{u.conf}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 画面4: ターゲット確認 ---
+    const TargetConfirm = ({ onNavigate }) => {
+      const [excluded, setExcluded] = useState([]);
+      // デフォルトのフィルタ条件（CA, TX, FL）に一致する大学のみ表示
+      const defaultStates = ["CA", "TX", "FL"];
+      const filteredUnis = D1_UNIVERSITIES.filter(u => defaultStates.includes(u.state));
+      const active = filteredUnis.filter(u => !excluded.includes(u.id));
+      const toggleExclude = id => setExcluded(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+      const totalCoaches = active.reduce((s, u) => s + u.coachBreakdown.hc + u.coachBreakdown.asst, 0);
+
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <Nav right="Step 2 / 5 — ターゲット確認" onNavigate={onNavigate} />
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="rounded-lg p-4 mb-6 flex justify-between items-center" style={{ backgroundColor: THEME.navy + "10", border: `1px solid ${THEME.navy}30` }}>
+              <div className="flex flex-wrap gap-2">
+                <Badge color="navy">D1</Badge>
+                <Badge color="dirt">CA, TX, FL</Badge>
+                <Badge color="purple">#1-50</Badge>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold font-mono" style={{ color: THEME.navy }}>{active.length}<span className="text-sm font-normal text-gray-500">校</span></div>
+                <div className="text-xs" style={{ color: THEME.dirt }}>コーチ約{totalCoaches}名</div>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead style={{ backgroundColor: THEME.navy }}>
+                  <tr>
+                    <th className="p-3 text-left w-10"><input type="checkbox" checked readOnly className="rounded" /></th>
+                    <th className="p-3 text-left text-white text-xs tracking-wider">大学名</th>
+                    <th className="p-3 text-left text-white text-xs tracking-wider">Conference</th>
+                    <th className="p-3 text-left text-white text-xs tracking-wider">州</th>
+                    <th className="p-3 text-left text-white text-xs tracking-wider">Ranking</th>
+                    <th className="p-3 text-left text-white text-xs tracking-wider">学生数</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUnis.map(u => (
+                    <tr key={u.id} className={`border-b hover:bg-gray-50 ${excluded.includes(u.id) ? "opacity-40" : ""}`}>
+                      <td className="p-3"><input type="checkbox" checked={!excluded.includes(u.id)} onChange={() => toggleExclude(u.id)} className="rounded" /></td>
+                      <td className="p-3 font-medium">{u.name}</td>
+                      <td className="p-3"><span className="text-xs font-medium px-2 py-0.5 rounded" style={{ backgroundColor: THEME.navy + "10", color: THEME.navy }}>{u.conf}</span></td>
+                      <td className="p-3">{u.state}</td>
+                      <td className="p-3 font-mono font-bold" style={{ color: u.ranking <= 10 ? THEME.dirt : THEME.navy }}>#{u.ranking}</td>
+                      <td className="p-3 text-sm">{u.students.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="flex justify-between mt-6">
+              <button onClick={() => onNavigate("target")} className="px-6 py-3 border rounded-lg text-gray-600 hover:bg-gray-50">← ターゲット設定に戻る</button>
+              <button onClick={() => onNavigate("template")} className="px-6 py-3 text-white rounded-lg font-bold hover:opacity-90" style={{ backgroundColor: THEME.navy }}>この{active.length}校にメールを設定 →</button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 画面5: メールテンプレート ---
+    const TemplateSetup = ({ onNavigate }) => {
+      const [selected, setSelected] = useState(0);
+      const [subject, setSubject] = useState(TEMPLATES[0].subject);
+      const [body, setBody] = useState(TEMPLATES[0].body);
+      const [bodyJa, setBodyJa] = useState(TEMPLATES[0].bodyJa);
+      const selectTemplate = i => { setSelected(i); setSubject(TEMPLATES[i].subject); setBody(TEMPLATES[i].body); setBodyJa(TEMPLATES[i].bodyJa); };
+      const fillPreview = t => t.replace(/\{\{coach_last_name\}\}/g, "Fox").replace(/\{\{university\}\}/g, "North Carolina").replace(/\{\{player_name\}\}/g, "Takeru Onozaki");
+
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <Nav right="Step 3 / 5 — メールテンプレート" onNavigate={onNavigate} />
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="bg-white rounded-xl shadow-sm border p-4 mb-6">
+              <div className="flex items-center gap-4">
+                <span className="font-medium text-sm" style={{ color: THEME.navy }}>配信言語:</span>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg border shadow-sm" style={{ borderColor: THEME.navy, backgroundColor: THEME.navy + "08" }}>
+                  <span className="text-sm">🇺🇸 English（コーチに届くメール）</span>
+                </div>
+                <span className="text-xs text-gray-500">※ プレビューは日本語訳を併記します</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="space-y-3">
+                <h3 className="font-bold text-lg mb-2" style={{ color: THEME.navy }}>テンプレートを選択</h3>
+                {TEMPLATES.map((t, i) => (
+                  <div key={t.id} onClick={() => selectTemplate(i)}
+                    className={`p-4 rounded-xl border cursor-pointer transition ${selected === i ? "shadow-sm" : "bg-white hover:border-gray-300"}`}
+                    style={selected === i ? { borderColor: THEME.navy, backgroundColor: THEME.navy + "08" } : {}}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{t.icon}</span>
+                      <div className="font-bold text-sm" style={{ color: THEME.navy }}>{t.name}</div>
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1 ml-7">{t.desc}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="lg:col-span-2 space-y-4">
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold text-lg mb-4" style={{ color: THEME.navy }}>✉️ メール編集</h3>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">件名</label>
+                    <input type="text" value={subject} onChange={e => setSubject(e.target.value)} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:outline-none text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">本文</label>
+                    <textarea value={body} onChange={e => setBody(e.target.value)} rows={8} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:outline-none text-sm font-mono" />
+                  </div>
+                </div>
+
+                <div className="rounded-xl overflow-hidden" style={{ border: `2px solid ${THEME.navy}` }}>
+                  <div className="p-4" style={{ backgroundColor: THEME.navy }}>
+                    <h4 className="text-xs font-bold mb-2" style={{ color: THEME.dirtLight }}>🇯🇵 日本語プレビュー（あなたの確認用）</h4>
+                    <div className="text-sm font-medium mb-2" style={{ color: THEME.dirtLight }}>件名: {fillPreview(subject)}</div>
+                    <div className="text-sm text-gray-200 whitespace-pre-wrap leading-relaxed">{fillPreview(bodyJa)}</div>
+                  </div>
+                  <div className="p-4 border-t" style={{ backgroundColor: THEME.navy + "10", borderColor: THEME.navy + "30" }}>
+                    <h4 className="text-xs font-bold mb-2" style={{ color: THEME.navy }}>🇺🇸 英語原文（コーチに届くメール）</h4>
+                    <div className="text-xs text-gray-600 whitespace-pre-wrap leading-relaxed">{fillPreview(body).substring(0, 200)}...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-between mt-6">
+              <button onClick={() => onNavigate("confirm")} className="px-6 py-3 border rounded-lg text-gray-600 hover:bg-gray-50">← ターゲット確認に戻る</button>
+              <button onClick={() => onNavigate("schedule")} className="px-6 py-3 text-white rounded-lg font-bold hover:opacity-90" style={{ backgroundColor: THEME.navy }}>配信スケジュールを設定 →</button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 画面6: 配信スケジュール ---
+    const ScheduleSetup = ({ onNavigate }) => {
+      const totalCoaches = 68;
+      const deliveryDays = Math.ceil(totalCoaches / DAILY_LIMIT);
+      const startDate = "2026-03-01";
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + deliveryDays - 1);
+      const endStr = `${endDate.getFullYear()}/${String(endDate.getMonth() + 1).padStart(2, "0")}/${String(endDate.getDate()).padStart(2, "0")}`;
+
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <Nav right="Step 4 / 5 — 配信スケジュール" onNavigate={onNavigate} />
+          <div className="max-w-2xl mx-auto px-4 py-8">
+            <div className="space-y-6">
+              <div className="bg-white rounded-xl shadow-sm border p-6">
+                <h3 className="font-bold text-lg mb-4" style={{ color: THEME.navy }}>📅 配信開始日を選択</h3>
+                <input type="date" defaultValue={startDate} className="px-4 py-3 border rounded-lg text-sm w-full focus:ring-2 focus:outline-none" />
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm border p-6">
+                <h3 className="font-bold text-lg mb-2" style={{ color: THEME.navy }}>⚡ 送信上限（運営設定）</h3>
+                <p className="text-sm text-gray-500 mb-4">サーバーの処理能力に応じて運営側で設定しています</p>
+                <div className="flex items-center gap-4">
+                  <div className="rounded-lg px-6 py-4 text-center" style={{ backgroundColor: THEME.navy }}>
+                    <div className="text-3xl font-bold font-mono text-white">{DAILY_LIMIT}</div>
+                    <div className="text-xs" style={{ color: THEME.dirtLight }}>通 / 日</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl p-6 shadow-lg text-white" style={{ backgroundColor: THEME.navy }}>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-xl">⚾</span>
+                  <h3 className="font-bold text-lg">配信プラン</h3>
+                </div>
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div className="rounded-lg p-3" style={{ backgroundColor: THEME.navyLight }}>
+                    <div className="text-2xl font-bold font-mono" style={{ color: THEME.dirtLight }}>{totalCoaches}</div>
+                    <div className="text-xs text-gray-400">配信数</div>
+                  </div>
+                  <div className="rounded-lg p-3" style={{ backgroundColor: THEME.navyLight }}>
+                    <div className="text-2xl font-bold font-mono" style={{ color: THEME.dirtLight }}>{DAILY_LIMIT}</div>
+                    <div className="text-xs text-gray-400">通/日上限</div>
+                  </div>
+                  <div className="rounded-lg p-3" style={{ backgroundColor: THEME.navyLight }}>
+                    <div className="text-2xl font-bold font-mono" style={{ color: THEME.dirtLight }}>{deliveryDays}</div>
+                    <div className="text-xs text-gray-400">配信日数</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-between mt-6">
+              <button onClick={() => onNavigate("template")} className="px-6 py-3 border rounded-lg text-gray-600 hover:bg-gray-50">← メール設定に戻る</button>
+              <button onClick={() => onNavigate("payment")} className="px-6 py-3 text-white rounded-lg font-bold hover:opacity-90" style={{ backgroundColor: THEME.dirt }}>料金を確認する →</button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 画面7: 料金確認 ---
+    const PaymentScreen = ({ onNavigate }) => {
+      const schools = 50;
+      const price = schools * 300;
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <Nav right="Step 5 / 5 — お支払い" onNavigate={onNavigate} />
+          <div className="max-w-2xl mx-auto px-4 py-8">
+            <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
+              <h3 className="font-bold text-lg mb-4" style={{ color: THEME.navy }}>📋 パッケージ内容の確認</h3>
+              <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: THEME.navy + "08", border: `1px solid ${THEME.navy}20` }}>
+                <div className="font-bold" style={{ color: THEME.navy }}>2026年3月1日 D1 野球 配信プラン</div>
+              </div>
+              <div className="space-y-3 text-sm">
+                {[
+                  ["スポーツ", "⚾ 野球 (Baseball)"], ["レベル", "NCAA D1"], ["対象州", "CA, TX, FL（3州）"],
+                  ["配信先役職", "Head Coach + Assistant Coach"], ["対象大学数", `${schools}校`],
+                  ["対象コーチ数", "約68名"], ["テンプレート", "自己紹介型（英語）"],
+                  ["配信開始", "2026年3月1日"], ["送信上限", `${DAILY_LIMIT}通/日`],
+                ].map(([k, v]) => (
+                  <div key={k} className="flex justify-between py-2 border-b">
+                    <span className="text-gray-500">{k}</span>
+                    <span className="font-medium">{v}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-lg p-6 mb-6" style={{ border: `2px solid ${THEME.navy}` }}>
+              <div className="flex justify-between items-center">
+                <div>
+                  <div className="text-sm text-gray-500">お支払い金額</div>
+                  <div className="text-lg text-gray-500 mt-1">{schools}校 × ¥300</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-4xl font-bold font-mono" style={{ color: THEME.navy }}>¥{price.toLocaleString()}</div>
+                  <div className="text-xs text-gray-400">税込</div>
+                </div>
+              </div>
+            </div>
+            <button onClick={() => onNavigate("dashboard")} className="w-full text-white py-4 rounded-xl font-bold text-lg hover:opacity-90 transition shadow-lg" style={{ backgroundColor: THEME.navy }}>
+              カードで支払う（Stripe） 💳
+            </button>
+            <div className="flex justify-center mt-6">
+              <button onClick={() => onNavigate("schedule")} className="px-6 py-3 border rounded-lg text-gray-600 hover:bg-gray-50">← スケジュール設定に戻る</button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 画面8: パッケージ詳細 ---
+    const PackageDetail = ({ onNavigate }) => {
+      const [filter, setFilter] = useState("all");
+      const filtered = filter === "all" ? SAMPLE_DELIVERIES : SAMPLE_DELIVERIES.filter(d => d.status === filter);
+      const filters = [["all","すべて"],["sent","✅ 配信済"],["opened","👀 開封"],["replied","💬 反応"],["bounced","❌ バウンス"]];
+
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <nav style={{ backgroundColor: THEME.navy }}>
+            <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">⚾</span>
+                <span className="font-bold text-xl text-white tracking-wide">CoachConnect</span>
+              </div>
+              <button onClick={() => onNavigate("dashboard")} className="text-sm hover:underline" style={{ color: THEME.dirtLight }}>← ダッシュボードに戻る</button>
+            </div>
+            <BaseballStitchSVG />
+          </nav>
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <span className="text-xs font-bold px-2 py-0.5 rounded text-white" style={{ backgroundColor: THEME.grassLight }}>🟢 LIVE</span>
+                <h2 className="text-2xl font-bold mt-2" style={{ color: THEME.navy }}>2026/03/01 D1 野球 配信プラン</h2>
+              </div>
+            </div>
+
+            <div className="rounded-xl p-4 mb-6 shadow-sm" style={{ backgroundColor: THEME.navy }}>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                  { label: "DELIVERED", value: 10, sub: "配信済み", color: THEME.grassLight },
+                  { label: "OPENED", value: 6, sub: "開封", color: "#8B5CF6" },
+                  { label: "REPLIED", value: 3, sub: "反応あり!", color: THEME.dirt },
+                  { label: "ERROR", value: 1, sub: "要確認", color: THEME.red },
+                ].map(s => (
+                  <div key={s.label} className="text-center">
+                    <div className="text-xs font-bold tracking-wider mb-1" style={{ color: s.color }}>{s.label}</div>
+                    <div className="rounded-lg px-3 py-2 font-mono" style={{ backgroundColor: THEME.navyLight }}>
+                      <span className="text-3xl font-bold text-white"><AnimatedNumber target={s.value} /></span>
+                    </div>
+                    <div className="text-xs mt-1 text-gray-400">{s.sub}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+              <div className="p-4 border-b flex gap-2 flex-wrap">
+                {filters.map(([key, label]) => (
+                  <button key={key} onClick={() => setFilter(key)}
+                    className={`px-3 py-1 text-sm rounded-full transition font-medium ${filter === key ? "text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                    style={filter === key ? { backgroundColor: THEME.navy } : {}}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead style={{ backgroundColor: THEME.navy + "08" }}>
+                    <tr>
+                      <th className="p-3 text-left text-xs font-bold" style={{ color: THEME.navy }}>大学名</th>
+                      <th className="p-3 text-left text-xs font-bold" style={{ color: THEME.navy }}>コーチ名</th>
+                      <th className="p-3 text-left text-xs font-bold" style={{ color: THEME.navy }}>役職</th>
+                      <th className="p-3 text-left text-xs font-bold" style={{ color: THEME.navy }}>ステータス</th>
+                      <th className="p-3 text-left text-xs font-bold" style={{ color: THEME.navy }}>送信日時</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((d, i) => (
+                      <tr key={i} className="border-b hover:bg-gray-50">
+                        <td className="p-3 font-medium">{d.university}</td>
+                        <td className="p-3">{d.coach}</td>
+                        <td className="p-3 text-gray-500">{d.title}</td>
+                        <td className="p-3">
+                          <span className="inline-flex items-center gap-1">
+                            <span>{STATUS_CONFIG[d.status]?.icon}</span>
+                            <span style={{ color: STATUS_CONFIG[d.status]?.color }} className="font-medium text-xs">{STATUS_CONFIG[d.status]?.label}</span>
+                          </span>
+                        </td>
+                        <td className="p-3 text-gray-500 text-xs">{d.sentAt}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 画面9: データベース管理 ---
+    const DBManagement = ({ onNavigate }) => {
+      const [activeTab, setActiveTab] = useState("stats");
+      const [coaches, setCoaches] = useState(SAMPLE_COACHES);
+      const [editId, setEditId] = useState(null);
+
+      const deleteCoach = (id) => {
+        setCoaches(coaches.filter(c => c.id !== id));
+      };
+
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <nav style={{ backgroundColor: THEME.navy }}>
+            <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">⚾</span>
+                <div>
+                  <span className="font-bold text-xl text-white tracking-wide">CoachConnect</span>
+                  <span className="text-xs ml-2" style={{ color: THEME.dirtLight }}>BASEBALL</span>
+                </div>
+              </div>
+              <button onClick={() => onNavigate("dashboard")} className="text-sm hover:underline" style={{ color: THEME.dirtLight }}>← ダッシュボードに戻る</button>
+            </div>
+            <BaseballStitchSVG />
+          </nav>
+
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <h2 className="text-2xl font-bold mb-6" style={{ color: THEME.navy }}>📊 データ管理</h2>
+
+            <div className="flex gap-2 mb-6 border-b">
+              {[
+                ["stats", "📈 統計"],
+                ["import", "📥 インポート"],
+                ["coaches", "👥 コーチ管理"],
+                ["export", "📤 エクスポート"],
+              ].map(([tab, label]) => (
+                <button key={tab} onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2 font-medium transition ${activeTab === tab ? "border-b-2 text-white" : "text-gray-500 hover:text-gray-700"}`}
+                  style={activeTab === tab ? { borderBottomColor: THEME.navy, color: THEME.navy } : {}}>
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {activeTab === "stats" && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold text-lg mb-4" style={{ color: THEME.navy }}>📊 データベース統計</h3>
+                  <div className="space-y-4">
+                    {[
+                      { label: "D1大学数", value: 206, icon: "🏆" },
+                      { label: "登録コーチ数", value: 676, icon: "👥" },
+                      { label: "メール検証済", value: 634, icon: "✅" },
+                      { label: "バウンスエラー", value: 42, icon: "⚠️" },
+                    ].map((stat, i) => (
+                      <div key={i} className="flex justify-between items-center p-3 rounded-lg" style={{ backgroundColor: THEME.navy + "08" }}>
+                        <span className="text-sm">{stat.icon} {stat.label}</span>
+                        <span className="font-bold text-lg">{stat.value.toLocaleString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold text-lg mb-4" style={{ color: THEME.navy }}>🔄 データ更新状況</h3>
+                  <div className="space-y-3">
+                    <div className="p-3 rounded-lg" style={{ backgroundColor: THEME.grassLight + "20", border: `1px solid ${THEME.grassLight}` }}>
+                      <div className="text-xs font-bold" style={{ color: THEME.grassLight }}>最終更新</div>
+                      <div className="font-bold mt-1">2026年3月1日 15:30</div>
+                    </div>
+                    <button className="w-full px-4 py-2 rounded-lg font-medium text-white" style={{ backgroundColor: THEME.dirt }}>
+                      🔄 今すぐ更新する
+                    </button>
+                    <div className="text-xs text-gray-500 text-center mt-3">
+                      自動更新: 毎日午前2時
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "import" && (
+              <div className="bg-white rounded-xl shadow-sm border p-6">
+                <h3 className="font-bold text-lg mb-4" style={{ color: THEME.navy }}>📥 CSVインポート</h3>
+                <div className="border-2 border-dashed rounded-lg p-8 text-center" style={{ borderColor: THEME.dirt }}>
+                  <div className="text-4xl mb-2">📁</div>
+                  <p className="text-gray-600 font-medium mb-2">CSVファイルをドラッグ＆ドロップ</p>
+                  <p className="text-sm text-gray-500 mb-4">またはクリックして選択</p>
+                  <button className="px-6 py-2 rounded-lg font-medium text-white" style={{ backgroundColor: THEME.navy }}>
+                    ファイルを選択
+                  </button>
+                  <div className="text-xs text-gray-500 mt-4">
+                    対応フォーマット: first_name, last_name, email, university, title
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "coaches" && (
+              <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead style={{ backgroundColor: THEME.navy + "08" }}>
+                    <tr>
+                      <th className="p-3 text-left text-xs font-bold" style={{ color: THEME.navy }}>Last Name</th>
+                      <th className="p-3 text-left text-xs font-bold" style={{ color: THEME.navy }}>First Name</th>
+                      <th className="p-3 text-left text-xs font-bold" style={{ color: THEME.navy }}>Email</th>
+                      <th className="p-3 text-left text-xs font-bold" style={{ color: THEME.navy }}>University</th>
+                      <th className="p-3 text-left text-xs font-bold" style={{ color: THEME.navy }}>Title</th>
+                      <th className="p-3 text-left text-xs font-bold" style={{ color: THEME.navy }}>Status</th>
+                      <th className="p-3 text-left text-xs font-bold" style={{ color: THEME.navy }}>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {coaches.map(c => (
+                      <tr key={c.id} className="border-b hover:bg-gray-50">
+                        <td className="p-3 font-medium">{c.lastName}</td>
+                        <td className="p-3">{c.firstName}</td>
+                        <td className="p-3 text-xs text-gray-600">{c.email}</td>
+                        <td className="p-3 text-sm">{c.university}</td>
+                        <td className="p-3 text-xs text-gray-500">{c.title}</td>
+                        <td className="p-3">
+                          <Badge color={c.status.includes("CLICKED") ? "orange" : c.status === "BOUNCED" ? "red" : "blue"}>
+                            {c.status.replace(/_/g, " ")}
+                          </Badge>
+                        </td>
+                        <td className="p-3">
+                          <button onClick={() => deleteCoach(c.id)} className="text-xs text-red-600 hover:underline">削除</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {activeTab === "export" && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {[
+                  { format: "CSV", icon: "📊", desc: "スプレッドシートで開く" },
+                  { format: "JSON", icon: "{ }", desc: "プログラミング連携用" },
+                ].map(exp => (
+                  <div key={exp.format} className="bg-white rounded-xl shadow-sm border p-6 text-center">
+                    <div className="text-4xl mb-3">{exp.icon}</div>
+                    <h3 className="font-bold text-lg mb-2">{exp.format} エクスポート</h3>
+                    <p className="text-sm text-gray-500 mb-4">{exp.desc}</p>
+                    <button className="w-full px-4 py-2 rounded-lg font-medium text-white" style={{ backgroundColor: THEME.navy }}>
+                      {exp.format} をダウンロード
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    // ===== メインApp =====
+    function App() {
+      const [screen, setScreen] = useState("login");
+      const screens = {
+        login: LoginScreen,
+        dashboard: Dashboard,
+        target: TargetSetup,
+        confirm: TargetConfirm,
+        template: TemplateSetup,
+        schedule: ScheduleSetup,
+        payment: PaymentScreen,
+        detail: PackageDetail,
+        dbmanage: DBManagement,
+      };
+      const Screen = screens[screen] || LoginScreen;
+      return <Screen onNavigate={setScreen} />;
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
