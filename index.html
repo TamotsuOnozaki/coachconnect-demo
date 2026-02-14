@@ -252,39 +252,46 @@
 
     // --- 画面1: ログイン ---
     const LoginScreen = ({ onNavigate }) => (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: `linear-gradient(135deg, ${THEME.navy} 0%, ${THEME.navyLight} 50%, ${THEME.grass} 100%)` }}>
-        <div className="absolute inset-0 overflow-hidden opacity-5">
-          <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <DiamondIcon size={400} />
+      <div className="min-h-screen relative">
+        {/* ヒーロー背景画像 */}
+        <div className="absolute inset-0" style={{
+          backgroundImage: "url('https://images.unsplash.com/photo-1461896836934-bd45ba8fcb9b?w=1600&q=80')",
+          backgroundSize: "cover", backgroundPosition: "center"
+        }}>
+          <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, ${THEME.navy}CC 0%, ${THEME.navy}99 40%, ${THEME.navy}DD 100%)` }}></div>
+        </div>
+        {/* ヒーローテキスト */}
+        <div className="relative z-10 pt-16 pb-8 px-4 text-center">
+          <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-3">AthleteGate</h1>
+          <p className="text-lg sm:text-xl font-medium mb-2" style={{ color: THEME.dirtLight }}>Your Gateway to U.S. College Sports</p>
+          <p className="text-sm text-gray-300 max-w-md mx-auto">アメリカ大学スポーツへの扉を開く。指導者に直接あなたの実力を届けるプラットフォーム。</p>
+          {/* スポーツアイコン */}
+          <div className="flex justify-center gap-4 mt-6 text-2xl opacity-80">
+            <span>⚾</span><span>🏀</span><span>🏈</span><span>⚽</span><span>🎾</span><span>🏐</span>
           </div>
         </div>
-        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative z-10">
-          <div className="text-center mb-8">
-            <div className="text-6xl mb-3">⚾</div>
-            <h1 className="text-3xl font-bold tracking-tight" style={{ color: THEME.navy }}>AthleteGate</h1>
-            <div className="flex items-center justify-center gap-2 mt-1">
-              <div className="h-px w-12" style={{ backgroundColor: THEME.dirt }}></div>
-              <span className="text-xs font-bold tracking-widest uppercase" style={{ color: THEME.dirt }}>BASEBALL</span>
-              <div className="h-px w-12" style={{ backgroundColor: THEME.dirt }}></div>
+        {/* ログインフォーム */}
+        <div className="relative z-10 flex justify-center px-4 pb-8">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-bold" style={{ color: THEME.navy }}>ログイン</h2>
             </div>
-            <p className="text-gray-500 mt-3 text-sm">アメリカ大学野球コーチへの最短ルート</p>
-          </div>
-          <BaseballStitchSVG />
-          <div className="space-y-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
-              <input type="email" className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:outline-none" style={{ borderColor: THEME.navy + "40" }} defaultValue="onozaki@zetalabo.biz" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">パスワード</label>
-              <input type="password" className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:outline-none" style={{ borderColor: THEME.navy + "40" }} defaultValue="********" />
-            </div>
-            <button onClick={() => onNavigate("dashboard")} className="w-full text-white py-3 rounded-lg font-bold tracking-wide hover:opacity-90 transition text-lg" style={{ backgroundColor: THEME.navy }}>
-              Play Ball! ⚾
-            </button>
-            <div className="text-center">
-              <span className="text-sm text-gray-500">アカウントをお持ちでない方は </span>
-              <button className="text-sm font-medium hover:underline" style={{ color: THEME.dirt }}>新規登録</button>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+                <input type="email" className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:outline-none" style={{ borderColor: THEME.navy + "40" }} defaultValue="onozaki@zetalabo.biz" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">パスワード</label>
+                <input type="password" className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:outline-none" style={{ borderColor: THEME.navy + "40" }} defaultValue="********" />
+              </div>
+              <button onClick={() => onNavigate("dashboard")} className="w-full text-white py-3 rounded-lg font-bold tracking-wide hover:opacity-90 transition text-lg" style={{ backgroundColor: THEME.navy }}>
+                Sign In →
+              </button>
+              <div className="text-center">
+                <span className="text-sm text-gray-500">アカウントをお持ちでない方は </span>
+                <button className="text-sm font-medium hover:underline" style={{ color: THEME.dirt }}>新規登録</button>
+              </div>
             </div>
           </div>
         </div>
