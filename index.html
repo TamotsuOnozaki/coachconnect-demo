@@ -265,16 +265,18 @@
 
     // ===== Pricing Tiers =====
     const PRICING = {
+      currency: "¥",
       tiers: [
-        { level: "D1", rankMin: 1, rankMax: 50, price: 500, label: "D1 Top50" },
-        { level: "D1", rankMin: 51, rankMax: 100, price: 400, label: "D1 51-100" },
+        { level: "D1", rankMin: 1, rankMax: 25, price: 500, label: "D1 Top25" },
+        { level: "D1", rankMin: 26, rankMax: 50, price: 400, label: "D1 26-50" },
+        { level: "D1", rankMin: 51, rankMax: 100, price: 350, label: "D1 51-100" },
         { level: "D1", rankMin: 101, rankMax: 9999, price: 300, label: "D1 100+" },
-        { level: "D2", rankMin: 1, rankMax: 10, price: 400, label: "D2 Top10" },
+        { level: "D2", rankMin: 1, rankMax: 10, price: 350, label: "D2 Top10" },
         { level: "D2", rankMin: 11, rankMax: 30, price: 300, label: "D2 11-30" },
-        { level: "D2", rankMin: 31, rankMax: 9999, price: 100, label: "D2 31+" },
-        { level: "D3", rankMin: 1, rankMax: 9999, price: 100, label: "D3" },
-        { level: "NAIA", rankMin: 1, rankMax: 9999, price: 100, label: "NAIA" },
-        { level: "JUCO", rankMin: 1, rankMax: 9999, price: 80, label: "JUCO" },
+        { level: "D2", rankMin: 31, rankMax: 9999, price: 200, label: "D2 31+" },
+        { level: "D3", rankMin: 1, rankMax: 9999, price: 200, label: "D3" },
+        { level: "NAIA", rankMin: 1, rankMax: 9999, price: 150, label: "NAIA" },
+        { level: "JUCO", rankMin: 1, rankMax: 9999, price: 100, label: "JUCO" },
       ]
     };
 
@@ -949,8 +951,8 @@
                           <div className="text-xs text-gray-500">{data.count}校</div>
                         </div>
                         <div className="text-right">
-                          <div className="font-bold">${(data.price * data.count).toLocaleString()}</div>
-                          <div className="text-xs text-gray-500">${data.price} × {data.count}</div>
+                          <div className="font-bold">¥{(data.price * data.count).toLocaleString()}</div>
+                          <div className="text-xs text-gray-500">¥{data.price} × {data.count}</div>
                         </div>
                       </div>
                     ))}
@@ -958,7 +960,7 @@
                   <div className="border-t-2 pt-3">
                     <div className="flex justify-between items-center">
                       <span className="text-lg font-bold">合計</span>
-                      <span className="text-3xl font-bold" style={{ color: THEME.navy }}>${totalPrice.toLocaleString()}</span>
+                      <span className="text-3xl font-bold" style={{ color: THEME.navy }}>¥{totalPrice.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
