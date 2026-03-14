@@ -631,10 +631,13 @@
           : `linear-gradient(135deg, ${THEME.navy}, ${THEME.navyLight})`,
       }}>
         <div className="absolute top-2 right-3 text-4xl opacity-15">{icon}</div>
-        <div className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: "rgba(255,255,255,0.65)" }}>{label}</div>
+        <div className="flex items-center gap-1.5 mb-2">
+          <span className="text-lg">{icon}</span>
+          <span className="text-sm font-bold text-white">{label}</span>
+        </div>
         <div className="flex items-baseline gap-1">
           <span className="text-5xl font-black text-white leading-none" style={{ fontFamily: "'Helvetica Neue', sans-serif" }}><AnimatedNumber target={value} /></span>
-          {sub && <span className="text-base font-medium ml-1" style={{ color: "rgba(255,255,255,0.6)" }}>{sub}</span>}
+          {sub && <span className="text-lg font-bold ml-1" style={{ color: "rgba(255,255,255,0.75)" }}>{sub}</span>}
         </div>
       </div>
     );
