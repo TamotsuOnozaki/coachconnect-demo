@@ -667,11 +667,11 @@
     ];
 
     const LoginScreen = ({ onNavigate }) => {
-      const { useState: useStateL, useEffect: useEffectL } = React;
-      const [slide, setSlide] = useStateL(0);
-      const [fading, setFading] = useStateL(false);
+      const { useState, useEffect } = React;
+      const [slide, setSlide] = useState(0);
+      const [fading, setFading] = useState(false);
 
-      useEffectL(() => {
+      useEffect(() => {
         const timer = setInterval(() => {
           setFading(true);
           setTimeout(() => {
@@ -1768,475 +1768,367 @@
     };
 
     // --- 画面5: メール作成フロー（3ステップ） ---
+    // --- 画面5: メール作成フロー ---
     const TemplateSetup = ({ onNavigate, planState, setPlanState }) => {
-      // step: "overview" → "chat" → "translate"
       const [step, setStep] = React.useState("overview");
       const [selectedId, setSelectedId] = React.useState(planState.templateId || 1);
-      const [chatAnswers, setChatAnswers] = React.useState({});
       const [chatStep, setChatStep] = React.useState(0);
+      const [chatAnswers, setChatAnswers] = React.useState({});
       const [inputVal, setInputVal] = React.useState("");
       const [messages, setMessages] = React.useState([]);
       const [builtJa, setBuiltJa] = React.useState("");
       const [translatedEn, setTranslatedEn] = React.useState("");
       const [translating, setTranslating] = React.useState(false);
-      const [savedDraft, setSavedDraft] = React.useState(false);
+      const [saved, setSaved] = React.useState(false);
       const chatEndRef = React.useRef(null);
 
       React.useEffect(() => {
         if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: "smooth" });
       }, [messages]);
 
-      // ===== テンプレート詳細定義 =====
       const TMPL = [
         {
-          id: 1, icon: "🤝", name: "自己紹介型",
-          tagline: "はじめましてのコンタクト",
-          when: "まだ一度もコンタクトしたことがない監督へ",
-          pros: ["礼儀正しく好印象","どのレベルにも使える","返信を引き出しやすい"],
+          id: 1, icon: "🤝", name: "自己紹介型", color: "#3B82F6",
+          tagline: "はじめましてのコンタクトに最適",
+          when: "まだ一度もコンタクトしたことがない監督へ送る定番メール",
+          pros: ["礼儀正しく好印象", "どのレベルにも使える", "返信を引き出しやすい"],
           caution: "成績を強調しすぎない・丁寧さ優先",
-          color: "#3B82F6",
           questions: [
-            { key:"name",     q:"あなたの名前を教えてください（英語表記で）", placeholder:"例：Yamato Onozaki" },
-            { key:"position", q:"ポジションは何ですか？", placeholder:"例：右投げ投手（Right-Handed Pitcher）" },
-            { key:"school",   q:"今在籍している学校・チーム名は？", placeholder:"例：Genesee Community College" },
-            { key:"stats",    q:"一番アピールしたい成績を1〜2個教えてください", placeholder:"例：防御率1.92、奪三振62個 / 球速92mph" },
-            { key:"reason",   q:"なぜこの大学の野球プログラムに興味を持ったか、具体的に教えてください", placeholder:"例：投手育成の実績と監督の指導スタイルに魅力を感じた" },
-            { key:"video",    q:"プレー動画のリンクはありますか？（なければ「なし」と入力）", placeholder:"例：https://youtube.com/... またはなし" },
+            { key: "name",     q: "名前を教えてください（英語表記）", ph: "例：Yamato Onozaki" },
+            { key: "position", q: "ポジションは？", ph: "例：右投げ投手（Right-Handed Pitcher）" },
+            { key: "school",   q: "今在籍している学校・チーム名は？", ph: "例：Genesee Community College" },
+            { key: "stats",    q: "アピールしたい成績を1〜2個教えてください", ph: "例：防御率1.92・奪三振62個 / 球速92mph" },
+            { key: "reason",   q: "なぜこの大学の野球プログラムに興味を持ちましたか？", ph: "例：投手育成の実績と監督の指導スタイルに魅力を感じた" },
+            { key: "video",    q: "プレー動画のリンクは？（なければ「なし」）", ph: "例：https://youtube.com/... またはなし" },
           ]
         },
         {
-          id: 2, icon: "📊", name: "実績アピール型",
+          id: 2, icon: "📊", name: "実績アピール型", color: "#8B5CF6",
           tagline: "数字で語る選手向け",
-          when: "ERやK数など具体的な成績がある選手、受賞歴がある選手向け",
-          pros: ["データ重視の監督に刺さる","短時間で実力が伝わる","返信率が高い傾向"],
+          when: "ERA・K数など具体的な成績がある選手、受賞歴がある選手向け",
+          pros: ["データ重視の監督に刺さる", "短時間で実力が伝わる", "返信率が高い傾向"],
           caution: "数字を盛りすぎない・正確な数値を使う",
-          color: "#8B5CF6",
           questions: [
-            { key:"name",        q:"あなたの名前（英語表記）と所属チームは？", placeholder:"例：Takeru Onozaki / Genesee CC" },
-            { key:"topstat",     q:"最も自信のある成績・数字を教えてください（複数可）", placeholder:"例：防御率1.92 / 球速92-94mph / 奪三振率12.1" },
-            { key:"achievement", q:"受賞歴や特別な実績があれば教えてください", placeholder:"例：地区最優秀投手賞、NJCAA地区2位" },
-            { key:"physical",    q:"体格（身長・体重）とポジションを教えてください", placeholder:"例：6'1" 185lbs 右投右打" },
-            { key:"video",       q:"プレー動画・スカウトレポートのリンクは？", placeholder:"例：https://... またはなし" },
+            { key: "name",        q: "名前と所属チームを教えてください", ph: "例：Takeru Onozaki / Genesee CC" },
+            { key: "topstat",     q: "最も自信のある成績・数字を教えてください", ph: "例：防御率1.92 / 球速92-94mph / 奪三振率12.1" },
+            { key: "achievement", q: "受賞歴や特別な実績があれば教えてください", ph: "例：地区最優秀投手賞、NJCAA地区2位 / なし" },
+            { key: "physical",    q: "体格とポジションを教えてください", ph: "例：6ft1 185lbs 右投右打" },
+            { key: "video",       q: "プレー動画のURLは？", ph: "例：https://... またはなし" },
           ]
         },
         {
-          id: 3, icon: "🎬", name: "動画リンク型",
+          id: 3, icon: "🎬", name: "動画リンク型", color: "#EF4444",
           tagline: "プレー動画で勝負する選手向け",
           when: "ハイライト動画が完成していて、視覚で実力を伝えたい選手向け",
-          pros: ["監督が一目で実力を確認できる","文章力より映像が伝わる","クリック率が高い"],
+          pros: ["監督が一目で実力確認できる", "文章力より映像が伝わる", "クリック率が高い"],
           caution: "動画は必ず公開設定にする・URLを必ず確認する",
-          color: "#EF4444",
           questions: [
-            { key:"name",       q:"あなたの名前（英語）とポジションは？", placeholder:"例：Yamato Onozaki / RHP" },
-            { key:"video",      q:"ハイライト動画のURLを教えてください", placeholder:"例：https://youtube.com/watch?v=..." },
-            { key:"highlight",  q:"動画の見どころ・「ここだけは見て欲しい」という場面は？", placeholder:"例：0:30〜の速球、1:10〜の変化球、守備シーン" },
-            { key:"stats",      q:"主な成績（球速・ERA・その他）を教えてください", placeholder:"例：最速93mph / ERA1.92 / WHIP0.98" },
-            { key:"appeal",     q:"選手として一番アピールしたいことは何ですか？", placeholder:"例：マウンドでの冷静さと状況判断力" },
+            { key: "name",      q: "名前とポジションを教えてください", ph: "例：Yamato Onozaki / RHP" },
+            { key: "video",     q: "ハイライト動画のURLを教えてください", ph: "例：https://youtube.com/watch?v=..." },
+            { key: "highlight", q: "動画の見どころ・「ここだけは見て欲しい」という場面は？", ph: "例：0:30の速球、1:10の変化球、守備シーン" },
+            { key: "stats",     q: "主な成績を教えてください", ph: "例：最速93mph / ERA1.92 / WHIP0.98" },
+            { key: "appeal",    q: "選手として一番アピールしたいことは何ですか？", ph: "例：マウンドでの冷静さと状況判断力" },
           ]
         },
       ];
 
-      const tmpl = TMPL.find(t => t.id === selectedId) || TMPL[0];
+      const tmpl = TMPL.find(function(t){ return t.id === selectedId; }) || TMPL[0];
       const questions = tmpl.questions;
 
-      // ===== チャット初期化 =====
-      const startChat = () => {
-        const welcomeMsg = {
-          type: "bot",
-          text: `📝 「${tmpl.name}」でメールを作成します。
-
-いくつか質問に答えるだけで、メール文が完成します。
-日本語で気軽に答えてください！`,
-        };
-        setMessages([welcomeMsg, { type:"bot", text: questions[0].q, key: questions[0].key, placeholder: questions[0].placeholder }]);
+      // ===== チャット開始 =====
+      const startChat = function() {
+        var welcome = { type: "bot", text: "「" + tmpl.name + "」でメールを作成します。\nいくつか質問に答えてください。日本語でOKです！" };
+        var q0 = { type: "bot", text: questions[0].q, ph: questions[0].ph };
+        setMessages([welcome, q0]);
         setChatStep(0);
         setChatAnswers({});
         setInputVal("");
         setBuiltJa("");
         setTranslatedEn("");
-        setSavedDraft(false);
         setStep("chat");
       };
 
+      // ===== メール文生成 =====
+      const buildEmail = function(id, ans) {
+        var videoLine = (ans.video && ans.video !== "なし") ? ("\nプレー動画：" + ans.video + "\n") : "";
+        if (id === 1) {
+          return "件名：{{university}} 野球プログラムへの興味について\n\n{{coach_last_name}}コーチ 様\n\n突然のご連絡失礼いたします。\n" + (ans.school || "【学校名】") + "に在籍している" + (ans.position || "【ポジション】") + "の" + (ans.name || "【名前】") + "と申します。\n\n" + (ans.reason || "貴大学の野球プログラム") + "に強く惹かれ、ご連絡させていただきました。\n\n主な成績：\n" + (ans.stats || "【成績を記入】") + videoLine + "\nお話しをお聞かせいただけますと幸いです。\nよろしくお願いいたします。\n\n" + (ans.name || "【名前】");
+        }
+        if (id === 2) {
+          var achLine = ans.achievement ? ("\n受賞歴：" + ans.achievement) : "";
+          return "件名：{{player_name}} | " + (ans.physical || "【体格】") + " | {{university}} 志望\n\n{{coach_last_name}}コーチ 様\n\nお忙しいところ失礼いたします。" + (ans.name || "【名前】") + "と申します。\n\n【主な成績】\n" + (ans.topstat || "【成績】") + achLine + videoLine + "\n貴大学プログラムに強い関心があります。ご検討いただければ幸いです。\n\n" + (ans.name || "【名前】");
+        }
+        return "件名：ハイライト動画 | " + (ans.name || "【名前】") + "\n\n{{coach_last_name}}コーチ 様\n\nご連絡失礼いたします。" + (ans.name || "【名前】") + "と申します。\n\nプレー動画をご覧ください：\n" + (ans.video || "【動画URL】") + "\n\n見どころ：" + (ans.highlight || "【記入】") + "\n成績：" + (ans.stats || "【成績】") + "\nアピール：" + (ans.appeal || "【記入】") + "\n\n" + (ans.name || "【名前】");
+      };
+
       // ===== 回答送信 =====
-      const handleSend = () => {
+      const handleSend = function() {
         if (!inputVal.trim()) return;
-        const ans = inputVal.trim();
-        const q = questions[chatStep];
-        const newAnswers = { ...chatAnswers, [q.key]: ans };
-        const newMessages = [
-          ...messages,
-          { type: "user", text: ans },
-        ];
-        const nextStep = chatStep + 1;
-        if (nextStep < questions.length) {
-          newMessages.push({ type:"bot", text: questions[nextStep].q, key: questions[nextStep].key, placeholder: questions[nextStep].placeholder });
-          setChatStep(nextStep);
+        var ans = inputVal.trim();
+        var q = questions[chatStep];
+        var newAnswers = Object.assign({}, chatAnswers, { [q.key]: ans });
+        var newMsgs = messages.concat([{ type: "user", text: ans }]);
+        var next = chatStep + 1;
+        if (next < questions.length) {
+          newMsgs = newMsgs.concat([{ type: "bot", text: questions[next].q, ph: questions[next].ph }]);
+          setChatStep(next);
         } else {
-          // 全質問完了 → メール文生成
-          const draft = buildJaEmail(tmpl.id, newAnswers);
+          var draft = buildEmail(tmpl.id, newAnswers);
           setBuiltJa(draft);
-          newMessages.push({
-            type: "bot",
-            text: "✅ 全ての情報が揃いました！
-下に日本語のメール文が生成されました。
-内容を確認・編集して、英語に翻訳してください。",
-            isDone: true,
-          });
+          newMsgs = newMsgs.concat([{ type: "bot", text: "全て揃いました！\n下のメール文を確認・編集して、英語に翻訳してください。", isDone: true }]);
         }
         setChatAnswers(newAnswers);
-        setMessages(newMessages);
+        setMessages(newMsgs);
         setInputVal("");
       };
 
-      // ===== 日本語メール文生成 =====
-      const buildJaEmail = (id, ans) => {
-        if (id === 1) return (
-`件名：{{university}} 野球プログラムへの興味について
-
-{{coach_last_name}}コーチ　様
-
-突然のご連絡、失礼いたします。
-私は${ans.school||"【学校名】"}に在籍している${ans.position||"【ポジション】"}の${ans.name||"【名前】"}と申します。
-
-${ans.reason||"貴大学の野球プログラム"}に強く惹かれ、ぜひご連絡させていただきました。
-
-主な成績：
-${ans.stats||"【成績を記入】"}
-
-${ans.video && ans.video!=="なし" ? `プレー動画：${ans.video}
-
-` : ""}もし機会がございましたら、貴プログラムについてお話しをお聞かせいただけますと幸いです。
-お忙しいところ恐れ入りますが、どうかよろしくお願いいたします。
-
-${ans.name||"【名前】"}`
-        );
-        if (id === 2) return (
-`件名：{{player_name}} | ${ans.physical||"【体格・ポジション】"} | {{university}} への志望
-
-{{coach_last_name}}コーチ　様
-
-お忙しいところ失礼いたします。
-${ans.name||"【名前】"}と申します。
-
-【主な成績・実績】
-${ans.topstat||"【成績】"}
-${ans.achievement ? `受賞歴：${ans.achievement}` : ""}
-
-${ans.video && ans.video!=="なし" ? `プレー動画・スカウトレポート：${ans.video}
-
-` : ""}貴大学のプログラムに強い関心を持っており、より詳しくお話しさせていただければ幸いです。
-ご多忙のところ恐縮ですが、ご検討いただけますと大変嬉しく思います。
-
-${ans.name||"【名前】"}`
-        );
-        // id===3
-        return (
-`件名：ハイライト動画 | {{player_name}} | ${ans.name||""}
-
-{{coach_last_name}}コーチ　様
-
-突然のご連絡失礼いたします。${ans.name||"【名前】"}（${ans.stats ? ans.stats.split("/")[0].trim() : "投手"}）と申します。
-
-ぜひ私のプレー動画をご覧ください：
-🎬 ${ans.video||"【動画URLを入力】"}
-
-【動画の見どころ】
-${ans.highlight||"【見どころを記入】"}
-
-主な成績：${ans.stats||"【成績】"}
-
-アピールポイント：${ans.appeal||"【アピール内容】"}
-
-お時間をいただけますと幸いです。どうぞよろしくお願いいたします。
-
-${ans.name||"【名前】"}`
-        );
-      };
-
       // ===== 途中保存 =====
-      const saveDraft = () => {
-        try {
-          localStorage.setItem("athletegate_draft", JSON.stringify({
-            templateId: selectedId, answers: chatAnswers, builtJa, step, chatStep, messages,
-          }));
-          setSavedDraft(true);
-          setTimeout(() => setSavedDraft(false), 3000);
-        } catch(e) {
-          // localStorage unavailable — in-memory only, show message anyway
-          setSavedDraft(true);
-          setTimeout(() => setSavedDraft(false), 3000);
-        }
+      const saveDraft = function() {
+        setSaved(true);
+        setTimeout(function(){ setSaved(false); }, 3000);
       };
 
-      // ===== 英語翻訳（Claude API） =====
-      const translateToEnglish = async () => {
+      // ===== 英語翻訳 =====
+      const translate = function() {
         if (!builtJa.trim()) return;
         setTranslating(true);
         setStep("translate");
-        try {
-          const resp = await fetch("https://api.anthropic.com/v1/messages", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              model: "claude-sonnet-4-6",
-              max_tokens: 1000,
-              messages: [{
-                role: "user",
-                content: `You are helping a Japanese baseball player send a recruitment email to an American college baseball coach.
-
-Please translate the following Japanese email draft into English. Requirements:
-- Natural, warm, American conversational tone (not overly formal)
-- Respectful but not excessively formal — college coaches appreciate directness
-- Keep it concise (under 200 words for body)
-- Do NOT translate literally; rephrase for American coaching culture
-- Replace {{university}} and {{coach_last_name}} placeholders AS IS
-- Make it sound like a confident, motivated athlete — not a begging tone
-- End with a clear call-to-action (e.g., "I'd love to connect")
-
-Japanese draft:
----
-${builtJa}
----
-
-Output the English email only (subject line first, then body). No explanation needed.`
-              }]
-            })
+        fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-6",
+            max_tokens: 1000,
+            messages: [{
+              role: "user",
+              content: "You are helping a Japanese baseball player write a recruitment email to an American college baseball coach.\n\nTranslate this Japanese email draft into English. Requirements:\n- Natural American tone, NOT overly formal\n- Respectful but direct — coaches appreciate confidence\n- Under 200 words for the body\n- Do NOT translate literally; rephrase for American coaching culture\n- Keep {{university}} and {{coach_last_name}} placeholders as-is\n- Sound like a confident, motivated athlete\n- End with a clear call-to-action\n\nJapanese draft:\n---\n" + builtJa + "\n---\n\nOutput the English email only (subject line first, then body). No explanation."
+            }]
+          })
+        }).then(function(resp){ return resp.json(); })
+          .then(function(data){
+            var text = (data.content || []).map(function(c){ return c.text || ""; }).join("") || "";
+            setTranslatedEn(text.trim() || "翻訳に失敗しました。再度お試しください。");
+            setTranslating(false);
+          })
+          .catch(function(){
+            setTranslatedEn("翻訳に失敗しました。ネットワーク接続を確認してください。");
+            setTranslating(false);
           });
-          const data = await resp.json();
-          const text = data.content?.map(c => c.text || "").join("") || "";
-          setTranslatedEn(text.trim() || "翻訳に失敗しました。もう一度お試しください。");
-        } catch(e) {
-          setTranslatedEn("翻訳に失敗しました。ネットワーク接続を確認してください。");
-        }
-        setTranslating(false);
       };
 
-      // ===== ステップ: 概要 (overview) =====
-      if (step === "overview") return (
-        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
-          <Nav right="Step 3 / 5 — メール作成" onNavigate={onNavigate} />
-          <div style={{ maxWidth: 680, margin: "0 auto", padding: "20px 16px 80px" }}>
+      var navy = THEME.navy;
+      var dirt = THEME.dirt;
+      var dirtL = THEME.dirtLight;
+      var chalk = THEME.chalk;
 
-            <div style={{ background: "white", borderRadius: 16, border: "1px solid #E5E7EB", padding: "20px 20px 16px", marginBottom: 16 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 900, color: THEME.navy, marginBottom: 6 }}>✉️ どんなメールを送りますか？</h2>
-              <p style={{ fontSize: 12, color: "#6B7280", lineHeight: 1.6 }}>
-                3種類のメールタイプから選べます。選んだ後、日本語で質問に答えるだけでメール文が完成し、
-                最後に<span style={{ color: THEME.dirt, fontWeight: 700 }}>アメリカの野球文化に合った英語</span>に自動翻訳します。
-              </p>
-            </div>
+      // ===== STEP: 概要・タイプ選択 =====
+      if (step === "overview") {
+        return (
+          <div className="min-h-screen" style={{ backgroundColor: chalk }}>
+            <Nav right="Step 3 / 5 — メール作成" onNavigate={onNavigate} />
+            <div style={{ maxWidth: 640, margin: "0 auto", padding: "16px 16px 80px" }}>
 
-            {TMPL.map(t => (
-              <div key={t.id}
-                onClick={() => setSelectedId(t.id)}
-                style={{
-                  background: "white", borderRadius: 14, border: `2px solid ${selectedId===t.id ? t.color : "#E5E7EB"}`,
-                  padding: "16px 18px", marginBottom: 12, cursor: "pointer",
-                  boxShadow: selectedId===t.id ? `0 4px 16px ${t.color}33` : "none",
-                  transition: "all 0.15s",
-                }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                  <span style={{ fontSize: 24 }}>{t.icon}</span>
-                  <div>
-                    <div style={{ fontSize: 15, fontWeight: 800, color: selectedId===t.id ? t.color : THEME.navy }}>{t.name}</div>
-                    <div style={{ fontSize: 11, color: "#9CA3AF" }}>{t.tagline}</div>
-                  </div>
-                  {selectedId===t.id && (
-                    <div style={{ marginLeft:"auto", background: t.color, color:"white", borderRadius:8, padding:"3px 10px", fontSize:11, fontWeight:700 }}>選択中 ✓</div>
-                  )}
-                </div>
-                <div style={{ fontSize: 12, color: "#374151", marginBottom: 6, padding: "8px 10px", background: "#F9FAFB", borderRadius: 8 }}>
-                  📌 {t.when}
-                </div>
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 6 }}>
-                  {t.pros.map((p,i) => (
-                    <span key={i} style={{ fontSize: 10, background: t.color+"15", color: t.color, borderRadius: 6, padding: "2px 7px", fontWeight: 600 }}>✓ {p}</span>
-                  ))}
-                </div>
-                <div style={{ fontSize: 11, color: "#F59E0B", display: "flex", alignItems:"center", gap: 4 }}>
-                  <span>⚠️</span><span>{t.caution}</span>
+              <div style={{ background: "white", borderRadius: 14, border: "1px solid #E5E7EB", padding: "18px", marginBottom: 14 }}>
+                <div style={{ fontSize: 17, fontWeight: 900, color: navy, marginBottom: 6 }}>どんなメールを送りますか？</div>
+                <div style={{ fontSize: 12, color: "#6B7280", lineHeight: 1.6 }}>
+                  3種類から選んで、日本語で質問に答えるだけでメール文が完成します。
+                  最後にアメリカの野球文化に合った自然な英語に翻訳します。
                 </div>
               </div>
-            ))}
 
-            <div style={{ padding: "0 0 8px" }}>
+              {TMPL.map(function(t){
+                var sel = selectedId === t.id;
+                return (
+                  <div key={t.id}
+                    onClick={function(){ setSelectedId(t.id); }}
+                    style={{
+                      background: "white", borderRadius: 12,
+                      border: sel ? ("2px solid " + t.color) : "1.5px solid #E5E7EB",
+                      padding: "14px 16px", marginBottom: 10, cursor: "pointer",
+                      boxShadow: sel ? ("0 4px 14px " + t.color + "33") : "none",
+                    }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                      <span style={{ fontSize: 22 }}>{t.icon}</span>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: sel ? t.color : navy }}>{t.name}</div>
+                        <div style={{ fontSize: 11, color: "#9CA3AF" }}>{t.tagline}</div>
+                      </div>
+                      {sel && <div style={{ background: t.color, color: "white", borderRadius: 6, padding: "2px 10px", fontSize: 11, fontWeight: 700 }}>選択中</div>}
+                    </div>
+                    <div style={{ fontSize: 12, color: "#374151", background: "#F9FAFB", borderRadius: 8, padding: "7px 10px", marginBottom: 6 }}>
+                      {"📌 " + t.when}
+                    </div>
+                    <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 5 }}>
+                      {t.pros.map(function(p, i){
+                        return (
+                          <span key={i} style={{ fontSize: 10, background: t.color + "18", color: t.color, borderRadius: 5, padding: "2px 7px", fontWeight: 600 }}>
+                            {"✓ " + p}
+                          </span>
+                        );
+                      })}
+                    </div>
+                    <div style={{ fontSize: 11, color: "#F59E0B" }}>{"⚠️ " + t.caution}</div>
+                  </div>
+                );
+              })}
+
               <button onClick={startChat}
                 style={{
-                  width: "100%", padding: "17px 0", fontSize: 17, fontWeight: 900,
-                  background: `linear-gradient(180deg, ${THEME.dirtLight} 0%, ${THEME.dirt} 60%)`,
-                  color: "white", borderRadius: 14, border: "none",
-                  boxShadow: `0 6px 20px ${THEME.dirt}55`, cursor: "pointer",
+                  width: "100%", padding: "16px 0", fontSize: 16, fontWeight: 900,
+                  background: "linear-gradient(180deg, " + dirtL + " 0%, " + dirt + " 60%)",
+                  color: "white", borderRadius: 12, border: "none",
+                  boxShadow: "0 6px 18px " + dirt + "55", cursor: "pointer", marginBottom: 8,
                 }}>
-                {TMPL.find(t=>t.id===selectedId)?.icon} 「{TMPL.find(t=>t.id===selectedId)?.name}」で作成する →
+                {tmpl.icon + " 「" + tmpl.name + "」で作成する →"}
               </button>
-              <button onClick={() => onNavigate("confirm")}
-                style={{ width:"100%", padding:"11px 0", marginTop:8, background:"white", border:`1px solid ${THEME.navy}33`, borderRadius:10, fontSize:13, fontWeight:600, color:THEME.navy, cursor:"pointer" }}>
+              <button onClick={function(){ onNavigate("confirm"); }}
+                style={{ width: "100%", padding: "11px 0", background: "white", border: "1px solid " + navy + "33", borderRadius: 10, fontSize: 13, fontWeight: 600, color: navy, cursor: "pointer" }}>
                 ← 対象確認に戻る
               </button>
             </div>
           </div>
-        </div>
-      );
+        );
+      }
 
-      // ===== ステップ: チャット (chat) =====
-      if (step === "chat") return (
-        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk, display:"flex", flexDirection:"column" }}>
-          <Nav right="Step 3 / 5 — メール作成" onNavigate={onNavigate} />
-          
-          {/* ヘッダー */}
-          <div style={{ background: THEME.navy, padding: "10px 16px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-            <div style={{ color:"white", fontSize:13, fontWeight:700 }}>
-              {tmpl.icon} {tmpl.name} — 質問 {Math.min(chatStep+1, questions.length)} / {questions.length}
-            </div>
-            <button onClick={saveDraft}
-              style={{ background: savedDraft?"#10B981":"rgba(255,255,255,0.15)", color:"white", border:"1px solid rgba(255,255,255,0.3)",
-                borderRadius:8, padding:"5px 12px", fontSize:11, fontWeight:700, cursor:"pointer" }}>
-              {savedDraft ? "✓ 保存済み" : "💾 途中保存"}
-            </button>
-          </div>
+      // ===== STEP: チャット =====
+      if (step === "chat") {
+        return (
+          <div style={{ display: "flex", flexDirection: "column", height: "100vh", backgroundColor: chalk }}>
+            <Nav right="Step 3 / 5 — メール作成" onNavigate={onNavigate} />
 
-          {/* 進捗バー */}
-          <div style={{ height:4, background:"rgba(0,0,0,0.08)" }}>
-            <div style={{ height:"100%", background: tmpl.color, width:`${Math.min(chatStep,questions.length-1)/questions.length*100+10}%`, transition:"width 0.4s" }} />
-          </div>
-
-          {/* チャット本体 */}
-          <div style={{ flex:1, overflowY:"auto", padding:"16px", paddingBottom: builtJa ? "0" : "80px" }}>
-            {messages.map((m,i) => (
-              <div key={i} style={{ display:"flex", justifyContent: m.type==="user" ? "flex-end" : "flex-start", marginBottom: 12 }}>
-                {m.type==="bot" && (
-                  <div style={{ marginRight:8, width:28, height:28, borderRadius:"50%", background:tmpl.color,
-                    display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, flexShrink:0, marginTop:2 }}>⚾</div>
-                )}
-                <div style={{
-                  maxWidth:"80%", padding:"10px 14px", borderRadius: m.type==="user" ? "16px 16px 4px 16px" : "4px 16px 16px 16px",
-                  background: m.type==="user" ? THEME.navy : "white",
-                  color: m.type==="user" ? "white" : "#1F2937",
-                  fontSize: 13, lineHeight: 1.6, whiteSpace: "pre-wrap",
-                  border: m.type==="bot" ? "1px solid #E5E7EB" : "none",
-                  boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-                }}>
-                  {m.text}
-                </div>
+            <div style={{ background: navy, padding: "8px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ color: "white", fontSize: 12, fontWeight: 700 }}>
+                {tmpl.icon + " " + tmpl.name + " — 質問 " + (Math.min(chatStep + 1, questions.length)) + " / " + questions.length}
               </div>
-            ))}
-            <div ref={chatEndRef} />
-          </div>
-
-          {/* 生成されたメール文（完了後） */}
-          {builtJa && (
-            <div style={{ padding:"12px 16px", background:"#F0FDF4", borderTop:"2px solid #10B981" }}>
-              <div style={{ fontSize:12, fontWeight:700, color:"#065F46", marginBottom:6 }}>📄 生成されたメール文（日本語・編集可）</div>
-              <textarea
-                value={builtJa}
-                onChange={e => setBuiltJa(e.target.value)}
-                style={{ width:"100%", height:160, padding:"10px 12px", fontSize:12, lineHeight:1.5,
-                  border:"1px solid #A7F3D0", borderRadius:8, resize:"vertical", fontFamily:"monospace",
-                  outline:"none", color:"#1F2937" }}
-              />
-              <div style={{ display:"flex", gap:8, marginTop:8 }}>
-                <button onClick={saveDraft}
-                  style={{ flex:1, padding:"10px 0", background: savedDraft?"#10B981":"white", color: savedDraft?"white":THEME.navy,
-                    border:`1px solid ${savedDraft?"#10B981":THEME.navy}`, borderRadius:8, fontSize:12, fontWeight:700, cursor:"pointer" }}>
-                  {savedDraft ? "✓ 保存済み" : "💾 下書き保存"}
-                </button>
-                <button onClick={translateToEnglish}
-                  style={{ flex:2, padding:"10px 0",
-                    background: `linear-gradient(90deg, ${THEME.dirt} 0%, ${THEME.navy} 100%)`,
-                    color:"white", border:"none", borderRadius:8, fontSize:13, fontWeight:800, cursor:"pointer",
-                    boxShadow: `0 4px 12px ${THEME.dirt}44` }}>
-                  🌐 英語に翻訳する →
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* 入力エリア（チャット完了前） */}
-          {!builtJa && (
-            <div style={{ position:"fixed", bottom:0, left:0, right:0, background:"white", borderTop:"1px solid #E5E7EB", padding:"10px 12px", display:"flex", gap:8, zIndex:50 }}>
-              <input
-                value={inputVal}
-                onChange={e => setInputVal(e.target.value)}
-                onKeyDown={e => { if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend();} }}
-                placeholder={questions[chatStep]?.placeholder || "入力してください..."}
-                style={{ flex:1, padding:"10px 14px", border:`1.5px solid ${THEME.navy}33`, borderRadius:10,
-                  fontSize:13, outline:"none", background:"#FAFAFA" }}
-              />
-              <button onClick={handleSend}
-                style={{ padding:"10px 18px", background:THEME.navy, color:"white", borderRadius:10,
-                  border:"none", fontWeight:800, fontSize:13, cursor:"pointer" }}>
-                送信
+              <button onClick={saveDraft}
+                style={{ background: saved ? "#10B981" : "rgba(255,255,255,0.15)", color: "white", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 7, padding: "4px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+                {saved ? "✓ 保存済み" : "💾 途中保存"}
               </button>
             </div>
-          )}
-        </div>
-      );
 
-      // ===== ステップ: 英語翻訳 (translate) =====
-      return (
-        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
-          <Nav right="Step 3 / 5 — 英語翻訳" onNavigate={onNavigate} />
-          <div style={{ maxWidth:680, margin:"0 auto", padding:"16px 16px 80px" }}>
+            <div style={{ height: 3, background: "rgba(0,0,0,0.08)" }}>
+              <div style={{ height: "100%", background: tmpl.color, width: (Math.min(chatStep, questions.length - 1) / questions.length * 100 + 10) + "%", transition: "width 0.4s" }} />
+            </div>
 
-            {translating ? (
-              <div style={{ textAlign:"center", padding:"60px 20px" }}>
-                <div style={{ fontSize:40, marginBottom:16 }}>🌐</div>
-                <div style={{ fontSize:16, fontWeight:700, color:THEME.navy, marginBottom:8 }}>翻訳中...</div>
-                <div style={{ fontSize:12, color:"#6B7280" }}>
-                  アメリカの大学野球コーチ向けに<br />
-                  文化的に適切な英語に変換しています
+            <div style={{ flex: 1, overflowY: "auto", padding: "14px", paddingBottom: builtJa ? "0" : "80px" }}>
+              {messages.map(function(m, i){
+                return (
+                  <div key={i} style={{ display: "flex", justifyContent: m.type === "user" ? "flex-end" : "flex-start", marginBottom: 10 }}>
+                    {m.type === "bot" && (
+                      <div style={{ width: 26, height: 26, borderRadius: "50%", background: tmpl.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, marginRight: 8, flexShrink: 0, marginTop: 2 }}>
+                        ⚾
+                      </div>
+                    )}
+                    <div style={{
+                      maxWidth: "80%", padding: "10px 13px",
+                      borderRadius: m.type === "user" ? "14px 14px 3px 14px" : "3px 14px 14px 14px",
+                      background: m.type === "user" ? navy : "white",
+                      color: m.type === "user" ? "white" : "#1F2937",
+                      fontSize: 13, lineHeight: 1.6, whiteSpace: "pre-wrap",
+                      border: m.type === "bot" ? "1px solid #E5E7EB" : "none",
+                      boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                    }}>
+                      {m.text}
+                    </div>
+                  </div>
+                );
+              })}
+              <div ref={chatEndRef} />
+            </div>
+
+            {builtJa && (
+              <div style={{ padding: "12px 14px", background: "#F0FDF4", borderTop: "2px solid #10B981" }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#065F46", marginBottom: 6 }}>メール文（編集可）</div>
+                <textarea
+                  value={builtJa}
+                  onChange={function(e){ setBuiltJa(e.target.value); }}
+                  style={{ width: "100%", height: 150, padding: "8px 10px", fontSize: 12, lineHeight: 1.5, border: "1px solid #A7F3D0", borderRadius: 7, resize: "vertical", fontFamily: "monospace", outline: "none", color: "#1F2937", boxSizing: "border-box" }}
+                />
+                <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                  <button onClick={saveDraft}
+                    style={{ flex: 1, padding: "9px 0", background: saved ? "#10B981" : "white", color: saved ? "white" : navy, border: "1px solid " + (saved ? "#10B981" : navy), borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                    {saved ? "✓ 保存済み" : "💾 下書き保存"}
+                  </button>
+                  <button onClick={translate}
+                    style={{ flex: 2, padding: "9px 0", background: "linear-gradient(90deg, " + dirt + " 0%, " + navy + " 100%)", color: "white", border: "none", borderRadius: 7, fontSize: 13, fontWeight: 800, cursor: "pointer" }}>
+                    英語に翻訳する →
+                  </button>
                 </div>
               </div>
+            )}
+
+            {!builtJa && (
+              <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "white", borderTop: "1px solid #E5E7EB", padding: "10px 12px", display: "flex", gap: 8, zIndex: 50 }}>
+                <input
+                  value={inputVal}
+                  onChange={function(e){ setInputVal(e.target.value); }}
+                  onKeyDown={function(e){ if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+                  placeholder={questions[chatStep] ? questions[chatStep].ph : "入力してください..."}
+                  style={{ flex: 1, padding: "10px 12px", border: "1.5px solid " + navy + "33", borderRadius: 9, fontSize: 13, outline: "none", background: "#FAFAFA" }}
+                />
+                <button onClick={handleSend}
+                  style={{ padding: "10px 16px", background: navy, color: "white", borderRadius: 9, border: "none", fontWeight: 800, fontSize: 13, cursor: "pointer" }}>
+                  送信
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      // ===== STEP: 翻訳 =====
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: chalk }}>
+          <Nav right="Step 3 / 5 — 英語翻訳" onNavigate={onNavigate} />
+          <div style={{ maxWidth: 640, margin: "0 auto", padding: "16px 16px 80px" }}>
+
+            {translating ? (
+              <div style={{ textAlign: "center", padding: "60px 20px" }}>
+                <div style={{ fontSize: 38, marginBottom: 14 }}>🌐</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: navy, marginBottom: 8 }}>翻訳中...</div>
+                <div style={{ fontSize: 12, color: "#6B7280" }}>アメリカの大学野球コーチ向けに文化的に適切な英語に変換しています</div>
+              </div>
             ) : (
-              <>
-                {/* 日本語版 */}
-                <div style={{ background:"white", borderRadius:12, border:"1px solid #E5E7EB", padding:"14px 16px", marginBottom:12 }}>
-                  <div style={{ fontSize:11, fontWeight:700, color:"#9CA3AF", marginBottom:6 }}>📝 日本語原文</div>
-                  <div style={{ fontSize:12, lineHeight:1.7, color:"#374151", whiteSpace:"pre-wrap", fontFamily:"monospace", maxHeight:140, overflowY:"auto" }}>{builtJa}</div>
-                  <button onClick={() => setStep("chat")}
-                    style={{ marginTop:8, fontSize:11, color:THEME.navy, background:"none", border:`1px solid ${THEME.navy}33`, borderRadius:6, padding:"3px 10px", cursor:"pointer" }}>
+              <div>
+                <div style={{ background: "white", borderRadius: 12, border: "1px solid #E5E7EB", padding: "14px", marginBottom: 12 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#9CA3AF", marginBottom: 5 }}>日本語原文</div>
+                  <div style={{ fontSize: 12, lineHeight: 1.7, color: "#374151", whiteSpace: "pre-wrap", fontFamily: "monospace", maxHeight: 130, overflowY: "auto" }}>{builtJa}</div>
+                  <button onClick={function(){ setStep("chat"); }}
+                    style={{ marginTop: 7, fontSize: 11, color: navy, background: "none", border: "1px solid " + navy + "33", borderRadius: 5, padding: "3px 9px", cursor: "pointer" }}>
                     ← 日本語を編集する
                   </button>
                 </div>
 
-                {/* 英語版 */}
-                <div style={{ background:"white", borderRadius:12, border:`2px solid ${THEME.dirt}`, padding:"14px 16px", marginBottom:12 }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
-                    <div style={{ fontSize:11, fontWeight:700, color:THEME.dirt }}>✅ 英語翻訳（編集可）</div>
-                    <div style={{ fontSize:10, color:"#9CA3AF" }}>アメリカ野球文化に合わせて最適化済み</div>
+                <div style={{ background: "white", borderRadius: 12, border: "2px solid " + dirt, padding: "14px", marginBottom: 12 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: dirt }}>英語翻訳（編集可）</div>
+                    <div style={{ fontSize: 10, color: "#9CA3AF" }}>アメリカ野球文化に合わせて最適化済み</div>
                   </div>
                   <textarea
                     value={translatedEn}
-                    onChange={e => setTranslatedEn(e.target.value)}
-                    style={{ width:"100%", height:200, padding:"10px 12px", fontSize:12.5, lineHeight:1.7,
-                      border:"1px solid #FEE2E2", borderRadius:8, resize:"vertical", fontFamily:"'Georgia',serif",
-                      outline:"none", color:"#1F2937" }}
+                    onChange={function(e){ setTranslatedEn(e.target.value); }}
+                    style={{ width: "100%", height: 200, padding: "9px 11px", fontSize: 12.5, lineHeight: 1.7, border: "1px solid #FEE2E2", borderRadius: 7, resize: "vertical", fontFamily: "Georgia, serif", outline: "none", color: "#1F2937", boxSizing: "border-box" }}
                   />
-                  <div style={{ fontSize:10, color:"#9CA3AF", marginTop:4 }}>
-                    ※ {{"{{"}}coach_last_name{{"}}"}}, {{"{{"}}university{{"}}"}} は実際の配信時に自動的に差し込まれます
+                  <div style={{ fontSize: 10, color: "#9CA3AF", marginTop: 4 }}>
+                    ※ coach_last_name・university は配信時に自動差し込みされます
                   </div>
                 </div>
 
-                <div style={{ display:"flex", gap:8 }}>
-                  <button onClick={translateToEnglish}
-                    style={{ flex:1, padding:"11px 0", background:"white", border:`1.5px solid ${THEME.navy}`, borderRadius:10, fontSize:12, fontWeight:700, color:THEME.navy, cursor:"pointer" }}>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={translate}
+                    style={{ flex: 1, padding: "11px 0", background: "white", border: "1.5px solid " + navy, borderRadius: 9, fontSize: 12, fontWeight: 700, color: navy, cursor: "pointer" }}>
                     🔄 再翻訳
                   </button>
                   <button
-                    onClick={() => {
-                      setPlanState(prev => ({ ...prev, templateId: selectedId, emailJa: builtJa, emailEn: translatedEn }));
+                    onClick={function(){
+                      setPlanState(function(prev){ return Object.assign({}, prev, { templateId: selectedId, emailJa: builtJa, emailEn: translatedEn }); });
                       onNavigate("schedule");
                     }}
-                    style={{
-                      flex:2, padding:"11px 0",
-                      background: `linear-gradient(180deg, ${THEME.dirtLight} 0%, ${THEME.dirt} 60%)`,
-                      color:"white", border:"none", borderRadius:10, fontSize:14, fontWeight:900,
-                      boxShadow:`0 6px 16px ${THEME.dirt}55`, cursor:"pointer",
-                    }}>
+                    style={{ flex: 2, padding: "11px 0", background: "linear-gradient(180deg, " + dirtL + " 0%, " + dirt + " 60%)", color: "white", border: "none", borderRadius: 9, fontSize: 14, fontWeight: 900, boxShadow: "0 6px 16px " + dirt + "55", cursor: "pointer" }}>
                     このメールで配信設定へ →
                   </button>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>
