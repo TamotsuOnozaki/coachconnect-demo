@@ -1161,6 +1161,36 @@
               </div>
             </div>
           </div>
+
+          {/* ===== TargetSetup フッター: 選択大学数・コーチ数 ===== */}
+          <div className="fixed bottom-0 left-0 right-0 z-50" style={{ background: "rgba(255,255,255,0.97)", backdropFilter: "blur(12px)", borderTop: `2px solid ${THEME.navy}22`, boxShadow: "0 -4px 20px rgba(0,0,0,0.12)" }}>
+            <div style={{ display: "flex", alignItems: "center", padding: "10px 16px 14px", gap: 10 }}>
+              {/* 選択大学数・コーチ数バッジ */}
+              <div style={{ display: "flex", alignItems: "center", gap: 6, background: THEME.navy + "0d", borderRadius: 10, padding: "8px 16px", flex: 1, flexWrap: "wrap" }}>
+                <DiamondIcon size={14} />
+                <span style={{ fontSize: 11, fontWeight: 700, color: THEME.navy, opacity: 0.7 }}>選択大学数</span>
+                <span style={{ fontSize: 24, fontWeight: 900, fontFamily: "monospace", color: THEME.dirt, lineHeight: 1 }}>{roundedSchools}</span>
+                <span style={{ fontSize: 11, color: THEME.dirt, fontWeight: 600 }}>校</span>
+                <div style={{ width: 1, height: 22, background: "#dde", margin: "0 6px" }} />
+                <span style={{ fontSize: 11, fontWeight: 700, color: THEME.navy, opacity: 0.7 }}>対象コーチ</span>
+                <span style={{ fontSize: 24, fontWeight: 900, fontFamily: "monospace", color: THEME.navy, lineHeight: 1 }}>{totalCoaches}</span>
+                <span style={{ fontSize: 11, color: THEME.navy, fontWeight: 600 }}>名</span>
+              </div>
+              {/* 次へボタン */}
+              <button onClick={() => onNavigate("confirm")}
+                className="text-white font-black tracking-wide flex items-center gap-2 transition-all duration-200 active:scale-95"
+                style={{
+                  fontSize: "0.85rem", padding: "12px 18px", borderRadius: 12, whiteSpace: "nowrap",
+                  background: `linear-gradient(180deg, ${THEME.dirtLight} 0%, ${THEME.dirt} 50%, ${THEME.leather || "#7A3B10"} 100%)`,
+                  boxShadow: `0 4px 14px ${THEME.dirt}55`,
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  textShadow: "0 1px 2px rgba(0,0,0,0.3)",
+                }}>
+                確認 →
+              </button>
+            </div>
+          </div>
+          <div className="h-20" />
         </div>
       );
     };
@@ -1621,8 +1651,8 @@
           <div style={{ background: darkMode ? "#0a0d1a" : "#fffbeb", padding:"12px 16px", borderBottom:`1px solid ${borderColor}`, display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
             <span style={{ fontSize:18 }}>📋</span>
             <div style={{ flex:1 }}>
-              <div style={{ fontWeight:800, fontSize:14, color:textColor }}>QA-Fill 使い方ガイド</div>
-              <div style={{ fontSize:10, color:subColor }}>大学アンケートをワンクリックで自動入力できます</div>
+              <div style={{ fontWeight:800, fontSize:17, color:textColor }}>QA-Fill 使い方ガイド</div>
+              <div style={{ fontSize:12, color:subColor, marginTop:2 }}>大学アンケートをワンクリックで自動入力できます</div>
             </div>
             <button onClick={onClose} style={{ background:"transparent", border:"none", cursor:"pointer", fontSize:18, color:"#94a3b8", padding:"0 4px" }}>✕</button>
           </div>
@@ -1637,16 +1667,16 @@
                 </div>
                 {/* テキスト */}
                 <div style={{ flex:1 }}>
-                  <div style={{ fontSize:13, fontWeight:800, color:textColor, marginBottom:3 }}>{step.title}</div>
-                  <div style={{ fontSize:11, color:subColor, lineHeight:1.6 }}>{step.desc}</div>
+                  <div style={{ fontSize:15, fontWeight:800, color:textColor, marginBottom:4 }}>{step.title}</div>
+                  <div style={{ fontSize:13, color:subColor, lineHeight:1.7 }}>{step.desc}</div>
                 </div>
               </div>
             ))}
 
             {/* ポイント補足 */}
             <div style={{ background: darkMode?"rgba(245,158,11,0.08)":"#fffde7", border:`1px solid ${accentColor}44`, borderRadius:8, padding:"10px 12px", marginBottom:12 }}>
-              <div style={{ fontSize:11, fontWeight:700, color:accentColor, marginBottom:4 }}>💡 ポイント</div>
-              <div style={{ fontSize:10, color:subColor, lineHeight:1.7 }}>
+              <div style={{ fontSize:13, fontWeight:700, color:accentColor, marginBottom:6 }}>💡 ポイント</div>
+              <div style={{ fontSize:12, color:subColor, lineHeight:1.9 }}>
                 ・ブックマーク登録は最初の1回だけ<br/>
                 ・ヤマト用・タケル用を別々に保存可能<br/>
                 ・フォームの項目名を自動認識して入力します<br/>
@@ -1832,9 +1862,7 @@
             }}>
               🔗 フォーム自動入力ブックマークレットをコピー
             </button>
-            <div style={{ fontSize: 9, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>
-              コピー後 → ブラウザのブックマークに追加 → 大学フォームを開いてクリック
-            </div>
+
           </div>
         </div>
       );
