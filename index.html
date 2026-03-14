@@ -1163,32 +1163,34 @@
           </div>
 
           {/* フッター分のスペース確保 */}
-          <div className="h-24" />
+          <div className="h-36" />
         </div>
 
         {/* ===== TargetSetup フッター: 選択大学数・コーチ数 ===== */}
-        <div className="fixed bottom-0 left-0 right-0 z-50" style={{ background: "rgba(255,255,255,0.97)", backdropFilter: "blur(12px)", borderTop: `2px solid ${THEME.navy}22`, boxShadow: "0 -4px 20px rgba(0,0,0,0.12)" }}>
-          <div style={{ display: "flex", alignItems: "center", padding: "10px 16px 14px", gap: 10 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, background: THEME.navy + "0d", borderRadius: 10, padding: "8px 16px", flex: 1 }}>
-              <DiamondIcon size={14} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: THEME.navy, opacity: 0.7 }}>選択大学数</span>
-              <span style={{ fontSize: 24, fontWeight: 900, fontFamily: "monospace", color: THEME.dirt, lineHeight: 1 }}>{roundedSchools}</span>
-              <span style={{ fontSize: 11, color: THEME.dirt, fontWeight: 600 }}>校</span>
-              <div style={{ width: 1, height: 22, background: "#dde", margin: "0 8px" }} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: THEME.navy, opacity: 0.7 }}>対象コーチ</span>
-              <span style={{ fontSize: 24, fontWeight: 900, fontFamily: "monospace", color: THEME.navy, lineHeight: 1 }}>{totalCoaches}</span>
-              <span style={{ fontSize: 11, color: THEME.navy, fontWeight: 600 }}>名</span>
+        <div className="fixed bottom-0 left-0 right-0 z-50" style={{ background: "rgba(255,255,255,0.98)", backdropFilter: "blur(14px)", borderTop: `3px solid ${THEME.navy}33`, boxShadow: "0 -6px 24px rgba(0,0,0,0.15)" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "10px 16px 14px", gap: 10 }}>
+            {/* 大学数・コーチ数 大きく表示 */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, width: "100%" }}>
+              <DiamondIcon size={18} />
+              <span style={{ fontSize: 15, fontWeight: 800, color: THEME.navy }}>選択大学数</span>
+              <span style={{ fontSize: 42, fontWeight: 900, fontFamily: "monospace", color: THEME.dirt, lineHeight: 1, margin: "0 2px" }}>{roundedSchools}</span>
+              <span style={{ fontSize: 18, color: THEME.dirt, fontWeight: 800 }}>校</span>
+              <div style={{ width: 2, height: 36, background: THEME.navy + "33", margin: "0 12px" }} />
+              <span style={{ fontSize: 15, fontWeight: 800, color: THEME.navy }}>対象コーチ</span>
+              <span style={{ fontSize: 42, fontWeight: 900, fontFamily: "monospace", color: THEME.navy, lineHeight: 1, margin: "0 2px" }}>{totalCoaches}</span>
+              <span style={{ fontSize: 18, color: THEME.navy, fontWeight: 800 }}>名</span>
             </div>
+            {/* 確認ボタン 横幅いっぱい */}
             <button onClick={() => onNavigate("confirm")}
-              className="text-white font-black tracking-wide flex items-center gap-2 transition-all duration-200 active:scale-95"
+              className="text-white font-black tracking-wide flex items-center justify-center gap-3 transition-all duration-200 active:scale-95"
               style={{
-                fontSize: "0.85rem", padding: "12px 20px", borderRadius: 12, whiteSpace: "nowrap",
+                fontSize: "1.15rem", padding: "14px 0", width: "100%", borderRadius: 14,
                 background: `linear-gradient(180deg, ${THEME.dirtLight} 0%, ${THEME.dirt} 50%, ${THEME.leather || "#7A3B10"} 100%)`,
-                boxShadow: `0 4px 14px ${THEME.dirt}55`,
+                boxShadow: `0 6px 20px ${THEME.dirt}66, inset 0 1px 0 rgba(255,255,255,0.25)`,
                 border: "1px solid rgba(255,255,255,0.15)",
                 textShadow: "0 1px 2px rgba(0,0,0,0.3)",
               }}>
-              確認 →
+              対象大学リストを確認 →
             </button>
           </div>
         </div>
