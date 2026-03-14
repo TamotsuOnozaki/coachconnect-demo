@@ -883,18 +883,29 @@
                           <div className="text-2xl sm:text-3xl font-bold font-mono" style={{ color: THEME.navy }}>{pkg.coachCount}<span className="text-xs font-normal text-gray-500">通</span></div>
                         </div>
                       </div>
-                      <div className="w-full bg-gray-100 rounded-full h-2.5 flex overflow-hidden mb-2">
-                        {pkg.stats.replied > 0 && <div style={{ width: `${(pkg.stats.replied / total) * 100}%`, transition: "width 1s ease", backgroundColor: THEME.dirt }} />}
-                        {pkg.stats.opened > 0 && <div style={{ width: `${(pkg.stats.opened / total) * 100}%`, transition: "width 1s ease" }} className="bg-purple-400" />}
-                        {pkg.stats.sent > 0 && <div style={{ width: `${(pkg.stats.sent / total) * 100}%`, transition: "width 1s ease", backgroundColor: THEME.grassLight }} />}
-                        {pkg.stats.pending > 0 && <div style={{ width: `${(pkg.stats.pending / total) * 100}%`, transition: "width 1s ease" }} className="bg-blue-300" />}
-                      </div>
-                      <div className="flex flex-wrap gap-3 text-xs text-gray-500">
-                        <span>💬 反応 {pkg.stats.replied}</span>
-                        <span>👀 開封 {pkg.stats.opened}</span>
-                        <span>✅ 配信 {pkg.stats.sent}</span>
-                        <span>⏳ 待ち {pkg.stats.pending}</span>
-                      </div>
+                      {(() => {
+                        const segments = [
+                          { key: "replied", label: "反応", value: pkg.stats.replied, color: THEME.dirt },
+                          { key: "opened", label: "開封", value: pkg.stats.opened, color: "#8B5CF6" },
+                          { key: "sent", label: "配信", value: pkg.stats.sent, color: THEME.grassLight },
+                          { key: "pending", label: "待ち", value: pkg.stats.pending, color: "#93C5FD" },
+                        ].filter(s => s.value > 0);
+                        return (
+                          <div className="w-full rounded-xl h-10 flex overflow-hidden" style={{ backgroundColor: "#F1F5F9" }}>
+                            {segments.map(seg => {
+                              const pct = (seg.value / total) * 100;
+                              return (
+                                <div key={seg.key} className="h-full flex items-center justify-center transition-all duration-700 relative group"
+                                  style={{ width: `${pct}%`, backgroundColor: seg.color, minWidth: pct > 0 ? "2rem" : 0 }}>
+                                  <span className="text-xs font-bold text-white truncate px-1">
+                                    {pct >= 12 ? `${seg.label} ${seg.value}` : seg.value}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 );
