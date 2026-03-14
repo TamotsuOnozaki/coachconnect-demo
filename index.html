@@ -973,21 +973,33 @@
         {/* ===== QA-Fill パネル ===== */}
         {qaOpen && <QAFillPanel onClose={() => setQaOpen(false)} darkMode={darkMode} />}
 
-        <div className="fixed bottom-0 left-0 right-0 z-50" style={{ background: "linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0))" }}>
-            <div className="flex justify-center pb-6 pt-4">
-              <button onClick={() => onNavigate("target")}
-                className="text-white px-10 py-4 rounded-2xl font-black tracking-wide flex items-center gap-3 transition-all duration-200 active:scale-95"
-                style={{
-                  fontSize: "1.2rem",
-                  background: `linear-gradient(180deg, ${THEME.dirtLight} 0%, ${THEME.dirt} 50%, ${THEME.leather || '#7A3B10'} 100%)`,
-                  boxShadow: `0 6px 20px ${THEME.dirt}66, 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3)`,
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  textShadow: "0 1px 2px rgba(0,0,0,0.3)",
-                }}>
-                <span className="text-2xl leading-none font-black">+</span> 新規配信プラン作成
-              </button>
+        <div className="fixed bottom-0 left-0 right-0 z-50" style={{ background: darkMode ? "rgba(13,17,23,0.97)" : "rgba(255,255,255,0.97)", backdropFilter: "blur(12px)", borderTop: `2px solid ${THEME.navy}22`, boxShadow: "0 -4px 20px rgba(0,0,0,0.12)" }}>
+          {/* ターゲット概要バー */}
+          <div style={{ display: "flex", alignItems: "center", padding: "10px 16px 6px", gap: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, background: darkMode ? THEME.navy+"33" : THEME.navy+"11", borderRadius: 10, padding: "6px 14px", flex: 1 }}>
+              <DiamondIcon size={14} />
+              <span style={{ fontSize: 11, fontWeight: 700, color: darkMode ? "#aab" : THEME.navy, opacity: 0.7 }}>配信大学数</span>
+              <span style={{ fontSize: 22, fontWeight: 900, fontFamily: "monospace", color: THEME.dirt, lineHeight: 1 }}>{roundedSchools}</span>
+              <span style={{ fontSize: 11, color: THEME.dirt, fontWeight: 600 }}>校</span>
+              <div style={{ width: 1, height: 20, background: darkMode ? "#334" : "#dde", margin: "0 6px" }} />
+              <span style={{ fontSize: 11, fontWeight: 700, color: darkMode ? "#aab" : THEME.navy, opacity: 0.7 }}>配信コーチ</span>
+              <span style={{ fontSize: 22, fontWeight: 900, fontFamily: "monospace", color: THEME.navy, lineHeight: 1 }}>{totalCoaches}</span>
+              <span style={{ fontSize: 11, color: THEME.navy, fontWeight: 600 }}>名</span>
             </div>
+            <button onClick={() => onNavigate("target")}
+              className="text-white rounded-xl font-black tracking-wide flex items-center gap-2 transition-all duration-200 active:scale-95"
+              style={{
+                fontSize: "0.85rem", padding: "10px 16px",
+                background: `linear-gradient(180deg, ${THEME.dirtLight} 0%, ${THEME.dirt} 50%, ${THEME.leather || '#7A3B10'} 100%)`,
+                boxShadow: `0 4px 14px ${THEME.dirt}55`,
+                border: "1px solid rgba(255,255,255,0.15)",
+                textShadow: "0 1px 2px rgba(0,0,0,0.3)", whiteSpace: "nowrap",
+              }}>
+              <span style={{ fontSize: 16 }}>+</span> 新規プラン
+            </button>
           </div>
+          <div style={{ height: 4 }} />
+        </div>
         </div>
       );
     };
@@ -1142,17 +1154,6 @@
               </div>
 
               <div className="space-y-6">
-                <div className="rounded-2xl shadow-lg p-6 sticky top-4 text-white" style={{ backgroundColor: THEME.navy }}>
-                  <div className="flex items-center gap-2 mb-4">
-                    <DiamondIcon size={20} />
-                    <h3 className="font-bold text-lg">ターゲット概要</h3>
-                  </div>
-                  <div className="text-5xl font-bold font-mono mb-1"><AnimatedNumber target={roundedSchools} /><span className="text-lg font-normal opacity-70">校</span></div>
-                  <div className="text-sm mb-3" style={{ color: THEME.dirtLight }}>配信コーチ 約<AnimatedNumber target={totalCoaches} />名</div>
-                  <button onClick={() => onNavigate("confirm")} className="w-full mt-4 py-3 rounded-lg font-bold hover:opacity-90 transition" style={{ backgroundColor: THEME.dirt, color: "#fff" }}>
-                    対象大学リストを確認 →
-                  </button>
-                </div>
                 <div className="bg-white rounded-xl shadow-sm border p-6">
                   <h3 className="font-bold text-sm mb-3" style={{ color: THEME.navy }}>🔥 2025 Top 5</h3>
                   {topUnis.map((u, i) => (
@@ -1518,7 +1519,7 @@
 
     const QA_DEFAULT = {
       yamato: {
-        personal: { firstName:"Yamato", lastName:"Onozaki", preferredName:"Yamato", country:"Japan", addressType:"Home", street:"3-1-17 Yawata, Tagajo, Miyagi", city:"Tagajo", state:"Miyagi", zip:"9850874", gradYear:"2026", dob:"12/27/2004", email:"yamato@prospect.zetalabo.biz", personalEmail:"y12271801@gmail.com", mobile:"+81 8077437530", instagram:"", twitter:"" },
+        personal: { firstName:"Yamato", lastName:"Onozaki", preferredName:"Yamato", country:"Japan", addressType:"Home", street:"3-1-17 Yawata, Tagajo, Miyagi", city:"Tagajo", state:"Miyagi", zip:"9850874", gradYear:"2026", dob:"12/27/2004", email:"yamato@prospect.zetalabo.biz", personalEmail:"y12271801@gmail.com", mobile:"+81 8077437530", instagram:"@y12271801", twitter:"" },
         parent: { p1FirstName:"Tamotsu", p1LastName:"Onozaki", p1Gender:"Male", p1Occupation:"CEO, Zeta Lab Inc.", p1Email:"onozaki@zetalabo.biz", p1LivingWith:"Yes", siblings:"Takeru Onozaki (Twin Brother, Same Age)", p2FirstName:"", p2LastName:"" },
         academic: { schoolName:"Genesee Community College", schoolCity:"Batavia", schoolState:"New York", gpa:"2.8", intendedMajor:"Health Science", eligibilityCenter:"Yes", eligibilityId:"", toefl:"" },
         athletic: { height:"6' 4\"", weight:"210", positions:"Right Handed Pitcher", throwingHand:"Right", battingHand:"Right", fbVelocity:"T88 mph (avg 86-87)", sliderVelocity:"76 mph", curveVelocity:"68-70 mph", era:"1.92", ip:"56", strikeouts:"62", confERA:"0.67 (1st in Conf.)", sixtyYard:"" },
