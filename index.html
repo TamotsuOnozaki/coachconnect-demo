@@ -974,31 +974,19 @@
         {qaOpen && <QAFillPanel onClose={() => setQaOpen(false)} darkMode={darkMode} />}
 
         <div className="fixed bottom-0 left-0 right-0 z-50" style={{ background: darkMode ? "rgba(13,17,23,0.97)" : "rgba(255,255,255,0.97)", backdropFilter: "blur(12px)", borderTop: `2px solid ${THEME.navy}22`, boxShadow: "0 -4px 20px rgba(0,0,0,0.12)" }}>
-          {/* ターゲット概要バー */}
-          <div style={{ display: "flex", alignItems: "center", padding: "10px 16px 6px", gap: 8 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, background: darkMode ? THEME.navy+"33" : THEME.navy+"11", borderRadius: 10, padding: "6px 14px", flex: 1 }}>
-              <DiamondIcon size={14} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: darkMode ? "#aab" : THEME.navy, opacity: 0.7 }}>配信大学数</span>
-              <span style={{ fontSize: 22, fontWeight: 900, fontFamily: "monospace", color: THEME.dirt, lineHeight: 1 }}>50</span>
-              <span style={{ fontSize: 11, color: THEME.dirt, fontWeight: 600 }}>校</span>
-              <div style={{ width: 1, height: 20, background: darkMode ? "#334" : "#dde", margin: "0 6px" }} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: darkMode ? "#aab" : THEME.navy, opacity: 0.7 }}>配信コーチ</span>
-              <span style={{ fontSize: 22, fontWeight: 900, fontFamily: "monospace", color: THEME.navy, lineHeight: 1 }}>約87</span>
-              <span style={{ fontSize: 11, color: THEME.navy, fontWeight: 600 }}>名</span>
-            </div>
+          <div style={{ display: "flex", justifyContent: "center", padding: "10px 16px 14px" }}>
             <button onClick={() => onNavigate("target")}
-              className="text-white rounded-xl font-black tracking-wide flex items-center gap-2 transition-all duration-200 active:scale-95"
+              className="text-white font-black tracking-wide flex items-center justify-center gap-3 transition-all duration-200 active:scale-95"
               style={{
-                fontSize: "0.85rem", padding: "10px 16px",
+                fontSize: "1.1rem", padding: "14px 0", width: "80%", maxWidth: 420, borderRadius: 14,
                 background: `linear-gradient(180deg, ${THEME.dirtLight} 0%, ${THEME.dirt} 50%, ${THEME.leather || '#7A3B10'} 100%)`,
-                boxShadow: `0 4px 14px ${THEME.dirt}55`,
+                boxShadow: `0 6px 20px ${THEME.dirt}66, 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.25)`,
                 border: "1px solid rgba(255,255,255,0.15)",
-                textShadow: "0 1px 2px rgba(0,0,0,0.3)", whiteSpace: "nowrap",
+                textShadow: "0 1px 2px rgba(0,0,0,0.3)",
               }}>
-              <span style={{ fontSize: 16 }}>+</span> 新規プラン
+              <span style={{ fontSize: 20, fontWeight: 900, lineHeight: 1 }}>+</span> 新規プラン追加
             </button>
           </div>
-          <div style={{ height: 4 }} />
         </div>
         </div>
       );
@@ -1648,6 +1636,37 @@
                 </div>
               );
             })}
+          </div>
+
+          {/* ===== Bookmarklet取得ボタン ===== */}
+          <div style={{ padding: "8px 10px 10px", borderTop: `1px solid ${fieldBorder}`, flexShrink: 0, background: panelBg }}>
+            <button onClick={() => {
+              const allFields = {};
+              Object.values(d).forEach(sec => {
+                if (typeof sec === "object") {
+                  Object.entries(sec).forEach(([k, v]) => { if(v) allFields[k] = v; });
+                }
+              });
+              const dataJson = JSON.stringify(allFields).replace(/"/g, '\"');
+              const bmCode = `javascript:(function(){const data=JSON.parse("${dataJson}");const inputs=document.querySelectorAll('input,textarea,select');let filled=0;const map=[[['first','fname','firstname','given'],data.firstName],[['last','lname','lastname','family'],data.lastName],[['email'],data.email||data.personalEmail],[['phone','mobile','cell'],data.mobile],[['height','ht'],data.height],[['weight','wt','lbs'],data.weight],[['gpa'],data.gpa],[['major','study'],data.intendedMajor],[['position','pos'],data.positions],[['velocity','velo','fb'],data.fbVelocity],[['grad','class','year'],data.gradYear],[['city'],data.city],[['state'],data.state],[['zip','postal'],data.zip],[['country'],data.country],[['school','college'],data.schoolName],[['instagram','ig'],data.instagram],[['twitter'],data.twitter]];inputs.forEach(el=>{const ctx=((el.name||"")+(el.id||"")+(el.placeholder||"")).toLowerCase();const lbl=(el.closest?.('label')||el.parentElement?.querySelector?.('label')||{}).textContent||"";const full=(ctx+lbl).toLowerCase();for(const[keys,val]of map){if(!val)continue;if(keys.some(k=>full.includes(k))){if(el.tagName==="SELECT"){Array.from(el.options).forEach(o=>{if(o.text.toLowerCase().includes(val.toLowerCase()))el.value=o.value});}else{el.value=val;}el.dispatchEvent(new Event("input",{bubbles:true}));el.dispatchEvent(new Event("change",{bubbles:true}));el.style.outline="3px solid #f59e0b";filled++;break;}}});alert("QA-Fill: "+filled+"件を自動入力しました！");})()`;
+              try {
+                navigator.clipboard.writeText(bmCode);
+                setMsg("🔗 コピー完了！");
+                setTimeout(() => setMsg(""), 3000);
+              } catch(e) {
+                window.prompt("URLをコピーしてブックマークに追加", bmCode);
+              }
+            }} style={{
+              width: "100%", padding: "10px", border: "none", borderRadius: 8,
+              background: isY ? "rgba(99,102,241,0.15)" : "rgba(217,119,6,0.15)",
+              color: ac, fontSize: 12, fontWeight: 700, cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontFamily: "inherit"
+            }}>
+              🔗 フォーム自動入力ブックマークレットをコピー
+            </button>
+            <div style={{ fontSize: 9, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>
+              コピー後 → ブラウザのブックマークに追加 → 大学フォームを開いてクリック
+            </div>
           </div>
         </div>
       );
