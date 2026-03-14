@@ -707,6 +707,7 @@
 
     // --- 画面2: ダッシュボード ---
     const Dashboard = ({ onNavigate, themeId, changeTheme }) => {
+      const [expandedPkgs, setExpandedPkgs] = useState({});
       const [animStep, setAnimStep] = useState(0);
       useEffect(() => {
         const t = setInterval(() => setAnimStep(s => (s + 1) % 8), 2000);
@@ -852,74 +853,99 @@
             </div>
 
             <div className="grid gap-4">
-              {packages.map(pkg => {
+              {packages.map((pkg, idx) => {
                 const total = Object.values(pkg.stats).reduce((a, b) => a + b, 0);
                 const statusLabel = pkg.status === "active" ? "🟢 配信中" : "✅ 完了";
                 const isActive = pkg.status === "active";
+                const isLatest = idx === 0;
+                const isExpanded = isLatest || expandedPkgs[pkg.id];
+                const toggleExpand = (e) => {
+                  if (!isLatest) {
+                    e.stopPropagation();
+                    setExpandedPkgs(prev => ({ ...prev, [pkg.id]: !prev[pkg.id] }));
+                  }
+                };
                 return (
-                  <div key={pkg.id} className="bg-white rounded-2xl shadow-sm border hover:shadow-lg transition-shadow cursor-pointer overflow-hidden"
-                    style={{ borderLeft: `4px solid ${isActive ? THEME.grassLight : THEME.navy}` }}
-                    onClick={() => onNavigate("detail")}>
-                    {/* 登録日ヘッダー */}
-                    <div className="px-4 sm:px-6 py-2 flex justify-between items-center" style={{ backgroundColor: isActive ? THEME.grassLight + "10" : THEME.navy + "06" }}>
+                  <div key={pkg.id} className="bg-white rounded-2xl shadow-sm border overflow-hidden transition-all"
+                    style={{ borderLeft: `4px solid ${isActive ? THEME.grassLight : THEME.navy}` }}>
+                    {/* ヘッダー（常に表示） */}
+                    <div className="px-4 sm:px-6 py-2.5 flex justify-between items-center cursor-pointer select-none"
+                      style={{ backgroundColor: isActive ? THEME.grassLight + "10" : THEME.navy + "06" }}
+                      onClick={isLatest ? () => onNavigate("detail") : toggleExpand}>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-bold" style={{ color: isActive ? THEME.grassLight : THEME.navy }}>📅 {formatDate(pkg.createdAt)}</span>
-                        <span className="text-xs text-gray-400">{daysAgo(pkg.createdAt)}</span>
-                      </div>
-                      <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ backgroundColor: isActive ? THEME.grassLight + "20" : THEME.navy + "10", color: isActive ? THEME.grassLight : THEME.navy }}>{statusLabel}</span>
-                    </div>
-                    {/* カード本体 */}
-                    <div className="px-4 sm:px-6 py-4">
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        {!isLatest && (
+                          <span className="flex items-center gap-1.5">
                             <Badge color="navy">{pkg.level}</Badge>
-                            <span className="text-xs text-gray-500">{pkg.states}</span>
-                            <span className="text-xs text-gray-400">| {pkg.roles}</span>
-                          </div>
-                          <div className="text-sm font-medium" style={{ color: THEME.navy }}>{pkg.targets}校 → {pkg.coachCount}名に配信</div>
-                        </div>
-                        <div className="text-right flex-shrink-0">
-                          <div className="text-2xl sm:text-3xl font-bold font-mono" style={{ color: THEME.navy }}>{pkg.coachCount}<span className="text-xs font-normal text-gray-500">通</span></div>
-                        </div>
+                            <span className="text-xs text-gray-500">{pkg.coachCount}通</span>
+                          </span>
+                        )}
+                        {isLatest && <span className="text-xs text-gray-400">{daysAgo(pkg.createdAt)}</span>}
                       </div>
-                      {(() => {
-                        const segments = [
-                          { key: "replied", label: "反応", value: pkg.stats.replied, color: THEME.dirt },
-                          { key: "opened", label: "開封", value: pkg.stats.opened, color: "#8B5CF6" },
-                          { key: "sent", label: "配信", value: pkg.stats.sent, color: THEME.grassLight },
-                          { key: "pending", label: "待ち", value: pkg.stats.pending, color: "#93C5FD" },
-                        ].filter(s => s.value > 0);
-                        return (
-                          <div>
-                            <div className="w-full rounded-xl h-10 flex overflow-hidden" style={{ backgroundColor: "#F1F5F9" }}>
-                              {segments.map(seg => {
-                                const pct = (seg.value / total) * 100;
-                                return (
-                                  <div key={seg.key} className="h-full flex items-center justify-center transition-all duration-700 relative"
-                                    title={`${seg.label}: ${seg.value}通`}
-                                    style={{ width: `${pct}%`, backgroundColor: seg.color, minWidth: pct > 0 ? "2rem" : 0, cursor: "default" }}>
-                                    <span className="text-xs font-bold text-white truncate px-1">
-                                      {pct >= 15 ? `${seg.label} ${seg.value}` : seg.value}
-                                    </span>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                            {segments.some(s => (s.value / total) * 100 < 15) && (
-                              <div className="flex gap-3 mt-1.5 pl-0.5">
-                                {segments.filter(s => (s.value / total) * 100 < 15).map(seg => (
-                                  <div key={seg.key} className="flex items-center gap-1">
-                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: seg.color }} />
-                                    <span className="text-xs font-medium" style={{ color: "#64748B" }}>{seg.label} {seg.value}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })()}
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ backgroundColor: isActive ? THEME.grassLight + "20" : THEME.navy + "10", color: isActive ? THEME.grassLight : THEME.navy }}>{statusLabel}</span>
+                        {!isLatest && (
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={THEME.navy} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                            style={{ transition: "transform 0.3s", transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>
+                            <polyline points="6 9 12 15 18 9" />
+                          </svg>
+                        )}
+                      </div>
                     </div>
+                    {/* カード本体（展開時のみ表示） */}
+                    {isExpanded && (
+                      <div className="px-4 sm:px-6 py-4 cursor-pointer" onClick={() => onNavigate("detail")}>
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                              <Badge color="navy">{pkg.level}</Badge>
+                              <span className="text-xs text-gray-500">{pkg.states}</span>
+                              <span className="text-xs text-gray-400">| {pkg.roles}</span>
+                            </div>
+                            <div className="text-sm font-medium" style={{ color: THEME.navy }}>{pkg.targets}校 → {pkg.coachCount}名に配信</div>
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            <div className="text-2xl sm:text-3xl font-bold font-mono" style={{ color: THEME.navy }}>{pkg.coachCount}<span className="text-xs font-normal text-gray-500">通</span></div>
+                          </div>
+                        </div>
+                        {(() => {
+                          const segments = [
+                            { key: "replied", label: "反応", value: pkg.stats.replied, color: THEME.dirt },
+                            { key: "opened", label: "開封", value: pkg.stats.opened, color: "#8B5CF6" },
+                            { key: "sent", label: "配信", value: pkg.stats.sent, color: THEME.grassLight },
+                            { key: "pending", label: "待ち", value: pkg.stats.pending, color: "#93C5FD" },
+                          ].filter(s => s.value > 0);
+                          return (
+                            <div>
+                              <div className="w-full rounded-xl h-10 flex overflow-hidden" style={{ backgroundColor: "#F1F5F9" }}>
+                                {segments.map(seg => {
+                                  const pct = (seg.value / total) * 100;
+                                  return (
+                                    <div key={seg.key} className="h-full flex items-center justify-center transition-all duration-700 relative"
+                                      title={`${seg.label}: ${seg.value}通`}
+                                      style={{ width: `${pct}%`, backgroundColor: seg.color, minWidth: pct > 0 ? "2rem" : 0, cursor: "default" }}>
+                                      <span className="text-xs font-bold text-white truncate px-1">
+                                        {pct >= 15 ? `${seg.label} ${seg.value}` : seg.value}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              {segments.some(s => (s.value / total) * 100 < 15) && (
+                                <div className="flex gap-3 mt-1.5 pl-0.5">
+                                  {segments.filter(s => (s.value / total) * 100 < 15).map(seg => (
+                                    <div key={seg.key} className="flex items-center gap-1">
+                                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: seg.color }} />
+                                      <span className="text-xs font-medium" style={{ color: "#64748B" }}>{seg.label} {seg.value}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    )}
                   </div>
                 );
               })}
