@@ -1091,6 +1091,234 @@
       );
     };
 
+    // --- USマップセレクター ---
+    const USMapSelector = ({ selectedStates, onStateToggle }) => {
+      const [activeState, setActiveState] = React.useState(null);
+
+      const SELECTABLE = ["AL","AZ","AR","CA","CO","CT","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","MA","MD","MI","MN","MO","MS","MT","NC","NE","NJ","NM","NV","NY","OH","OK","OR","PA","SC","SD","TN","TX","UT","VA","WA","WI","WV","WY"];
+
+      // [row, col] — 左が西、右が東、上が北、下が南
+      const GRID = {
+        ME:[0,10], NH:[0,9], VT:[0,8],
+        WA:[1,0], MT:[1,1], ND:[1,2], MN:[1,3], WI:[1,5], MI:[1,6], NY:[1,8], MA:[1,9],
+        OR:[2,0], ID:[2,1], SD:[2,2], IA:[2,3], IL:[2,4], IN:[2,5], OH:[2,6], PA:[2,7], NJ:[2,8], CT:[2,9], RI:[2,10],
+        CA:[3,0], NV:[3,1], WY:[3,2], NE:[3,3], MO:[3,4], KY:[3,5], WV:[3,6], VA:[3,7], MD:[3,8], DE:[3,9],
+        AZ:[4,1], UT:[4,2], CO:[4,3], KS:[4,4], TN:[4,5], NC:[4,7],
+        NM:[5,2], OK:[5,3], AR:[5,4], MS:[5,5], AL:[5,6], SC:[5,7],
+        TX:[6,3], LA:[6,5], GA:[6,6],
+        FL:[7,7],
+        AK:[8,0], HI:[8,1],
+      };
+
+      const INFO = {
+        AL:{ja:"アラバマ",city:"バーミンガム",region:"south"},
+        AZ:{ja:"アリゾナ",city:"フェニックス 🌵",region:"mountain"},
+        AR:{ja:"アーカンソー",city:"リトルロック",region:"south"},
+        CA:{ja:"カリフォルニア",city:"LA・サンフランシスコ 🌴",region:"west"},
+        CO:{ja:"コロラド",city:"デンバー ⛷️",region:"mountain"},
+        CT:{ja:"コネチカット",city:"ハートフォード",region:"east"},
+        DE:{ja:"デラウェア",city:"ウィルミントン",region:"east"},
+        FL:{ja:"フロリダ",city:"マイアミ・オーランド 🏖️",region:"south"},
+        GA:{ja:"ジョージア",city:"アトランタ",region:"south"},
+        HI:{ja:"ハワイ",city:"ホノルル 🌺",region:"west"},
+        ID:{ja:"アイダホ",city:"ボイシ ⛰️",region:"mountain"},
+        IL:{ja:"イリノイ",city:"シカゴ 🏙️",region:"midwest"},
+        IN:{ja:"インディアナ",city:"インディアナポリス",region:"midwest"},
+        IA:{ja:"アイオワ",city:"デモイン 🌽",region:"midwest"},
+        KS:{ja:"カンザス",city:"ウィチタ 🌾",region:"midwest"},
+        KY:{ja:"ケンタッキー",city:"ルイビル 🏇",region:"south"},
+        LA:{ja:"ルイジアナ",city:"ニューオーリンズ 🎷",region:"south"},
+        MA:{ja:"マサチューセッツ",city:"ボストン",region:"east"},
+        MD:{ja:"メリーランド",city:"ボルチモア",region:"east"},
+        ME:{ja:"メイン",city:"ポートランド",region:"east"},
+        MI:{ja:"ミシガン",city:"デトロイト 🚗",region:"midwest"},
+        MN:{ja:"ミネソタ",city:"ミネアポリス ❄️",region:"midwest"},
+        MO:{ja:"ミズーリ",city:"セントルイス",region:"midwest"},
+        MS:{ja:"ミシシッピ",city:"ジャクソン",region:"south"},
+        MT:{ja:"モンタナ",city:"ビリングス ⛰️",region:"mountain"},
+        NC:{ja:"ノースカロライナ",city:"シャーロット",region:"east"},
+        ND:{ja:"ノースダコタ",city:"ビスマーク ❄️",region:"midwest"},
+        NE:{ja:"ネブラスカ",city:"オマハ 🌽",region:"midwest"},
+        NH:{ja:"ニューハンプシャー",city:"マンチェスター",region:"east"},
+        NJ:{ja:"ニュージャージー",city:"ニューアーク",region:"east"},
+        NM:{ja:"ニューメキシコ",city:"アルバカーキ 🌵",region:"mountain"},
+        NV:{ja:"ネバダ",city:"ラスベガス 🎰",region:"mountain"},
+        NY:{ja:"ニューヨーク",city:"ニューヨーク市 🗽",region:"east"},
+        OH:{ja:"オハイオ",city:"コロンバス",region:"midwest"},
+        OK:{ja:"オクラホマ",city:"オクラホマシティ",region:"south"},
+        OR:{ja:"オレゴン",city:"ポートランド 🌲",region:"west"},
+        PA:{ja:"ペンシルベニア",city:"フィラデルフィア",region:"east"},
+        RI:{ja:"ロードアイランド",city:"プロビデンス",region:"east"},
+        SC:{ja:"サウスカロライナ",city:"コロンビア",region:"south"},
+        SD:{ja:"サウスダコタ",city:"スーフォールズ",region:"midwest"},
+        TN:{ja:"テネシー",city:"ナッシュビル 🎸",region:"south"},
+        TX:{ja:"テキサス",city:"ヒューストン・ダラス 🤠",region:"south"},
+        UT:{ja:"ユタ",city:"ソルトレイクシティ ⛷️",region:"mountain"},
+        VA:{ja:"バージニア",city:"リッチモンド",region:"east"},
+        VT:{ja:"バーモント",city:"バーリントン",region:"east"},
+        WA:{ja:"ワシントン州",city:"シアトル ☕",region:"west"},
+        WI:{ja:"ウィスコンシン",city:"ミルウォーキー",region:"midwest"},
+        WV:{ja:"ウェストバージニア",city:"チャールストン ⛰️",region:"east"},
+        WY:{ja:"ワイオミング",city:"シャイアン ⛰️",region:"mountain"},
+        AK:{ja:"アラスカ",city:"アンカレッジ ❄️",region:"west"},
+      };
+
+      const RC = {
+        west:"#BFDBFE",
+        mountain:"#FDE68A",
+        midwest:"#BBF7D0",
+        south:"#FED7AA",
+        east:"#E9D5FF",
+      };
+
+      const REGION_META = [
+        {key:"west",  label:"🌊 西海岸", sub:"CA・WA・OR"},
+        {key:"mountain",label:"⛰️ 山岳部", sub:"CO・UT・NV"},
+        {key:"midwest",label:"🌾 中西部", sub:"IL・OH・MI"},
+        {key:"south", label:"☀️ 南部",   sub:"TX・FL・GA"},
+        {key:"east",  label:"🗽 東海岸", sub:"NY・MA・PA"},
+      ];
+
+      // 主要都市マーカー（マップ上に★表示）
+      const MAJOR_CITIES = {
+        CA:"LA", TX:"HOU", NY:"NYC", FL:"MIA", IL:"CHI",
+        WA:"SEA", MA:"BOS", GA:"ATL", CO:"DEN", WA:"SEA",
+      };
+
+      const CW=36, CH=30;
+
+      const handleClick = (code) => {
+        setActiveState(prev => prev===code ? null : code);
+        if (SELECTABLE.includes(code)) onStateToggle(code);
+      };
+
+      return (
+        <div>
+          {/* 凡例 */}
+          <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:10}}>
+            {REGION_META.map(r=>(
+              <div key={r.key} style={{
+                background:RC[r.key],borderRadius:8,padding:"3px 8px",
+                fontSize:10,fontWeight:700,border:"1px solid rgba(0,0,0,0.1)",
+                lineHeight:1.4,
+              }}>
+                <div>{r.label}</div>
+                <div style={{fontSize:9,fontWeight:400,color:"#555"}}>{r.sub}</div>
+              </div>
+            ))}
+            <div style={{background:"#E5E7EB",borderRadius:8,padding:"3px 8px",fontSize:10,fontWeight:600,color:"#9CA3AF",border:"1px solid rgba(0,0,0,0.08)"}}>□ 対象外</div>
+          </div>
+
+          {/* マップ外枠 */}
+          <div style={{position:"relative"}}>
+            {/* 方位・海ラベル */}
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:2,paddingLeft:2,paddingRight:2}}>
+              <span style={{fontSize:9,color:"#60A5FA",fontWeight:700}}>🌊 太平洋（西）</span>
+              <span style={{fontSize:9,color:"#7C3AED",fontWeight:700}}>（東）🌊 大西洋</span>
+            </div>
+
+            {/* スクロール可能マップ */}
+            <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch",borderRadius:8,background:"#F0F4FF",padding:"4px 4px 2px"}}>
+              <div style={{position:"relative",width:CW*11+2,height:CH*9+4,minWidth:CW*11+2}}>
+
+                {/* ロッキー山脈ラベル */}
+                <div style={{position:"absolute",top:CH*1.5,left:CW*1.4,fontSize:8,color:"#92400E",fontWeight:700,transform:"rotate(-40deg)",transformOrigin:"center",whiteSpace:"nowrap",pointerEvents:"none",opacity:0.7}}>⛰ロッキー山脈</div>
+
+                {/* メキシコ湾ラベル */}
+                <div style={{position:"absolute",bottom:CH*1.4,left:CW*4.5,fontSize:8,color:"#0EA5E9",fontWeight:600,whiteSpace:"nowrap",pointerEvents:"none",opacity:0.8}}>〜 メキシコ湾 〜</div>
+
+                {/* 州タイル */}
+                {Object.entries(GRID).map(([code,[row,col]])=>{
+                  const info = INFO[code] || {ja:code,city:"",region:"midwest"};
+                  const canSelect = SELECTABLE.includes(code);
+                  const selected = selectedStates.includes(code);
+                  const isActive = activeState===code;
+                  const hasBigCity = ["CA","TX","NY","FL","IL","WA","MA","GA","CO","PA","OH","MI","NC","VA"].includes(code);
+
+                  const bg = selected ? "#1B2A4A"
+                    : canSelect ? RC[info.region]
+                    : "#E9EBF0";
+                  const textCol = selected ? "#FFFFFF" : canSelect ? "#1a202c" : "#9CA3AF";
+                  const border = selected ? "2px solid #0F1D33"
+                    : isActive ? "2px solid #6366F1"
+                    : canSelect ? "1px solid rgba(0,0,0,0.14)"
+                    : "1px solid #D1D5DB";
+
+                  return (
+                    <div key={code}
+                      onClick={()=>handleClick(code)}
+                      style={{
+                        position:"absolute",
+                        left:col*CW+1, top:row*CH+1,
+                        width:CW-3, height:CH-3,
+                        background:bg, border:border, borderRadius:4,
+                        display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+                        cursor:canSelect?"pointer":"default",
+                        transition:"all 0.12s",
+                        boxShadow:selected?"0 2px 8px rgba(27,42,74,0.45)":isActive?"0 0 0 2px #A5B4FC":"none",
+                        userSelect:"none",
+                        WebkitTapHighlightColor:"transparent",
+                        zIndex:selected||isActive?2:1,
+                      }}>
+                      <span style={{fontSize:8.5,fontWeight:selected?800:600,color:textCol,lineHeight:1}}>{code}</span>
+                      {hasBigCity && canSelect && (
+                        <span style={{fontSize:5,color:selected?"#FCD34D":"#6B7280",marginTop:1}}>★</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 方位（下） */}
+            <div style={{display:"flex",justifyContent:"center",marginTop:2}}>
+              <span style={{fontSize:9,color:"#9CA3AF"}}>↑ 北　　　　南 ↓　　★大都市あり</span>
+            </div>
+          </div>
+
+          {/* 州情報カード */}
+          {activeState && INFO[activeState] && (
+            <div style={{
+              marginTop:8, padding:"10px 14px",
+              background: selectedStates.includes(activeState) ? "#1B2A4A" : "#FAFAFA",
+              borderRadius:10,
+              border:"1px solid " + (selectedStates.includes(activeState)?"#1B2A4A":"#E5E7EB"),
+              display:"flex",justifyContent:"space-between",alignItems:"center",
+              transition:"all 0.15s",
+            }}>
+              <div>
+                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  <span style={{
+                    display:"inline-block",width:28,height:20,borderRadius:3,
+                    background:RC[INFO[activeState].region]||"#E5E7EB",
+                    border:"1px solid rgba(0,0,0,0.1)",
+                    textAlign:"center",lineHeight:"20px",fontSize:9,fontWeight:700,color:"#333",
+                  }}>{activeState}</span>
+                  <span style={{fontWeight:700,fontSize:14,color:selectedStates.includes(activeState)?"#FFF":"#1F2937"}}>
+                    {INFO[activeState].ja}
+                  </span>
+                </div>
+                <div style={{fontSize:11,color:selectedStates.includes(activeState)?"#FCD34D":"#6B7280",marginTop:3}}>
+                  🏙️ {INFO[activeState].city}
+                </div>
+              </div>
+              {SELECTABLE.includes(activeState) ? (
+                <div style={{
+                  fontSize:11,fontWeight:700,padding:"5px 10px",borderRadius:7,
+                  background:selectedStates.includes(activeState)?"#C4813D":"#1B2A4A",
+                  color:"white",textAlign:"center",minWidth:60,
+                }}>
+                  {selectedStates.includes(activeState)?"✓ 選択中":"+ 選択"}
+                </div>
+              ) : (
+                <span style={{fontSize:10,color:"#9CA3AF",fontStyle:"italic"}}>大学データなし</span>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    };
+
     // --- 画面3: ターゲット設定 ---
     const TargetSetup = ({ onNavigate, planState, setPlanState }) => {
       const allLevels = ["D1", "D2", "D3", "NAIA", "JUCO"];
@@ -1224,20 +1452,22 @@
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border p-6">
-                  <h3 className="font-bold text-lg mb-4" style={{ color: THEME.navy }}>📍 州（複数選択可）</h3>
-                  <div className="flex flex-wrap gap-2 mb-3">
+                <div className="bg-white rounded-xl shadow-sm border p-5">
+                  <h3 className="font-bold text-lg mb-1" style={{ color: THEME.navy }}>📍 州を地図から選択</h3>
+                  <p className="text-xs text-gray-400 mb-3">州をタップして選択 / もう一度タップで解除。★は主要大都市あり。</p>
+                  {/* クイック選択 */}
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {presets.map(p => (
-                      <button key={p.label} onClick={() => handleStatePreset(p.states)} className="px-3 py-1.5 text-sm rounded-full border font-medium hover:opacity-80 transition" style={{ borderColor: THEME.dirt, color: THEME.dirt }}>{p.label}</button>
+                      <button key={p.label} onClick={() => handleStatePreset(p.states)}
+                        className="px-3 py-1.5 text-xs rounded-full border font-bold hover:opacity-80 transition"
+                        style={{ borderColor: THEME.dirt, color: THEME.dirt, background: "white" }}>{p.label}</button>
                     ))}
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {allStates.map(s => (
-                      <button key={s} onClick={() => handleStateChange(s)}
-                        className={`px-3 py-1 text-sm rounded transition font-medium ${planState.states.includes(s) ? "text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
-                        style={planState.states.includes(s) ? { backgroundColor: THEME.navy } : {}}>{s}</button>
-                    ))}
-                  </div>
+                  {/* インタラクティブマップ */}
+                  <USMapSelector
+                    selectedStates={planState.states}
+                    onStateToggle={handleStateChange}
+                  />
                 </div>
               </div>
 
