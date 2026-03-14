@@ -706,7 +706,7 @@
     );
 
     // --- 画面2: ダッシュボード ---
-    const Dashboard = ({ onNavigate, themeId, changeTheme }) => {
+    const Dashboard = ({ onNavigate, themeId, changeTheme, darkMode, setDarkMode, qaOpen, setQaOpen }) => {
       const [expandedPkgs, setExpandedPkgs] = useState({});
       const [animStep, setAnimStep] = useState(0);
       useEffect(() => {
@@ -749,9 +749,12 @@
         return `${diff}日前`;
       };
 
+      const bg = darkMode ? "#0d1117" : THEME.chalk;
+      const textColor = darkMode ? "#c9d1d9" : THEME.navy;
+
       return (
-        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
-          <nav style={{ backgroundColor: THEME.navy }}>
+        <div className="min-h-screen" style={{ backgroundColor: bg, transition: "background-color 0.3s" }}>
+          <nav style={{ backgroundColor: darkMode ? "#161b22" : THEME.navy, borderBottom: darkMode ? "1px solid #30363d" : "none" }}>
             <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">⚾</span>
@@ -774,6 +777,10 @@
                       }} />
                   ))}
                 </div>
+                <button onClick={() => setDarkMode(!darkMode)} title={darkMode ? "ライトモード" : "ダークモード"}
+                  style={{ background: darkMode ? "#30363d" : "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {darkMode ? "☀️" : "🌙"}
+                </button>
                 <span className="text-sm text-gray-300">ザキさん</span>
                 <button onClick={() => onNavigate("login")} className="text-sm text-gray-400 hover:text-white">ログアウト</button>
               </div>
@@ -786,7 +793,7 @@
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-5">
                 <DiamondIcon size={22} />
-                <h2 className="font-bold text-xl tracking-wide" style={{ color: THEME.navy }}>あなたの配信実績</h2>
+                <h2 className="font-bold text-xl tracking-wide" style={{ color: textColor }}>あなたの配信実績</h2>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 <ScoreboardNumber label="配信先" value={totalCoaches} sub="校" iconType="school" highlight />
@@ -955,7 +962,18 @@
           </div>
 
           {/* フローティングフッター */}
-          <div className="fixed bottom-0 left-0 right-0 z-50" style={{ background: "linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0))" }}>
+          {/* ===== QA-Fill フローティングボタン ===== */}
+        <button onClick={() => setQaOpen(!qaOpen)}
+          style={{ position: "fixed", bottom: 90, right: 20, width: 52, height: 52, borderRadius: "50%", background: darkMode ? "#238636" : THEME.dirt, border: "none", cursor: "pointer", fontSize: 22, boxShadow: "0 4px 14px rgba(0,0,0,0.3)", zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", transition: "transform 0.2s" }}
+          onMouseOver={e => e.currentTarget.style.transform="scale(1.1)"}
+          onMouseOut={e => e.currentTarget.style.transform="scale(1.0)"}>
+          📝
+        </button>
+
+        {/* ===== QA-Fill パネル ===== */}
+        {qaOpen && <QAFillPanel onClose={() => setQaOpen(false)} darkMode={darkMode} />}
+
+        <div className="fixed bottom-0 left-0 right-0 z-50" style={{ background: "linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0))" }}>
             <div className="flex justify-center pb-6 pt-4">
               <button onClick={() => onNavigate("target")}
                 className="text-white px-10 py-4 rounded-2xl font-black tracking-wide flex items-center gap-3 transition-all duration-200 active:scale-95"
@@ -1494,9 +1512,151 @@
     };
 
     // ===== メインアプリケーション =====
+
+    // ===== QA-Fill パネルコンポーネント =====
+    const QA_SECTIONS = { personal:"Personal", parent:"Parent", academic:"Academic", athletic:"Athletic", club:"Club", links:"Links" };
+
+    const QA_DEFAULT = {
+      yamato: {
+        personal: { firstName:"Yamato", lastName:"Onozaki", preferredName:"Yamato", country:"Japan", addressType:"Home", street:"3-1-17 Yawata, Tagajo, Miyagi", city:"Tagajo", state:"Miyagi", zip:"9850874", gradYear:"2026", dob:"12/27/2004", email:"yamato@prospect.zetalabo.biz", personalEmail:"y12271801@gmail.com", mobile:"+81 8077437530", instagram:"", twitter:"" },
+        parent: { p1FirstName:"Tamotsu", p1LastName:"Onozaki", p1Gender:"Male", p1Occupation:"CEO, Zeta Lab Inc.", p1Email:"onozaki@zetalabo.biz", p1LivingWith:"Yes", siblings:"Takeru Onozaki (Twin Brother, Same Age)", p2FirstName:"", p2LastName:"" },
+        academic: { schoolName:"Genesee Community College", schoolCity:"Batavia", schoolState:"New York", gpa:"2.8", intendedMajor:"Health Science", eligibilityCenter:"Yes", eligibilityId:"", toefl:"" },
+        athletic: { height:"6' 4\"", weight:"210", positions:"Right Handed Pitcher", throwingHand:"Right", battingHand:"Right", fbVelocity:"T88 mph (avg 86-87)", sliderVelocity:"76 mph", curveVelocity:"68-70 mph", era:"1.92", ip:"56", strikeouts:"62", confERA:"0.67 (1st in Conf.)", sixtyYard:"" },
+        club: { clubName:"Tohoku Marks", clubCity:"Sendai" },
+        links: { fieldLevel:"https://www.fieldlevel.com/app/profile/yamato.onozaki/baseball", youtube:"https://youtu.be/17LhHZvF4nU?t=180", fiveTool:"" }
+      },
+      takeru: {
+        personal: { firstName:"Takeru", lastName:"Onozaki", preferredName:"Takeru", country:"Japan", addressType:"Home", street:"3-1-17 Yawata, Tagajo, Miyagi", city:"Tagajo", state:"Miyagi", zip:"9850874", gradYear:"2025", dob:"12/27/2004", email:"takeru@baseball.zetalabo.biz", personalEmail:"t12271801@gmail.com", mobile:"+81 7041005395", instagram:"@takeru_onozaki", twitter:"@takeru_onozaki" },
+        parent: { p1FirstName:"Tamotsu", p1LastName:"Onozaki", p1Gender:"Male", p1Occupation:"CEO, Zeta Lab Inc.", p1Email:"onozaki@zetalabo.biz", p1LivingWith:"Yes", siblings:"Yamato Onozaki (Twin Brother, Same Age)", p2FirstName:"", p2LastName:"" },
+        academic: { schoolName:"Southwestern Oregon Community College", schoolCity:"Coos Bay", schoolState:"Oregon", gpa:"3.35", intendedMajor:"Business / Information Systems", eligibilityCenter:"Yes", eligibilityId:"", toefl:"" },
+        athletic: { height:"6' 4\"", weight:"200", positions:"RHP, Outfield (Two-Way)", throwingHand:"Right", battingHand:"Right", fbVelocity:"85-89 mph (topped 90)", sliderVelocity:"76 mph", curveVelocity:"68-70 mph", era:"3.09", ip:"67", strikeouts:"53", record:"4-3", whip:"1.35", ofArmVelocity:"92 mph", exitVelocity:"93 mph", sixtyYard:"7.25 sec" },
+        club: { clubName:"Tohoku Marks", clubCity:"Sendai" },
+        links: { fieldLevel:"https://www.fieldlevel.com/app/profile/takeru.onozaki/baseball", youtube:"https://youtu.be/3QO8xkjVij8?t=511", fiveTool:"https://fivetool.org/players/da3f180a-77f4-4e14-a970-b6dffb6d9577" }
+      }
+    };
+
+    const QA_LABELS = {
+      firstName:"First Name", lastName:"Last Name", preferredName:"Preferred Name", country:"Country", addressType:"Address Type", street:"Street", city:"City", state:"State", zip:"Zip", gradYear:"Grad Year", dob:"Date of Birth", email:"Email (Coach用)", personalEmail:"Email (個人)", mobile:"Mobile", instagram:"Instagram", twitter:"Twitter/X",
+      p1FirstName:"Parent 1 名", p1LastName:"Parent 1 姓", p1Gender:"Parent 1 Gender", p1Occupation:"Parent 1 職業", p1Email:"Parent 1 Email", p1LivingWith:"Living With", siblings:"Siblings", p2FirstName:"Parent 2 名", p2LastName:"Parent 2 姓",
+      schoolName:"School", schoolCity:"School City", schoolState:"School State", gpa:"GPA", intendedMajor:"Intended Major", eligibilityCenter:"NCAA Eligibility", eligibilityId:"Eligibility ID ⚠", toefl:"TOEFL",
+      height:"Height", weight:"Weight (lbs)", positions:"Position(s)", throwingHand:"Throws", battingHand:"Bats", fbVelocity:"FB Velocity", sliderVelocity:"Slider", curveVelocity:"Curve", era:"ERA", ip:"IP", strikeouts:"K (Strikeouts)", confERA:"Conf. ERA", record:"Record", whip:"WHIP", ofArmVelocity:"OF Arm", exitVelocity:"Exit Velocity", sixtyYard:"60yd dash",
+      clubName:"Club/Team", clubCity:"Club City",
+      fieldLevel:"FieldLevel", youtube:"YouTube", fiveTool:"FiveTool"
+    };
+
+    const QAFillPanel = ({ onClose, darkMode }) => {
+      const { useState: useStateQA, useEffect: useEffectQA, useCallback: useCallbackQA } = React;
+      const [player, setPlayer] = useStateQA("yamato");
+      const [section, setSectionQA] = useStateQA("personal");
+      const [data, setDataQA] = useStateQA(QA_DEFAULT);
+      const [copied, setCopied] = useStateQA(null);
+      const [editing, setEditing] = useStateQA(null);
+      const [msg, setMsg] = useStateQA("");
+
+      // localStorage から読み込み
+      useEffectQA(() => {
+        try {
+          const saved = localStorage.getItem("qa-fill-v1");
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            const merged = JSON.parse(JSON.stringify(QA_DEFAULT));
+            ["yamato","takeru"].forEach(pl => {
+              Object.keys(merged[pl]).forEach(s => {
+                if (parsed[pl] && parsed[pl][s]) {
+                  Object.entries(parsed[pl][s]).forEach(([k,v]) => { if(v) merged[pl][s][k]=v; });
+                }
+              });
+            });
+            setDataQA(merged);
+          }
+        } catch(e) {}
+      }, []);
+
+      const saveData = useCallbackQA((d) => {
+        try { localStorage.setItem("qa-fill-v1", JSON.stringify(d)); setMsg("✓"); setTimeout(()=>setMsg(""),1000); } catch(e) {}
+      }, []);
+
+      const doCopy = useCallbackQA(async (f, v) => {
+        if (!v) return;
+        try { await navigator.clipboard.writeText(v); setCopied(f); setTimeout(()=>setCopied(null),1000); } catch(e) {}
+      }, []);
+
+      const doEdit = useCallbackQA((f, v) => {
+        setDataQA(prev => {
+          const n = JSON.parse(JSON.stringify(prev));
+          n[player][section][f] = v;
+          saveData(n);
+          return n;
+        });
+      }, [player, section, saveData]);
+
+      const d = data[player];
+      const fields = d[section] ? Object.keys(d[section]) : [];
+      const isY = player === "yamato";
+      const ac = isY ? "#6366f1" : "#d97706";
+      const panelBg = darkMode ? "#0f1225" : "#ffffff";
+      const fieldBg = darkMode ? "#131730" : "#f8fafc";
+      const fieldBorder = darkMode ? "#1d2242" : "#e2e8f0";
+      const labelColor = darkMode ? "#6b7294" : "#94a3b8";
+      const valueColor = darkMode ? "#e0e4f0" : "#1e293b";
+
+      return (
+        <div style={{ position:"fixed", bottom:0, left:0, right:0, height:"55vh", background:panelBg, borderTop:`2px solid ${ac}`, boxShadow:"0 -4px 24px rgba(0,0,0,0.2)", zIndex:70, display:"flex", flexDirection:"column", borderRadius:"16px 16px 0 0", overflow:"hidden" }}>
+          {/* パネルヘッダー */}
+          <div style={{ background: darkMode ? "#0a0d1a" : "#f1f5f9", padding:"8px 12px", borderBottom:`1px solid ${fieldBorder}`, display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
+            <span style={{ fontWeight:800, fontSize:14, color: darkMode ? "#f0f2fa" : "#1e293b" }}>⚾ QA-Fill</span>
+            {msg && <span style={{ fontSize:11, color:"#22c55e", fontWeight:700 }}>{msg}</span>}
+            <div style={{ flex:1 }} />
+            {/* 選手切替 */}
+            {[{id:"yamato",l:"ヤマト",c:"#6366f1"},{id:"takeru",l:"タケル",c:"#d97706"}].map(p => (
+              <button key={p.id} onClick={() => setPlayer(p.id)} style={{ padding:"5px 14px", border:"none", borderRadius:6, cursor:"pointer", fontSize:12, fontWeight:700, background: player===p.id ? p.c : "transparent", color: player===p.id ? "#fff" : "#94a3b8", transition:"all 0.15s" }}>{p.l}</button>
+            ))}
+            <button onClick={onClose} style={{ background:"transparent", border:"none", cursor:"pointer", fontSize:18, color:"#94a3b8", padding:"0 4px" }}>✕</button>
+          </div>
+
+          {/* セクションタブ */}
+          <div style={{ display:"flex", gap:2, padding:"6px 10px", overflowX:"auto", flexShrink:0, background: darkMode ? "#0f1225" : "#f8fafc", borderBottom:`1px solid ${fieldBorder}` }}>
+            {Object.entries(QA_SECTIONS).map(([k,l]) => (
+              <button key={k} onClick={() => setSectionQA(k)} style={{ padding:"4px 10px", border:"none", borderRadius:5, cursor:"pointer", fontSize:10, fontWeight:700, whiteSpace:"nowrap", background: section===k ? (isY?"rgba(99,102,241,0.15)":"rgba(217,119,6,0.15)") : "transparent", color: section===k ? ac : "#94a3b8" }}>{l}</button>
+            ))}
+          </div>
+
+          {/* フィールドリスト */}
+          <div style={{ flex:1, overflowY:"auto", padding:"6px 10px 8px" }}>
+            {fields.map(f => {
+              const v = d[section][f] || "";
+              const lbl = QA_LABELS[f] || f;
+              const isCopied = copied === f;
+              const isEditing = editing === f;
+              const empty = !v;
+              return (
+                <div key={f} style={{ display:"flex", alignItems:"center", gap:5, background: empty ? (darkMode?"rgba(220,38,38,0.05)":"#fff5f5") : fieldBg, border:`1px solid ${isCopied ? ac : empty ? "rgba(220,38,38,0.2)" : fieldBorder}`, borderRadius:6, padding:"5px 8px", marginBottom:3 }}>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontSize:9, color:labelColor, fontWeight:700, textTransform:"uppercase" }}>{lbl}</div>
+                    {isEditing ? (
+                      <input autoFocus value={v} onChange={e => doEdit(f, e.target.value)} onBlur={() => setEditing(null)} onKeyDown={e => { if(e.key==="Enter") setEditing(null); }}
+                        style={{ width:"100%", padding:"2px 4px", border:`1px solid ${ac}`, borderRadius:3, background: darkMode?"#080b16":"#fff", color: darkMode?"#eef0f6":"#1e293b", fontSize:11, fontFamily:"monospace", outline:"none", boxSizing:"border-box" }} />
+                    ) : (
+                      <div onClick={() => { if(empty) setEditing(f); }} style={{ fontSize:11, fontFamily: v ? "monospace" : "inherit", color: empty ? "#ef4444" : v.startsWith("http") ? "#60a5fa" : valueColor, fontStyle: empty ? "italic" : "normal", wordBreak:"break-all", cursor: empty ? "pointer" : "default" }}>
+                        {v || "⚠ tap to fill"}
+                      </div>
+                    )}
+                  </div>
+                  <button onClick={() => setEditing(f)} style={{ width:24, height:24, border:`1px solid ${fieldBorder}`, borderRadius:4, background: darkMode?"#1e2340":"#f1f5f9", color:"#94a3b8", cursor:"pointer", fontSize:10 }}>✏</button>
+                  <button onClick={() => doCopy(f, v)} disabled={!v} style={{ width:24, height:24, border:`1px solid ${isCopied ? ac : fieldBorder}`, borderRadius:4, background: isCopied ? ac : v ? (darkMode?"#1e2340":"#f1f5f9") : "transparent", color: isCopied ? "#fff" : v ? "#64748b" : "#cbd5e1", cursor: v ? "pointer" : "not-allowed", fontSize:10 }}>{isCopied?"✓":"📋"}</button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    };
+
     const App = () => {
       const [currentScreen, setCurrentScreen] = useState("login");
       const [themeId, setThemeId] = useState("classic");
+      const [darkMode, setDarkMode] = useState(false);
+      const [qaOpen, setQaOpen] = useState(false);
       const [planState, setPlanState] = useState({
         levels: ["D1"],
         states: ["CA", "TX", "FL"],
@@ -1509,7 +1669,7 @@
 
       // テーマ切り替え
       const changeTheme = (id) => {
-        Object.assign(THEME, THEME_PRESETS[id]);
+        THEME = { ...THEME_PRESETS[id] };  // 新オブジェクトに再代入してReactが変化を検知
         setThemeId(id);
       };
 
@@ -1518,7 +1678,7 @@
       return (
         <>
           {currentScreen === "login" && <LoginScreen onNavigate={onNavigate} />}
-          {currentScreen === "dashboard" && <Dashboard onNavigate={onNavigate} themeId={themeId} changeTheme={changeTheme} />}
+          {currentScreen === "dashboard" && <Dashboard onNavigate={onNavigate} themeId={themeId} changeTheme={changeTheme} darkMode={darkMode} setDarkMode={setDarkMode} qaOpen={qaOpen} setQaOpen={setQaOpen} />}
           {currentScreen === "target" && <TargetSetup onNavigate={onNavigate} planState={planState} setPlanState={setPlanState} />}
           {currentScreen === "confirm" && <TargetConfirm onNavigate={onNavigate} planState={planState} />}
           {currentScreen === "template" && <TemplateSetup onNavigate={onNavigate} planState={planState} setPlanState={setPlanState} />}
