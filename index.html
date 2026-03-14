@@ -25,19 +25,51 @@
     const { useState, useEffect } = React;
     const { LineChart, Line, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } = window.Recharts || {};
 
-    // ===== 野球テーマカラー =====
-    const THEME = {
-      navy: "#1B2A4A",
-      navyLight: "#2A3F6B",
-      dirt: "#C4813D",
-      dirtLight: "#E8A961",
-      grass: "#2D5A27",
-      grassLight: "#4A8B3F",
-      chalk: "#F5F0E8",
-      leather: "#8B4513",
-      red: "#C41E3A",
-      white: "#FFFFFF",
+    // ===== カラーテーマプリセット（5パターン） =====
+    const THEME_PRESETS = {
+      classic: {
+        id: "classic", label: "クラシック", emoji: "⚾",
+        preview: { main: "#1B2A4A", accent: "#C4813D" },
+        navy: "#1B2A4A", navyLight: "#2A3F6B",
+        dirt: "#C4813D", dirtLight: "#E8A961",
+        grass: "#2D5A27", grassLight: "#4A8B3F",
+        chalk: "#F5F0E8", leather: "#8B4513", red: "#C41E3A", white: "#FFFFFF",
+      },
+      ocean: {
+        id: "ocean", label: "オーシャン", emoji: "🌊",
+        preview: { main: "#0F3460", accent: "#E94560" },
+        navy: "#0F3460", navyLight: "#1A4F8B",
+        dirt: "#E94560", dirtLight: "#FF6B81",
+        grass: "#0A8754", grassLight: "#16A085",
+        chalk: "#ECF0F1", leather: "#2C3E50", red: "#E74C3C", white: "#FFFFFF",
+      },
+      forest: {
+        id: "forest", label: "フォレスト", emoji: "🌲",
+        preview: { main: "#1B4332", accent: "#D4A843" },
+        navy: "#1B4332", navyLight: "#2D6A4F",
+        dirt: "#D4A843", dirtLight: "#E8C468",
+        grass: "#40916C", grassLight: "#52B788",
+        chalk: "#F0EDE5", leather: "#6B4423", red: "#BC4749", white: "#FFFFFF",
+      },
+      sunset: {
+        id: "sunset", label: "サンセット", emoji: "🌅",
+        preview: { main: "#4A1942", accent: "#E85D04" },
+        navy: "#4A1942", navyLight: "#6B2D5B",
+        dirt: "#E85D04", dirtLight: "#F48C06",
+        grass: "#606C38", grassLight: "#7C8A4E",
+        chalk: "#FDF6EC", leather: "#9C4A1A", red: "#D62828", white: "#FFFFFF",
+      },
+      steel: {
+        id: "steel", label: "スチール", emoji: "🏙️",
+        preview: { main: "#212529", accent: "#0096C7" },
+        navy: "#212529", navyLight: "#495057",
+        dirt: "#0096C7", dirtLight: "#48CAE4",
+        grass: "#2B9348", grassLight: "#55A630",
+        chalk: "#F8F9FA", leather: "#6C757D", red: "#E63946", white: "#FFFFFF",
+      },
     };
+
+    let THEME = { ...THEME_PRESETS.classic };
 
     // ===== 実D1大学データ（統合データシートから253校） =====
     const D1_UNIVERSITIES = [
@@ -651,7 +683,7 @@
     );
 
     // --- 画面2: ダッシュボード ---
-    const Dashboard = ({ onNavigate }) => {
+    const Dashboard = ({ onNavigate, themeId, changeTheme }) => {
       const [animStep, setAnimStep] = useState(0);
       useEffect(() => {
         const t = setInterval(() => setAnimStep(s => (s + 1) % 8), 2000);
@@ -706,6 +738,18 @@
               </div>
               <div className="flex items-center gap-4">
                 <button onClick={() => onNavigate("dbmanage")} className="text-sm hover:text-white px-3 py-1 rounded" style={{ color: THEME.dirtLight }}>📊 データ管理</button>
+                <div className="flex items-center gap-1.5 ml-2">
+                  {Object.values(THEME_PRESETS).map(t => (
+                    <button key={t.id} onClick={() => changeTheme(t.id)} title={t.label}
+                      className="rounded-full transition-all hover:scale-110"
+                      style={{
+                        width: themeId === t.id ? 28 : 22, height: themeId === t.id ? 28 : 22,
+                        background: `linear-gradient(135deg, ${t.preview.main} 50%, ${t.preview.accent} 50%)`,
+                        border: themeId === t.id ? "2px solid white" : "1px solid rgba(255,255,255,0.3)",
+                        boxShadow: themeId === t.id ? "0 0 8px rgba(255,255,255,0.4)" : "none",
+                      }} />
+                  ))}
+                </div>
                 <span className="text-sm text-gray-300">ザキさん</span>
                 <button onClick={() => onNavigate("login")} className="text-sm text-gray-400 hover:text-white">ログアウト</button>
               </div>
@@ -1343,6 +1387,7 @@
     // ===== メインアプリケーション =====
     const App = () => {
       const [currentScreen, setCurrentScreen] = useState("login");
+      const [themeId, setThemeId] = useState("classic");
       const [planState, setPlanState] = useState({
         levels: ["D1"],
         states: ["CA", "TX", "FL"],
@@ -1353,12 +1398,18 @@
         excluded: []
       });
 
+      // テーマ切り替え
+      const changeTheme = (id) => {
+        Object.assign(THEME, THEME_PRESETS[id]);
+        setThemeId(id);
+      };
+
       const onNavigate = (screen) => setCurrentScreen(screen);
 
       return (
         <>
           {currentScreen === "login" && <LoginScreen onNavigate={onNavigate} />}
-          {currentScreen === "dashboard" && <Dashboard onNavigate={onNavigate} />}
+          {currentScreen === "dashboard" && <Dashboard onNavigate={onNavigate} themeId={themeId} changeTheme={changeTheme} />}
           {currentScreen === "target" && <TargetSetup onNavigate={onNavigate} planState={planState} setPlanState={setPlanState} />}
           {currentScreen === "confirm" && <TargetConfirm onNavigate={onNavigate} planState={planState} />}
           {currentScreen === "template" && <TemplateSetup onNavigate={onNavigate} planState={planState} setPlanState={setPlanState} />}
