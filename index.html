@@ -1187,10 +1187,68 @@
 
       const CW=36, CH=30;
 
+      // ===== 地理的SVG背景パス（地図投影 → 396×270にスケール） =====
+      // x = (lon + 128) * 6.0   y = (50 - lat) * 10
+      const GEO = {
+        // [region, svgPath]
+        ME: ["east",     "M343,2 L373,2 L373,70 L343,70 Z"],
+        VT: ["east",     "M328,5 L340,5 L340,73 L328,73 Z"],
+        NH: ["east",     "M334,5 L347,5 L347,73 L334,73 Z"],
+        MA: ["east",     "M328,40 L360,40 L360,88 L328,88 Z"],
+        RI: ["east",     "M337,79 L343,79 L343,91 L337,91 Z"],
+        CT: ["east",     "M326,79 L340,79 L340,92 L326,92 Z"],
+        NY: ["east",     "M289,29 L345,29 L345,97 L289,97 Z"],
+        NJ: ["east",     "M314,86 L327,86 L327,113 L314,113 Z"],
+        PA: ["east",     "M285,76 L322,76 L322,105 L285,105 Z"],
+        DE: ["east",     "M314,103 L322,103 L322,117 L314,117 Z"],
+        MD: ["east",     "M292,103 L322,103 L322,122 L292,122 Z"],
+        VA: ["east",     "M265,104 L320,104 L320,136 L265,136 Z"],
+        WV: ["east",     "M272,93 L306,93 L306,129 L272,129 Z"],
+        NC: ["east",     "M261,133 L318,133 L318,163 L261,163 Z"],
+        SC: ["east",     "M268,148 L302,148 L302,183 L268,183 Z"],
+        GA: ["south",    "M253,150 L286,150 L286,201 L253,201 Z"],
+        FL: ["south",    "M243,191 L292,191 L297,227 L272,259 L243,229 Z"],
+        AL: ["south",    "M237,150 L262,150 L262,201 L237,201 Z"],
+        MS: ["south",    "M218,149 L240,149 L240,201 L218,201 Z"],
+        TN: ["south",    "M226,132 L282,132 L282,151 L226,151 Z"],
+        KY: ["south",    "M229,108 L279,108 L279,136 L229,136 Z"],
+        OH: ["midwest",  "M260,79 L286,79 L286,117 L260,117 Z"],
+        IN: ["midwest",  "M238,81 L262,81 L262,122 L238,122 Z"],
+        IL: ["midwest",  "M218,74 L246,74 L246,131 L218,131 Z"],
+        WI: ["midwest",  "M214,28 L249,28 L249,76 L214,76 Z"],
+        MI: ["midwest",  "M231,15 L276,15 L278,55 L260,60 L258,84 L231,84 Z"],
+        MN: ["midwest",  "M184,5 L233,5 L233,66 L184,66 Z"],
+        IA: ["midwest",  "M187,65 L229,65 L229,97 L187,97 Z"],
+        MO: ["midwest",  "M193,93 L235,93 L235,141 L193,141 Z"],
+        AR: ["south",    "M200,134 L233,134 L233,172 L200,172 Z"],
+        LA: ["south",    "M203,171 L236,171 L242,200 L222,215 L203,212 Z"],
+        OK: ["south",    "M150,130 L205,130 L205,166 L150,166 Z"],
+        TX: ["south",    "M128,135 L210,135 L210,208 L176,244 L130,203 L128,162 Z"],
+        ND: ["midwest",  "M143,9 L189,9 L189,42 L143,42 Z"],
+        SD: ["midwest",  "M143,42 L189,42 L189,77 L143,77 Z"],
+        NE: ["midwest",  "M143,69 L198,69 L198,104 L143,104 Z"],
+        KS: ["midwest",  "M155,104 L203,104 L203,133 L155,133 Z"],
+        MT: ["mountain", "M66,9 L146,9 L146,57 L66,57 Z"],
+        WY: ["mountain", "M103,50 L147,50 L147,93 L103,93 Z"],
+        CO: ["mountain", "M115,91 L158,91 L158,133 L115,133 Z"],
+        NM: ["mountain", "M115,133 L153,133 L153,189 L115,189 Z"],
+        AZ: ["mountain", "M78,133 L116,133 L116,189 L78,189 Z"],
+        UT: ["mountain", "M84,79 L116,79 L116,133 L84,133 Z"],
+        NV: ["mountain", "M70,79 L86,79 L86,151 L70,151 Z"],
+        ID: ["mountain", "M65,9 L105,9 L107,81 L65,81 Z"],
+        OR: ["west",     "M18,43 L70,37 L70,81 L18,81 Z"],
+        WA: ["west",     "M18,14 L68,14 L68,46 L34,49 L18,43 Z"],
+        CA: ["west",     "M18,81 L72,81 L82,122 L75,169 L23,163 L18,100 Z"],
+        AK: ["west",     "M6,222 L64,222 L64,265 L6,265 Z"],
+        HI: ["west",     "M68,234 L104,234 L104,262 L68,262 Z"],
+      };
+
       const handleClick = (code) => {
         setActiveState(prev => prev===code ? null : code);
         if (SELECTABLE.includes(code)) onStateToggle(code);
       };
+
+      const TW = CW*11+2, TH = CH*9+4;
 
       return (
         <div>
@@ -1213,21 +1271,92 @@
           <div style={{position:"relative"}}>
             {/* 方位・海ラベル */}
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:2,paddingLeft:2,paddingRight:2}}>
-              <span style={{fontSize:9,color:"#60A5FA",fontWeight:700}}>🌊 太平洋（西）</span>
-              <span style={{fontSize:9,color:"#7C3AED",fontWeight:700}}>（東）🌊 大西洋</span>
+              <span style={{fontSize:9,color:"#3B82F6",fontWeight:700}}>🌊 太平洋（西）</span>
+              <span style={{fontSize:9,color:"#6366F1",fontWeight:700}}>（東）🌊 大西洋</span>
             </div>
 
             {/* スクロール可能マップ */}
-            <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch",borderRadius:8,background:"#F0F4FF",padding:"4px 4px 2px"}}>
-              <div style={{position:"relative",width:CW*11+2,height:CH*9+4,minWidth:CW*11+2}}>
+            <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch",borderRadius:10,border:"1px solid #BFDBFE",padding:"4px 4px 2px",background:"#1e3a5f"}}>
+              <div style={{position:"relative",width:TW,height:TH,minWidth:TW}}>
 
-                {/* ロッキー山脈ラベル */}
-                <div style={{position:"absolute",top:CH*1.5,left:CW*1.4,fontSize:8,color:"#92400E",fontWeight:700,transform:"rotate(-40deg)",transformOrigin:"center",whiteSpace:"nowrap",pointerEvents:"none",opacity:0.7}}>⛰ロッキー山脈</div>
+                {/* ===== 地理的SVG背景マップ ===== */}
+                <svg
+                  viewBox={`0 0 ${TW} ${TH}`}
+                  style={{position:"absolute",top:0,left:0,width:TW,height:TH,pointerEvents:"none",zIndex:0}}
+                >
+                  {/* 海洋（背景） */}
+                  <rect x="0" y="0" width={TW} height={TH} fill="#1e3a5f"/>
 
-                {/* メキシコ湾ラベル */}
-                <div style={{position:"absolute",bottom:CH*1.4,left:CW*4.5,fontSize:8,color:"#0EA5E9",fontWeight:600,whiteSpace:"nowrap",pointerEvents:"none",opacity:0.8}}>〜 メキシコ湾 〜</div>
+                  {/* 太平洋 */}
+                  <text x="9" y="130" fontSize="8" fill="#60A5FA" fontWeight="700" opacity="0.7"
+                    transform="rotate(-90,9,130)">太　平　洋</text>
 
-                {/* 州タイル */}
+                  {/* 大西洋 */}
+                  <text x="390" y="110" fontSize="8" fill="#818CF8" fontWeight="700" opacity="0.7"
+                    transform="rotate(90,390,110)">大　西　洋</text>
+
+                  {/* 地理的州シェイプ */}
+                  {Object.entries(GEO).map(([code,[region,path]])=>{
+                    const sel = selectedStates.includes(code);
+                    return (
+                      <path key={code} d={path}
+                        fill={sel ? "#1B2A4A" : RC[region]}
+                        fillOpacity={sel ? 0.95 : 0.78}
+                        stroke={sel ? "#93C5FD" : "rgba(255,255,255,0.25)"}
+                        strokeWidth={sel ? 1.5 : 0.7}
+                      />
+                    );
+                  })}
+
+                  {/* ロッキー山脈ライン */}
+                  <path d="M82,20 L88,42 L84,64 L96,84 L90,102 L102,122 L96,140"
+                    fill="none" stroke="#FEF3C7" strokeWidth="3" strokeOpacity="0.18"
+                    strokeLinecap="round" strokeLinejoin="round"/>
+                  <text x="62" y="72" fontSize="6.5" fill="#FEF3C7" fontWeight="700" opacity="0.5"
+                    transform="rotate(-58,62,72)" style={{letterSpacing:"0.5px"}}>ロッキー山脈</text>
+
+                  {/* 大平原 */}
+                  <text x="162" y="100" fontSize="6" fill="#D1FAE5" opacity="0.45"
+                    fontWeight="600" transform="rotate(-3,162,100)">大　平　原</text>
+
+                  {/* メキシコ湾 */}
+                  <text x="168" y="252" fontSize="7.5" fill="#7DD3FC" opacity="0.7"
+                    fontWeight="600">── メキシコ湾 ──</text>
+
+                  {/* 五大湖エリア */}
+                  <ellipse cx="252" cy="45" rx="22" ry="10" fill="#60A5FA" fillOpacity="0.25"/>
+                  <text x="238" y="49" fontSize="5.5" fill="#BAE6FD" opacity="0.8">五大湖</text>
+
+                  {/* カナダ国境ライン */}
+                  <line x1="18" y1="14" x2="394" y2="9" stroke="#FEF9C3" strokeWidth="0.8"
+                    strokeDasharray="5,4" strokeOpacity="0.3"/>
+                  <text x="200" y="7" fontSize="5.5" fill="#FEF9C3" opacity="0.5" textAnchor="middle">── カナダ国境 ──</text>
+
+                  {/* メキシコ国境ライン */}
+                  <path d="M78,189 L116,189 L153,189 L210,208" fill="none"
+                    stroke="#FCA5A5" strokeWidth="0.8" strokeDasharray="4,3" strokeOpacity="0.4"/>
+
+                  {/* インセット区切り線 */}
+                  <line x1="4" y1="219" x2="112" y2="219" stroke="#93C5FD"
+                    strokeWidth="0.7" strokeDasharray="3,3" strokeOpacity="0.6"/>
+                  <text x="5" y="227" fontSize="5.5" fill="#93C5FD" opacity="0.6" fontStyle="italic">ⓘ インセット</text>
+
+                  {/* 選択ハイライト（地図上） */}
+                  {Object.entries(GEO).map(([code,[region,path]])=>{
+                    if (!selectedStates.includes(code)) return null;
+                    return (
+                      <path key={`sel-${code}`} d={path}
+                        fill="none"
+                        stroke="#FCD34D"
+                        strokeWidth="2"
+                        strokeOpacity="0.9"
+                        strokeLinejoin="round"
+                      />
+                    );
+                  })}
+                </svg>
+
+                {/* ===== インタラクティブタイルグリッド ===== */}
                 {Object.entries(GRID).map(([code,[row,col]])=>{
                   const info = INFO[code] || {ja:code,city:"",region:"midwest"};
                   const canSelect = SELECTABLE.includes(code);
@@ -1235,14 +1364,16 @@
                   const isActive = activeState===code;
                   const hasBigCity = ["CA","TX","NY","FL","IL","WA","MA","GA","CO","PA","OH","MI","NC","VA"].includes(code);
 
-                  const bg = selected ? "#1B2A4A"
-                    : canSelect ? RC[info.region]
-                    : "#E9EBF0";
-                  const textCol = selected ? "#FFFFFF" : canSelect ? "#1a202c" : "#9CA3AF";
-                  const border = selected ? "2px solid #0F1D33"
-                    : isActive ? "2px solid #6366F1"
-                    : canSelect ? "1px solid rgba(0,0,0,0.14)"
-                    : "1px solid #D1D5DB";
+                  const bg = selected
+                    ? "rgba(27,42,74,0.92)"
+                    : canSelect
+                      ? "rgba(255,255,255,0.75)"
+                      : "rgba(200,210,230,0.45)";
+                  const textCol = selected ? "#FFFFFF" : canSelect ? "#1a202c" : "#94A3B8";
+                  const border = selected ? "2px solid #FCD34D"
+                    : isActive ? "2px solid #818CF8"
+                    : canSelect ? "1px solid rgba(255,255,255,0.6)"
+                    : "1px solid rgba(200,215,240,0.35)";
 
                   return (
                     <div key={code}
@@ -1255,14 +1386,17 @@
                         display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
                         cursor:canSelect?"pointer":"default",
                         transition:"all 0.12s",
-                        boxShadow:selected?"0 2px 8px rgba(27,42,74,0.45)":isActive?"0 0 0 2px #A5B4FC":"none",
+                        boxShadow:selected
+                          ?"0 0 10px rgba(252,211,77,0.5), 0 2px 6px rgba(0,0,0,0.4)"
+                          :isActive?"0 0 0 2px #A5B4FC":"none",
                         userSelect:"none",
                         WebkitTapHighlightColor:"transparent",
-                        zIndex:selected||isActive?2:1,
+                        zIndex:selected||isActive?4:2,
+                        backdropFilter:"blur(2px)",
                       }}>
-                      <span style={{fontSize:8.5,fontWeight:selected?800:600,color:textCol,lineHeight:1}}>{code}</span>
+                      <span style={{fontSize:8.5,fontWeight:selected?800:600,color:textCol,lineHeight:1,textShadow:selected?"0 1px 3px rgba(0,0,0,0.5)":"none"}}>{code}</span>
                       {hasBigCity && canSelect && (
-                        <span style={{fontSize:5,color:selected?"#FCD34D":"#6B7280",marginTop:1}}>★</span>
+                        <span style={{fontSize:5,color:selected?"#FCD34D":"rgba(255,255,100,0.7)",marginTop:1}}>★</span>
                       )}
                     </div>
                   );
