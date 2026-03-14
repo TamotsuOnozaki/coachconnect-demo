@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AthleteGate - Baseball</title>
+
+  <!-- React & React DOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel Standalone for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Recharts UMD -->
+  <script src="https://unpkg.com/recharts@2/dist/Recharts.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const { LineChart, Line, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } = window.Recharts || {};
+
+    // ===== カラーテーマプリセット（5パターン） =====
+    const THEME_PRESETS = {
+      classic: {
+        id: "classic", label: "クラシック", emoji: "⚾",
+        preview: { main: "#1B2A4A", accent: "#C4813D" },
+        navy: "#1B2A4A", navyLight: "#2A3F6B",
+        dirt: "#C4813D", dirtLight: "#E8A961",
+        grass: "#2D5A27", grassLight: "#4A8B3F",
+        chalk: "#F5F0E8", leather: "#8B4513", red: "#C41E3A", white: "#FFFFFF",
+      },
+      ocean: {
+        id: "ocean", label: "オーシャン", emoji: "🌊",
+        preview: { main: "#0F3460", accent: "#E94560" },
+        navy: "#0F3460", navyLight: "#1A4F8B",
+        dirt: "#E94560", dirtLight: "#FF6B81",
+        grass: "#0A8754", grassLight: "#16A085",
+        chalk: "#ECF0F1", leather: "#2C3E50", red: "#E74C3C", white: "#FFFFFF",
+      },
+      forest: {
+        id: "forest", label: "フォレスト", emoji: "🌲",
+        preview: { main: "#1B4332", accent: "#D4A843" },
+        navy: "#1B4332", navyLight: "#2D6A4F",
+        dirt: "#D4A843", dirtLight: "#E8C468",
+        grass: "#40916C", grassLight: "#52B788",
+        chalk: "#F0EDE5", leather: "#6B4423", red: "#BC4749", white: "#FFFFFF",
+      },
+      sunset: {
+        id: "sunset", label: "サンセット", emoji: "🌅",
+        preview: { main: "#4A1942", accent: "#E85D04" },
+        navy: "#4A1942", navyLight: "#6B2D5B",
+        dirt: "#E85D04", dirtLight: "#F48C06",
+        grass: "#606C38", grassLight: "#7C8A4E",
+        chalk: "#FDF6EC", leather: "#9C4A1A", red: "#D62828", white: "#FFFFFF",
+      },
+      steel: {
+        id: "steel", label: "スチール", emoji: "🏙️",
+        preview: { main: "#212529", accent: "#0096C7" },
+        navy: "#212529", navyLight: "#495057",
+        dirt: "#0096C7", dirtLight: "#48CAE4",
+        grass: "#2B9348", grassLight: "#55A630",
+        chalk: "#F8F9FA", leather: "#6C757D", red: "#E63946", white: "#FFFFFF",
+      },
+    };
+
+    let THEME = { ...THEME_PRESETS.classic };
+
+    // ===== 実D1大学データ（統合データシートから253校） =====
+    const D1_UNIVERSITIES = [
+      { id: 1, name: "Abilene Christian University", conf: "WAC", state: "TX", ranking: 1, students: 15000, coaches: 4 },
+      { id: 2, name: "Air Force", conf: "MW", state: "CO", ranking: 2, students: 15000, coaches: 1 },
+      { id: 3, name: "Akron", conf: "MAC", state: "OH", ranking: 3, students: 15000, coaches: 1 },
+      { id: 4, name: "Alabama A&M University", conf: "SEC", state: "AL", ranking: 4, students: 15000, coaches: 1 },
+      { id: 5, name: "Alabama State University", conf: "SEC", state: "AL", ranking: 5, students: 15000, coaches: 2 },
+      { id: 6, name: "Alcorn State", conf: "SWAC", state: "MS", ranking: 6, students: 15000, coaches: 1 },
+      { id: 7, name: "Appalachian State University", conf: "Sun Belt", state: "NC", ranking: 7, students: 15000, coaches: 6 },
+      { id: 8, name: "Arkansas State", conf: "Sun Belt", state: "AR", ranking: 8, students: 15000, coaches: 1 },
+      { id: 9, name: "Arkansas State University", conf: "Big 12", state: "AR", ranking: 9, students: 15000, coaches: 1 },
+      { id: 10, name: "Army West Point", conf: "Patriot", state: "NY", ranking: 10, students: 15000, coaches: 1 },
+      { id: 11, name: "Auburn University", conf: "SEC", state: "AL", ranking: 11, students: 15000, coaches: 5 },
+      { id: 12, name: "Austin Peay State University", conf: "ASUN", state: "TN", ranking: 12, students: 15000, coaches: 2 },
+      { id: 13, name: "Ball State University", conf: "MAC", state: "IN", ranking: 13, students: 15000, coaches: 4 },
+      { id: 14, name: "Baylor University", conf: "Big 12", state: "TX", ranking: 14, students: 15000, coaches: 4 },
+      { id: 15, name: "Belmont University", conf: "MVC", state: "TN", ranking: 15, students: 15000, coaches: 2 },
+      { id: 16, name: "Bethune-Cookman University", conf: "SWAC", state: "FL", ranking: 16, students: 15000, coaches: 3 },
+      { id: 17, name: "Binghamton University", conf: "America East", state: "NY", ranking: 17, students: 15000, coaches: 4 },
+      { id: 18, name: "Boston College", conf: "ACC", state: "MA", ranking: 18, students: 15000, coaches: 5 },
+      { id: 19, name: "Bowling Green State University", conf: "MAC", state: "OH", ranking: 19, students: 15000, coaches: 4 },
+      { id: 20, name: "Bradley University", conf: "MVC", state: "IL", ranking: 20, students: 15000, coaches: 1 },
+      { id: 21, name: "Brown University", conf: "Ivy", state: "RI", ranking: 21, students: 15000, coaches: 1 },
+      { id: 22, name: "Bryant University", conf: "America East", state: "RI", ranking: 22, students: 15000, coaches: 3 },
+      { id: 23, name: "Bucknell University", conf: "Patriot", state: "PA", ranking: 23, students: 15000, coaches: 2 },
+      { id: 24, name: "Butler University", conf: "Big East", state: "IN", ranking: 24, students: 15000, coaches: 2 },
+      { id: 25, name: "Cal Poly", conf: "Big West", state: "CA", ranking: 25, students: 15000, coaches: 6 },
+      { id: 26, name: "Cal State Fullerton", conf: "Big West", state: "CA", ranking: 26, students: 15000, coaches: 1 },
+      { id: 27, name: "California State University", conf: "ACC", state: "CA", ranking: 27, students: 15000, coaches: 2 },
+      { id: 28, name: "California State University, Bakersfield", conf: "ACC", state: "CA", ranking: 28, students: 15000, coaches: 1 },
+      { id: 29, name: "California State University, Fresno", conf: "ACC", state: "CA", ranking: 29, students: 15000, coaches: 2 },
+      { id: 30, name: "California State University, Fullerton", conf: "ACC", state: "CA", ranking: 30, students: 15000, coaches: 4 },
+      { id: 31, name: "California State University, Northridge", conf: "ACC", state: "CA", ranking: 31, students: 15000, coaches: 2 },
+      { id: 32, name: "California State University, Sacramento", conf: "ACC", state: "CA", ranking: 32, students: 15000, coaches: 1 },
+      { id: 33, name: "Campbell University", conf: "CAA", state: "NC", ranking: 33, students: 15000, coaches: 4 },
+      { id: 34, name: "Canisius University", conf: "MAAC", state: "NY", ranking: 34, students: 15000, coaches: 1 },
+      { id: 35, name: "Central Michigan University", conf: "Big Ten", state: "MI", ranking: 35, students: 15000, coaches: 6 },
+      { id: 36, name: "Charleston Southern University", conf: "Big South", state: "SC", ranking: 36, students: 15000, coaches: 1 },
+      { id: 37, name: "College of Charleston", conf: "CAA", state: "SC", ranking: 37, students: 15000, coaches: 1 },
+      { id: 38, name: "College of the Holy Cross", conf: "Patriot", state: "MA", ranking: 38, students: 15000, coaches: 2 },
+      { id: 39, name: "Columbia University-Barnard College", conf: "Ivy", state: "NY", ranking: 39, students: 15000, coaches: 2 },
+      { id: 40, name: "Coppin State University", conf: "NEC (Assoc)", state: "MD", ranking: 40, students: 15000, coaches: 4 },
+      { id: 41, name: "Cornell University", conf: "Ivy", state: "NY", ranking: 41, students: 15000, coaches: 1 },
+      { id: 42, name: "Creighton University", conf: "Big East", state: "NE", ranking: 42, students: 15000, coaches: 2 },
+      { id: 43, name: "Dartmouth College", conf: "Ivy", state: "NH", ranking: 43, students: 15000, coaches: 3 },
+      { id: 44, name: "Davidson College", conf: "A-10", state: "NC", ranking: 44, students: 15000, coaches: 1 },
+      { id: 45, name: "Dayton", conf: "A-10", state: "OH", ranking: 45, students: 15000, coaches: 1 },
+      { id: 46, name: "Delaware", conf: "CUSA", state: "DE", ranking: 46, students: 15000, coaches: 1 },
+      { id: 47, name: "Delaware State", conf: "NEC (Assoc)", state: "DE", ranking: 47, students: 15000, coaches: 1 },
+      { id: 48, name: "Duke University", conf: "ACC", state: "NC", ranking: 48, students: 15000, coaches: 1 },
+      { id: 49, name: "East Carolina University", conf: "AAC", state: "NC", ranking: 49, students: 15000, coaches: 2 },
+      { id: 50, name: "Eastern Illinois", conf: "OVC", state: "IL", ranking: 50, students: 15000, coaches: 1 },
+      { id: 51, name: "Eastern Illinois University", conf: "Big Ten", state: "IL", ranking: 51, students: 15000, coaches: 2 },
+      { id: 52, name: "Eastern Michigan University", conf: "Big Ten", state: "MI", ranking: 52, students: 15000, coaches: 4 },
+      { id: 53, name: "Elon University", conf: "CAA", state: "NC", ranking: 53, students: 15000, coaches: 2 },
+      { id: 54, name: "ETSU", conf: "SoCon", state: "TN", ranking: 54, students: 15000, coaches: 1 },
+      { id: 55, name: "Fairfield University", conf: "MAAC", state: "CT", ranking: 55, students: 15000, coaches: 1 },
+      { id: 56, name: "Fairleigh Dickinson University", conf: "NEC", state: "NJ", ranking: 56, students: 15000, coaches: 1 },
+      { id: 57, name: "Fairleigh Dickinson University, Metropolitan Campus", conf: "NEC", state: "NJ", ranking: 57, students: 15000, coaches: 2 },
+      { id: 58, name: "Florida A&M University", conf: "SEC", state: "FL", ranking: 58, students: 15000, coaches: 2 },
+      { id: 59, name: "Florida Atlantic University", conf: "AAC", state: "FL", ranking: 59, students: 15000, coaches: 3 },
+      { id: 60, name: "Florida State University", conf: "ACC", state: "FL", ranking: 60, students: 15000, coaches: 2 },
+      { id: 61, name: "Fordham University", conf: "A-10", state: "NY", ranking: 61, students: 15000, coaches: 2 },
+      { id: 62, name: "Gardner-Webb University", conf: "Big South", state: "NC", ranking: 62, students: 15000, coaches: 5 },
+      { id: 63, name: "George Mason University", conf: "A-10", state: "VA", ranking: 63, students: 15000, coaches: 6 },
+      { id: 64, name: "George Washington University", conf: "A-10", state: "DC", ranking: 64, students: 15000, coaches: 2 },
+      { id: 65, name: "Georgetown University", conf: "Big East", state: "DC", ranking: 65, students: 15000, coaches: 4 },
+      { id: 66, name: "Georgia Southern University", conf: "SEC", state: "GA", ranking: 66, students: 15000, coaches: 5 },
+      { id: 67, name: "Georgia State", conf: "Sun Belt", state: "GA", ranking: 67, students: 15000, coaches: 1 },
+      { id: 68, name: "Georgia State University", conf: "SEC", state: "GA", ranking: 68, students: 15000, coaches: 1 },
+      { id: 69, name: "Gonzaga University", conf: "WCC", state: "WA", ranking: 69, students: 15000, coaches: 4 },
+      { id: 70, name: "Grambling State University", conf: "SWAC", state: "LA", ranking: 70, students: 15000, coaches: 1 },
+      { id: 71, name: "Grand Canyon University", conf: "WAC", state: "AZ", ranking: 71, students: 15000, coaches: 2 },
+      { id: 72, name: "Harvard University", conf: "Ivy", state: "MA", ranking: 72, students: 15000, coaches: 4 },
+      { id: 73, name: "High Point University", conf: "Big South", state: "NC", ranking: 73, students: 15000, coaches: 5 },
+      { id: 74, name: "Hofstra University", conf: "CAA", state: "NY", ranking: 74, students: 15000, coaches: 2 },
+      { id: 75, name: "Houston Christian University", conf: "Big 12", state: "TX", ranking: 75, students: 15000, coaches: 2 },
+      { id: 76, name: "Indiana State University", conf: "Big Ten", state: "IN", ranking: 76, students: 15000, coaches: 4 },
+      { id: 77, name: "Jackson State University", conf: "SWAC", state: "MS", ranking: 77, students: 15000, coaches: 1 },
+      { id: 78, name: "Jacksonville State University", conf: "ASUN", state: "AL", ranking: 78, students: 15000, coaches: 2 },
+      { id: 79, name: "Jacksonville University", conf: "ASUN", state: "FL", ranking: 79, students: 15000, coaches: 2 },
+      { id: 80, name: "James Madison University", conf: "Sun Belt", state: "VA", ranking: 80, students: 15000, coaches: 5 },
+      { id: 81, name: "Kennesaw State University", conf: "CUSA", state: "GA", ranking: 81, students: 15000, coaches: 3 },
+      { id: 82, name: "Kent State University", conf: "MAC", state: "OH", ranking: 82, students: 15000, coaches: 3 },
+      { id: 83, name: "Lafayette College", conf: "Patriot", state: "PA", ranking: 83, students: 15000, coaches: 3 },
+      { id: 84, name: "Lamar University", conf: "Southland", state: "TX", ranking: 84, students: 15000, coaches: 2 },
+      { id: 85, name: "Le Moyne", conf: "NEC", state: "NY", ranking: 85, students: 15000, coaches: 1 },
+      { id: 86, name: "Lehigh University", conf: "Patriot", state: "PA", ranking: 86, students: 15000, coaches: 3 },
+      { id: 87, name: "Liberty University", conf: "CUSA", state: "VA", ranking: 87, students: 15000, coaches: 1 },
+      { id: 88, name: "Lindenwood", conf: "OVC", state: "MO", ranking: 88, students: 15000, coaches: 1 },
+      { id: 89, name: "Lipscomb University", conf: "ASUN", state: "TN", ranking: 89, students: 15000, coaches: 3 },
+      { id: 90, name: "Long Beach State", conf: "Big West", state: "CA", ranking: 90, students: 15000, coaches: 1 },
+      { id: 91, name: "Long Island University", conf: "NEC", state: "NY", ranking: 91, students: 15000, coaches: 3 },
+      { id: 92, name: "Longwood University", conf: "Big South", state: "VA", ranking: 92, students: 15000, coaches: 1 },
+      { id: 93, name: "Loyola Marymount University", conf: "WCC", state: "CA", ranking: 93, students: 15000, coaches: 1 },
+      { id: 94, name: "Manhattan College", conf: "MAAC", state: "NY", ranking: 94, students: 15000, coaches: 2 },
+      { id: 95, name: "Marist College", conf: "MAAC", state: "NY", ranking: 95, students: 15000, coaches: 2 },
+      { id: 96, name: "Marshall", conf: "Sun Belt", state: "WV", ranking: 96, students: 15000, coaches: 1 },
+      { id: 97, name: "Massachusetts", conf: "Atlantic 10", state: "MA", ranking: 97, students: 15000, coaches: 1 },
+      { id: 98, name: "McNeese State University", conf: "Atlantic 10", state: "LA", ranking: 98, students: 15000, coaches: 2 },
+      { id: 99, name: "Mercer University", conf: "SoCon", state: "GA", ranking: 99, students: 15000, coaches: 1 },
+      { id: 100, name: "Merrimack College", conf: "MAAC", state: "MA", ranking: 100, students: 15000, coaches: 2 },
+      { id: 101, name: "Miami University", conf: "MAC", state: "FL", ranking: 101, students: 15000, coaches: 3 },
+      { id: 102, name: "Miami University (Ohio)", conf: "MAC", state: "OH", ranking: 102, students: 15000, coaches: 1 },
+      { id: 103, name: "Michigan State University", conf: "Big Ten", state: "MI", ranking: 103, students: 15000, coaches: 3 },
+      { id: 104, name: "Milwaukee", conf: "Horizon", state: "WI", ranking: 104, students: 15000, coaches: 1 },
+      { id: 105, name: "Mississippi State", conf: "SEC", state: "MS", ranking: 105, students: 15000, coaches: 1 },
+      { id: 106, name: "Missouri State University", conf: "CUSA", state: "MO", ranking: 106, students: 15000, coaches: 6 },
+      { id: 107, name: "Morehead State University", conf: "OVC", state: "KY", ranking: 107, students: 15000, coaches: 4 },
+      { id: 108, name: "Mount St. Mary s University", conf: "NEC", state: "MD", ranking: 108, students: 15000, coaches: 1 },
+      { id: 109, name: "Murray State", conf: "MVC", state: "KY", ranking: 109, students: 15000, coaches: 1 },
+      { id: 110, name: "MVSU", conf: "SWAC", state: "MS", ranking: 110, students: 15000, coaches: 1 },
+      { id: 111, name: "Nevada", conf: "MW", state: "NV", ranking: 111, students: 15000, coaches: 1 },
+      { id: 112, name: "New Haven", conf: "NEC", state: "CT", ranking: 112, students: 15000, coaches: 1 },
+      { id: 113, name: "New Jersey Institute of Technology", conf: "America East", state: "NJ", ranking: 113, students: 15000, coaches: 4 },
+      { id: 114, name: "New Mexico State University", conf: "CUSA", state: "NM", ranking: 114, students: 15000, coaches: 4 },
+      { id: 115, name: "New Orleans", conf: "Southland", state: "LA", ranking: 115, students: 15000, coaches: 2 },
+      { id: 116, name: "Niagara University", conf: "MAAC", state: "NY", ranking: 116, students: 15000, coaches: 1 },
+      { id: 117, name: "Norfolk State University", conf: "NEC (Assoc)", state: "VA", ranking: 117, students: 15000, coaches: 2 },
+      { id: 118, name: "North Carolina A&T State University", conf: "ACC", state: "NC", ranking: 118, students: 15000, coaches: 3 },
+      { id: 119, name: "North Carolina State University", conf: "ACC", state: "NC", ranking: 119, students: 15000, coaches: 6 },
+      { id: 120, name: "North Dakota State University", conf: "Summit", state: "ND", ranking: 120, students: 15000, coaches: 2 },
+      { id: 121, name: "Northeastern University", conf: "CAA", state: "MA", ranking: 121, students: 15000, coaches: 2 },
+      { id: 122, name: "Northern Illinois University", conf: "Big Ten", state: "IL", ranking: 122, students: 15000, coaches: 2 },
+      { id: 123, name: "Northern Kentucky University", conf: "Horizon", state: "KY", ranking: 123, students: 15000, coaches: 3 },
+      { id: 124, name: "Northwestern State University", conf: "Big Ten", state: "OK", ranking: 124, students: 15000, coaches: 7 },
+      { id: 125, name: "Northwestern University", conf: "Big Ten", state: "IL", ranking: 125, students: 15000, coaches: 1 },
+      { id: 126, name: "Ohio University", conf: "MAC", state: "OH", ranking: 126, students: 15000, coaches: 2 },
+      { id: 127, name: "Oklahoma State University", conf: "Big 12", state: "OK", ranking: 127, students: 15000, coaches: 4 },
+      { id: 128, name: "Old Dominion University", conf: "Sun Belt", state: "VA", ranking: 128, students: 15000, coaches: 5 },
+      { id: 129, name: "Ole Miss", conf: "SEC", state: "MS", ranking: 129, students: 15000, coaches: 1 },
+      { id: 130, name: "Omaha", conf: "Summit", state: "NE", ranking: 130, students: 15000, coaches: 1 },
+      { id: 131, name: "Oral Roberts University", conf: "Summit", state: "OK", ranking: 131, students: 15000, coaches: 5 },
+      { id: 132, name: "Oregon State University", conf: "Big Ten", state: "OR", ranking: 132, students: 15000, coaches: 3 },
+      { id: 133, name: "Pennsylvania State University", conf: "Ivy", state: "PA", ranking: 133, students: 15000, coaches: 4 },
+      { id: 134, name: "Pepperdine University", conf: "WCC", state: "CA", ranking: 134, students: 15000, coaches: 1 },
+      { id: 135, name: "Prairie View A&M University", conf: "SWAC", state: "TX", ranking: 135, students: 15000, coaches: 2 },
+      { id: 136, name: "Presbyterian College", conf: "Big South", state: "SC", ranking: 136, students: 15000, coaches: 3 },
+      { id: 137, name: "Princeton", conf: "Ivy", state: "NJ", ranking: 137, students: 15000, coaches: 1 },
+      { id: 138, name: "Purdue Fort Wayne", conf: "Horizon", state: "IN", ranking: 138, students: 15000, coaches: 1 },
+      { id: 139, name: "Queens University", conf: "Big South", state: "NC", ranking: 139, students: 15000, coaches: 1 },
+      { id: 140, name: "Quinnipiac University", conf: "MAAC", state: "CT", ranking: 140, students: 15000, coaches: 3 },
+      { id: 141, name: "Radford University", conf: "Big South", state: "VA", ranking: 141, students: 15000, coaches: 3 },
+      { id: 142, name: "Rider University", conf: "MAAC", state: "NJ", ranking: 142, students: 15000, coaches: 2 },
+      { id: 143, name: "Rutgers", conf: "Big Ten", state: "NJ", ranking: 143, students: 15000, coaches: 1 },
+      { id: 144, name: "Rutgers, The State University of New Jersey", conf: "Big Ten", state: "NJ", ranking: 144, students: 15000, coaches: 5 },
+      { id: 145, name: "Sacred Heart University", conf: "MAAC", state: "CT", ranking: 145, students: 15000, coaches: 3 },
+      { id: 146, name: "Saint Joseph s University", conf: "Atlantic 10", state: "PA", ranking: 146, students: 15000, coaches: 1 },
+      { id: 147, name: "Saint Louis University", conf: "A-10", state: "MO", ranking: 147, students: 15000, coaches: 3 },
+      { id: 148, name: "Saint Mary s College of California", conf: "ACC", state: "CA", ranking: 148, students: 15000, coaches: 5 },
+      { id: 149, name: "Sam Houston State University", conf: "Big 12", state: "TX", ranking: 149, students: 15000, coaches: 2 },
+      { id: 150, name: "Samford University", conf: "SoCon", state: "AL", ranking: 150, students: 15000, coaches: 3 },
+      { id: 151, name: "San Diego State University", conf: "MW", state: "CA", ranking: 151, students: 15000, coaches: 1 },
+      { id: 152, name: "Santa Clara", conf: "WCC", state: "CA", ranking: 152, students: 15000, coaches: 1 },
+      { id: 153, name: "Seton Hall", conf: "Big East", state: "NJ", ranking: 153, students: 15000, coaches: 1 },
+      { id: 154, name: "Siena College", conf: "MAAC", state: "NY", ranking: 154, students: 15000, coaches: 2 },
+      { id: 155, name: "South Dakota State University", conf: "Summit", state: "SD", ranking: 155, students: 15000, coaches: 1 },
+      { id: 156, name: "Southeast Missouri State University", conf: "CUSA", state: "MO", ranking: 156, students: 15000, coaches: 2 },
+      { id: 157, name: "Southeastern Louisiana University", conf: "Sun Belt", state: "LA", ranking: 157, students: 15000, coaches: 3 },
+      { id: 158, name: "Southern Illinois", conf: "MVC", state: "IL", ranking: 158, students: 15000, coaches: 1 },
+      { id: 159, name: "Southern Illinois University Edwardsville", conf: "Big Ten", state: "IL", ranking: 159, students: 15000, coaches: 1 },
+      { id: 160, name: "Southern University, Baton Rouge", conf: "SWAC", state: "LA", ranking: 160, students: 15000, coaches: 1 },
+      { id: 161, name: "St. Bonaventure University", conf: "A-10", state: "NY", ranking: 161, students: 15000, coaches: 2 },
+      { id: 162, name: "St. John\'s", conf: "Big East", state: "NY", ranking: 162, students: 15000, coaches: 1 },
+      { id: 163, name: "Stanford University", conf: "ACC", state: "CA", ranking: 163, students: 15000, coaches: 4 },
+      { id: 164, name: "Stephen F. Austin", conf: "Southland", state: "TX", ranking: 164, students: 15000, coaches: 1 },
+      { id: 165, name: "Stetson University", conf: "ASUN", state: "FL", ranking: 165, students: 15000, coaches: 2 },
+      { id: 166, name: "Stony Brook", conf: "CAA", state: "NY", ranking: 166, students: 15000, coaches: 1 },
+      { id: 167, name: "Tarleton State", conf: "WAC", state: "TX", ranking: 167, students: 15000, coaches: 1 },
+      { id: 168, name: "TCU", conf: "Big 12", state: "TX", ranking: 168, students: 15000, coaches: 1 },
+      { id: 169, name: "Tennessee", conf: "SEC", state: "TN", ranking: 169, students: 15000, coaches: 1 },
+      { id: 170, name: "Texas A&M-CC", conf: "Southland", state: "TX", ranking: 170, students: 15000, coaches: 1 },
+      { id: 171, name: "Texas State", conf: "Sun Belt", state: "TX", ranking: 171, students: 15000, coaches: 1 },
+      { id: 172, name: "The University of North Carolina at Charlotte", conf: "AAC", state: "NC", ranking: 172, students: 15000, coaches: 7 },
+      { id: 173, name: "The University of North Carolina at Greensboro", conf: "ACC", state: "NC", ranking: 173, students: 15000, coaches: 2 },
+      { id: 174, name: "Toledo", conf: "MAC", state: "OH", ranking: 174, students: 15000, coaches: 1 },
+      { id: 175, name: "Troy", conf: "Sun Belt", state: "AL", ranking: 175, students: 15000, coaches: 1 },
+      { id: 176, name: "ULM", conf: "Sun Belt", state: "LA", ranking: 176, students: 15000, coaches: 1 },
+      { id: 177, name: "UNCW", conf: "CAA", state: "NC", ranking: 177, students: 15000, coaches: 1 },
+      { id: 178, name: "University of Alabama", conf: "SEC", state: "AL", ranking: 178, students: 15000, coaches: 7 },
+      { id: 179, name: "University of Arizona", conf: "Big 12", state: "AZ", ranking: 179, students: 15000, coaches: 2 },
+      { id: 180, name: "University of Arkansas", conf: "Big 12", state: "AR", ranking: 180, students: 15000, coaches: 1 },
+      { id: 181, name: "University of Arkansas at Little Rock", conf: "Big 12", state: "AR", ranking: 181, students: 15000, coaches: 3 },
+      { id: 182, name: "University of Arkansas, Fayetteville", conf: "Big 12", state: "AR", ranking: 182, students: 15000, coaches: 3 },
+      { id: 183, name: "University of Arkansas, Pine Bluff", conf: "Big 12", state: "AR", ranking: 183, students: 15000, coaches: 2 },
+      { id: 184, name: "University of California, Berkeley", conf: "ACC", state: "CA", ranking: 184, students: 15000, coaches: 2 },
+      { id: 185, name: "University of California, Davis", conf: "ACC", state: "CA", ranking: 185, students: 15000, coaches: 4 },
+      { id: 186, name: "University of California, Irvine", conf: "ACC", state: "CA", ranking: 186, students: 15000, coaches: 5 },
+      { id: 187, name: "University of California, Riverside", conf: "ACC", state: "CA", ranking: 187, students: 15000, coaches: 3 },
+      { id: 188, name: "University of California, Santa Barbara", conf: "ACC", state: "CA", ranking: 188, students: 15000, coaches: 6 },
+      { id: 189, name: "University of Central Arkansas", conf: "ASUN", state: "AR", ranking: 189, students: 15000, coaches: 2 },
+      { id: 190, name: "University of Central Florida", conf: "SEC", state: "FL", ranking: 190, students: 15000, coaches: 2 },
+      { id: 191, name: "University of Cincinnati", conf: "Big 12", state: "OH", ranking: 191, students: 15000, coaches: 4 },
+      { id: 192, name: "University of Connecticut", conf: "Big East", state: "CT", ranking: 192, students: 15000, coaches: 2 },
+      { id: 193, name: "University of Dayton", conf: "A-10", state: "OH", ranking: 193, students: 15000, coaches: 1 },
+      { id: 194, name: "University of Delaware", conf: "CUSA", state: "DE", ranking: 194, students: 15000, coaches: 2 },
+      { id: 195, name: "University of Florida", conf: "SEC", state: "FL", ranking: 195, students: 15000, coaches: 2 },
+      { id: 196, name: "University of Georgia", conf: "SEC", state: "GA", ranking: 196, students: 15000, coaches: 3 },
+      { id: 197, name: "University of Hartford", conf: "America East", state: "CT", ranking: 197, students: 15000, coaches: 1 },
+      { id: 198, name: "University of Hawaii, Manoa", conf: "Big West", state: "HI", ranking: 198, students: 15000, coaches: 4 },
+      { id: 199, name: "University of Illinois Chicago", conf: "Big Ten", state: "IL", ranking: 199, students: 15000, coaches: 4 },
+      { id: 200, name: "University of Iowa", conf: "Big Ten", state: "IA", ranking: 200, students: 15000, coaches: 2 },
+      { id: 201, name: "University of Kansas", conf: "Big 12", state: "KS", ranking: 201, students: 15000, coaches: 3 },
+      { id: 202, name: "University of Kentucky", conf: "SEC", state: "KY", ranking: 202, students: 15000, coaches: 4 },
+      { id: 203, name: "University of Louisiana at Lafayette", conf: "Patriot", state: "LA", ranking: 203, students: 15000, coaches: 1 },
+      { id: 204, name: "University of Louisville", conf: "ACC", state: "KY", ranking: 204, students: 15000, coaches: 4 },
+      { id: 205, name: "University of Maine", conf: "America East", state: "ME", ranking: 205, students: 15000, coaches: 6 },
+      { id: 206, name: "University of Maryland Eastern Shore", conf: "Big Ten", state: "MD", ranking: 206, students: 15000, coaches: 2 },
+      { id: 207, name: "University of Maryland, Baltimore County", conf: "Big Ten", state: "MD", ranking: 207, students: 15000, coaches: 3 },
+      { id: 208, name: "University of Maryland, College Park", conf: "Big Ten", state: "MD", ranking: 208, students: 15000, coaches: 3 },
+      { id: 209, name: "University of Massachusetts Lowell", conf: "America East", state: "MA", ranking: 209, students: 15000, coaches: 2 },
+      { id: 210, name: "University of Miami", conf: "ACC", state: "FL", ranking: 210, students: 15000, coaches: 3 },
+      { id: 211, name: "University of Minnesota, Twin Cities", conf: "Big Ten", state: "MN", ranking: 211, students: 15000, coaches: 2 },
+      { id: 212, name: "University of Missouri, Columbia", conf: "Ivy", state: "MO", ranking: 212, students: 15000, coaches: 1 },
+      { id: 213, name: "University of Nevada, Las Vegas", conf: "MW", state: "NV", ranking: 213, students: 15000, coaches: 2 },
+      { id: 214, name: "University of New Mexico", conf: "MW", state: "NM", ranking: 214, students: 15000, coaches: 2 },
+      { id: 215, name: "University of North Alabama", conf: "ASUN", state: "AL", ranking: 215, students: 15000, coaches: 2 },
+      { id: 216, name: "University of North Carolina Asheville", conf: "ACC", state: "NC", ranking: 216, students: 15000, coaches: 1 },
+      { id: 217, name: "University of North Carolina Wilmington", conf: "ACC", state: "NC", ranking: 217, students: 15000, coaches: 3 },
+      { id: 218, name: "University of North Carolina, Chapel Hill", conf: "ACC", state: "NC", ranking: 218, students: 15000, coaches: 5 },
+      { id: 219, name: "University of North Florida", conf: "ASUN", state: "FL", ranking: 219, students: 15000, coaches: 1 },
+      { id: 220, name: "University of Northern Colorado", conf: "Summit", state: "CO", ranking: 220, students: 15000, coaches: 2 },
+      { id: 221, name: "University of Notre Dame", conf: "ACC", state: "IN", ranking: 221, students: 15000, coaches: 1 },
+      { id: 222, name: "University of Pennsylvania", conf: "Ivy", state: "PA", ranking: 222, students: 15000, coaches: 2 },
+      { id: 223, name: "University of Pittsburgh", conf: "ACC", state: "PA", ranking: 223, students: 15000, coaches: 5 },
+      { id: 224, name: "University of Portland", conf: "WCC", state: "OR", ranking: 224, students: 15000, coaches: 4 },
+      { id: 225, name: "University of Rhode Island", conf: "A-10", state: "RI", ranking: 225, students: 15000, coaches: 5 },
+      { id: 226, name: "University of Richmond", conf: "A-10", state: "VA", ranking: 226, students: 15000, coaches: 4 },
+      { id: 227, name: "University of San Diego", conf: "WCC", state: "CA", ranking: 227, students: 15000, coaches: 4 },
+      { id: 228, name: "University of San Francisco", conf: "WCC", state: "CA", ranking: 228, students: 15000, coaches: 4 },
+      { id: 229, name: "University of South Alabama", conf: "SEC", state: "AL", ranking: 229, students: 15000, coaches: 1 },
+      { id: 230, name: "University of South Carolina Upstate", conf: "SEC", state: "SC", ranking: 230, students: 15000, coaches: 2 },
+      { id: 231, name: "University of South Florida", conf: "AAC", state: "FL", ranking: 231, students: 15000, coaches: 1 },
+      { id: 232, name: "University of Southern California", conf: "ACC", state: "CA", ranking: 232, students: 15000, coaches: 4 },
+      { id: 233, name: "University of the Incarnate Word", conf: "Southland", state: "TX", ranking: 233, students: 15000, coaches: 4 },
+      { id: 234, name: "University of the Pacific", conf: "WCC", state: "CA", ranking: 234, students: 15000, coaches: 2 },
+      { id: 235, name: "UT Arlington", conf: "WAC", state: "TX", ranking: 235, students: 15000, coaches: 2 },
+      { id: 236, name: "UT Martin", conf: "OVC", state: "TN", ranking: 236, students: 15000, coaches: 1 },
+      { id: 237, name: "Utah Valley", conf: "WAC", state: "UT", ranking: 237, students: 15000, coaches: 1 },
+      { id: 238, name: "UTRGV", conf: "Southland", state: "TX", ranking: 238, students: 15000, coaches: 1 },
+      { id: 239, name: "Valparaiso", conf: "MVC", state: "IN", ranking: 239, students: 15000, coaches: 1 },
+      { id: 240, name: "VCU", conf: "A-10", state: "VA", ranking: 240, students: 15000, coaches: 2 },
+      { id: 241, name: "Villanova University", conf: "Big East", state: "PA", ranking: 241, students: 15000, coaches: 1 },
+      { id: 242, name: "VMI", conf: "SoCon", state: "VA", ranking: 242, students: 15000, coaches: 1 },
+      { id: 243, name: "Wagner College", conf: "NEC", state: "NY", ranking: 243, students: 15000, coaches: 1 },
+      { id: 244, name: "Western Carolina", conf: "SoCon", state: "NC", ranking: 244, students: 15000, coaches: 1 },
+      { id: 245, name: "Western Illinois", conf: "OVC", state: "IL", ranking: 245, students: 15000, coaches: 1 },
+      { id: 246, name: "Western Michigan", conf: "MAC", state: "MI", ranking: 246, students: 15000, coaches: 1 },
+      { id: 247, name: "William & Mary", conf: "CAA", state: "VA", ranking: 247, students: 15000, coaches: 2 },
+      { id: 248, name: "Winthrop University", conf: "Big South", state: "SC", ranking: 248, students: 15000, coaches: 1 },
+      { id: 249, name: "Wofford College", conf: "SoCon", state: "SC", ranking: 249, students: 15000, coaches: 1 },
+      { id: 250, name: "Wright State", conf: "Horizon", state: "OH", ranking: 250, students: 15000, coaches: 1 },
+      { id: 251, name: "Xavier University", conf: "Big East", state: "OH", ranking: 251, students: 15000, coaches: 1 },
+      { id: 252, name: "Yale", conf: "Ivy", state: "CT", ranking: 252, students: 15000, coaches: 1 },
+      { id: 253, name: "Youngstown State", conf: "Horizon", state: "OH", ranking: 253, students: 15000, coaches: 1 },
+    ];
+
+    // ===== 実D2大学データ（統合データシートから64校） =====
+    const D2_UNIVERSITIES = [
+      { id: 301, name: "Albany State", conf: "SIAC", state: "GA", ranking: 1, students: 8000, coaches: 3 },
+      { id: 302, name: "Angelo State", conf: "LSC (Lone Star)", state: "TX", ranking: 2, students: 8000, coaches: 3 },
+      { id: 303, name: "Arkansas Tech", conf: "GAC (Great American)", state: "AR", ranking: 3, students: 8000, coaches: 1 },
+      { id: 304, name: "Assumption", conf: "NE-10 (Northeast-10)", state: "MA", ranking: 4, students: 8000, coaches: 1 },
+      { id: 305, name: "Augustana", conf: "NSIC", state: "SD", ranking: 5, students: 8000, coaches: 2 },
+      { id: 306, name: "Belmont Abbey", conf: "Conf. Carolinas", state: "NC", ranking: 6, students: 8000, coaches: 3 },
+      { id: 307, name: "Bentley", conf: "NE-10 (Northeast-10)", state: "MA", ranking: 7, students: 8000, coaches: 2 },
+      { id: 308, name: "Cal Poly Pomona", conf: "CCAA (California Collegiate)", state: "CA", ranking: 8, students: 8000, coaches: 2 },
+      { id: 309, name: "Cal State Monterey Bay", conf: "CCAA (California Collegiate)", state: "CA", ranking: 9, students: 8000, coaches: 3 },
+      { id: 310, name: "Catawba", conf: "SAC (South Atlantic)", state: "NC", ranking: 10, students: 8000, coaches: 3 },
+      { id: 311, name: "Central Missouri", conf: "MIAA", state: "MO", ranking: 11, students: 8000, coaches: 3 },
+      { id: 312, name: "Central Oklahoma", conf: "MIAA", state: "OK", ranking: 12, students: 8000, coaches: 1 },
+      { id: 313, name: "Central Washington", conf: "GNAC (Great Northwest)", state: "WA", ranking: 13, students: 8000, coaches: 2 },
+      { id: 314, name: "Charleston (WV)", conf: "MEC (Mountain East)", state: "WV", ranking: 14, students: 8000, coaches: 3 },
+      { id: 315, name: "Chico State", conf: "CCAA (California Collegiate)", state: "CA", ranking: 15, students: 8000, coaches: 1 },
+      { id: 316, name: "Colorado Mesa", conf: "RMAC", state: "CO", ranking: 16, students: 8000, coaches: 2 },
+      { id: 317, name: "Columbus State", conf: "PBC (Peach Belt)", state: "GA", ranking: 17, students: 8000, coaches: 3 },
+      { id: 318, name: "Concord", conf: "MEC (Mountain East)", state: "WV", ranking: 18, students: 8000, coaches: 1 },
+      { id: 319, name: "CS Pueblo", conf: "RMAC", state: "CO", ranking: 19, students: 8000, coaches: 1 },
+      { id: 320, name: "Davenport", conf: "GLIAC", state: "MI", ranking: 20, students: 8000, coaches: 2 },
+      { id: 321, name: "Delta State", conf: "GSC (Gulf South)", state: "MS", ranking: 21, students: 8000, coaches: 1 },
+      { id: 322, name: "East Stroudsburg", conf: "PSAC", state: "PA", ranking: 22, students: 8000, coaches: 1 },
+      { id: 323, name: "Felician", conf: "CACC", state: "NJ", ranking: 23, students: 8000, coaches: 3 },
+      { id: 324, name: "Florida Southern", conf: "SSC (Sunshine State)", state: "FL", ranking: 24, students: 8000, coaches: 3 },
+      { id: 325, name: "Francis Marion", conf: "Conf. Carolinas", state: "SC", ranking: 25, students: 8000, coaches: 3 },
+      { id: 326, name: "Frostburg State", conf: "MEC (Mountain East)", state: "MD", ranking: 26, students: 8000, coaches: 1 },
+      { id: 327, name: "Grand Valley State", conf: "GLIAC", state: "MI", ranking: 27, students: 8000, coaches: 2 },
+      { id: 328, name: "Harding", conf: "GAC (Great American)", state: "AR", ranking: 28, students: 8000, coaches: 3 },
+      { id: 329, name: "Hawaii Pacific", conf: "PacWest", state: "HI", ranking: 29, students: 8000, coaches: 2 },
+      { id: 330, name: "Illinois Springfield", conf: "GLVC", state: "IL", ranking: 30, students: 8000, coaches: 3 },
+      { id: 331, name: "Indianapolis (UIndy)", conf: "GLVC", state: "IN", ranking: 31, students: 8000, coaches: 2 },
+      { id: 332, name: "Jefferson", conf: "CACC", state: "PA", ranking: 32, students: 8000, coaches: 1 },
+      { id: 333, name: "Lander", conf: "PBC (Peach Belt)", state: "SC", ranking: 33, students: 8000, coaches: 3 },
+      { id: 334, name: "Lenoir-Rhyne", conf: "SAC (South Atlantic)", state: "NC", ranking: 34, students: 8000, coaches: 3 },
+      { id: 335, name: "Lubbock Christian", conf: "LSC (Lone Star)", state: "TX", ranking: 35, students: 8000, coaches: 2 },
+      { id: 336, name: "Maryville", conf: "GLVC", state: "MO", ranking: 36, students: 8000, coaches: 2 },
+      { id: 337, name: "Metro State Denver", conf: "RMAC", state: "CO", ranking: 37, students: 8000, coaches: 1 },
+      { id: 338, name: "Millersville", conf: "PSAC", state: "PA", ranking: 38, students: 8000, coaches: 3 },
+      { id: 339, name: "Minnesota State", conf: "NSIC", state: "MN", ranking: 39, students: 8000, coaches: 1 },
+      { id: 340, name: "Mississippi College", conf: "GSC (Gulf South)", state: "MS", ranking: 40, students: 8000, coaches: 1 },
+      { id: 341, name: "Molloy", conf: "ECC (East Coast)", state: "NY", ranking: 41, students: 8000, coaches: 1 },
+      { id: 342, name: "North Georgia", conf: "PBC (Peach Belt)", state: "GA", ranking: 42, students: 8000, coaches: 3 },
+      { id: 343, name: "North Greenville", conf: "Conf. Carolinas", state: "SC", ranking: 43, students: 8000, coaches: 2 },
+      { id: 344, name: "Northwest Nazarene", conf: "GNAC (Great Northwest)", state: "ID", ranking: 44, students: 8000, coaches: 1 },
+      { id: 345, name: "Northwood", conf: "G-MAC (Great Midwest)", state: "MI", ranking: 45, students: 8000, coaches: 1 },
+      { id: 346, name: "Pittsburg State", conf: "MIAA", state: "KS", ranking: 46, students: 8000, coaches: 2 },
+      { id: 347, name: "Point Loma Nazarene", conf: "PacWest", state: "CA", ranking: 47, students: 8000, coaches: 3 },
+      { id: 348, name: "Post", conf: "CACC", state: "CT", ranking: 48, students: 8000, coaches: 1 },
+      { id: 349, name: "Rollins", conf: "SSC (Sunshine State)", state: "FL", ranking: 49, students: 8000, coaches: 2 },
+      { id: 350, name: "Seton Hill", conf: "PSAC", state: "PA", ranking: 50, students: 8000, coaches: 3 },
+      { id: 351, name: "Southern Arkansas", conf: "GAC (Great American)", state: "AR", ranking: 51, students: 8000, coaches: 1 },
+      { id: 352, name: "Southern New Hampshire", conf: "NE-10 (Northeast-10)", state: "NH", ranking: 52, students: 8000, coaches: 2 },
+      { id: 353, name: "St. Cloud State", conf: "NSIC", state: "MN", ranking: 53, students: 8000, coaches: 1 },
+      { id: 354, name: "Tampa", conf: "SSC (Sunshine State)", state: "FL", ranking: 54, students: 8000, coaches: 4 },
+      { id: 355, name: "Tiffin", conf: "G-MAC (Great Midwest)", state: "OH", ranking: 55, students: 8000, coaches: 1 },
+      { id: 356, name: "Tuskegee", conf: "SIAC", state: "AL", ranking: 56, students: 8000, coaches: 1 },
+      { id: 357, name: "UT Tyler", conf: "LSC (Lone Star)", state: "TX", ranking: 57, students: 8000, coaches: 4 },
+      { id: 358, name: "Virginia State", conf: "CIAA", state: "VA", ranking: 58, students: 8000, coaches: 3 },
+      { id: 359, name: "Walsh", conf: "G-MAC (Great Midwest)", state: "OH", ranking: 59, students: 8000, coaches: 2 },
+      { id: 360, name: "Wayne State", conf: "GLIAC", state: "MI", ranking: 60, students: 8000, coaches: 3 },
+      { id: 361, name: "West Florida", conf: "GSC (Gulf South)", state: "FL", ranking: 61, students: 8000, coaches: 3 },
+      { id: 362, name: "Western Oregon", conf: "GNAC (Great Northwest)", state: "OR", ranking: 62, students: 8000, coaches: 1 },
+      { id: 363, name: "Westmont", conf: "PacWest", state: "CA", ranking: 63, students: 8000, coaches: 2 },
+      { id: 364, name: "Wingate", conf: "SAC (South Atlantic)", state: "NC", ranking: 64, students: 8000, coaches: 2 },
+    ];
+
+    // ===== D3大学データ（~15校） =====
+    const D3_UNIVERSITIES = [
+      { id: 201, name: "Wartburg", conf: "IIAC", state: "IA", ranking: 1, students: 1700, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 202, name: "Frostburg State", conf: "Heartland", state: "MD", ranking: 2, students: 3700, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 203, name: "Salisbury", conf: "Heartland", state: "MD", ranking: 3, students: 8500, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 204, name: "Trinity", conf: "USA South", state: "TX", ranking: 4, students: 2500, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 205, name: "Montclair State", conf: "NJAC", state: "NJ", ranking: 5, students: 21000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 206, name: "Cortland State", conf: "SUNY", state: "NY", ranking: 6, students: 7000, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 1, strength: 0 } },
+      { id: 207, name: "Plattsburgh State", conf: "SUNY", state: "NY", ranking: 7, students: 5500, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 208, name: "Brandeis", conf: "NESCAC", state: "MA", ranking: 8, students: 3500, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 209, name: "Tufts", conf: "NESCAC", state: "MA", ranking: 9, students: 12000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 210, name: "Williams", conf: "NESCAC", state: "MA", ranking: 10, students: 2000, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 211, name: "Emory", conf: "UAA", state: "GA", ranking: 11, students: 15000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 212, name: "Carnegie Mellon", conf: "UAA", state: "PA", ranking: 12, students: 15000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 213, name: "Middlebury", conf: "NESCAC", state: "VT", ranking: 13, students: 2600, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 214, name: "Hamilton", conf: "NESCAC", state: "NY", ranking: 14, students: 1900, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 215, name: "RPI", conf: "ECAC", state: "NY", ranking: 15, students: 6800, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+    ];
+
+    // ===== NAIA大学データ（~10校） =====
+    const NAIA_UNIVERSITIES = [
+      { id: 301, name: "Southern Oregon", conf: "Cascade", state: "OR", ranking: 1, students: 3000, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 302, name: "Azusa Pacific", conf: "PacWest", state: "CA", ranking: 2, students: 6200, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 303, name: "Point Loma Nazarene", conf: "PacWest", state: "CA", ranking: 3, students: 2800, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 304, name: "Grand Canyon", conf: "WACCC", state: "AZ", ranking: 4, students: 100000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 305, name: "Missouri Valley", conf: "Hearts", state: "MO", ranking: 5, students: 2000, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 306, name: "Ottawa", conf: "Kansas", state: "KS", ranking: 6, students: 1000, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 307, name: "Biola", conf: "PacWest", state: "CA", ranking: 7, students: 4300, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 1, strength: 0 } },
+      { id: 308, name: "William Jessup", conf: "Gold", state: "CA", ranking: 8, students: 1500, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 309, name: "Oklahoma Baptist", conf: "Sooner", state: "OK", ranking: 9, students: 2000, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 310, name: "Vanguard", conf: "Gold", state: "CA", ranking: 10, students: 1700, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+    ];
+
+    // ===== JUCO大学データ（~10校） =====
+    const JUCO_UNIVERSITIES = [
+      { id: 401, name: "Merced College", conf: "Central Valley", state: "CA", ranking: 1, students: 12000, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 402, name: "San Jacinto College", conf: "NJCAA", state: "TX", ranking: 2, students: 28000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 403, name: "Iowa Central", conf: "ICCAC", state: "IA", ranking: 3, students: 4200, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 404, name: "Yavapai College", conf: "NJCAA", state: "AZ", ranking: 4, students: 6000, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 1, strength: 0 } },
+      { id: 405, name: "Phoenix College", conf: "NJCAA", state: "AZ", ranking: 5, students: 6000, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 406, name: "Cypress College", conf: "Orange County", state: "CA", ranking: 6, students: 24000, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 407, name: "Grayson College", conf: "NJCAA", state: "TX", ranking: 7, students: 4500, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 408, name: "McLennan College", conf: "NJCAA", state: "TX", ranking: 8, students: 8500, coachBreakdown: { hc: 1, assoc: 0, asst: 2, ops: 1, strength: 1 } },
+      { id: 409, name: "Odessa College", conf: "NJCAA", state: "TX", ranking: 9, students: 5000, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+      { id: 410, name: "Ranger College", conf: "NJCAA", state: "TX", ranking: 10, students: 2500, coachBreakdown: { hc: 1, assoc: 0, asst: 1, ops: 0, strength: 0 } },
+    ];
+
+    // ===== ALL_UNIVERSITIES with level tagging =====
+    const ALL_UNIVERSITIES = [
+      ...D1_UNIVERSITIES.map(u => ({ ...u, level: 'D1', coachBreakdown: u.coachBreakdown || { hc: 1, assoc: 0, asst: Math.max(0, u.coaches - 2), ops: Math.min(1, Math.max(0, u.coaches - 1)), strength: u.coaches > 3 ? 1 : 0 } })),
+      ...D2_UNIVERSITIES.map(u => ({ ...u, level: 'D2', coachBreakdown: u.coachBreakdown || { hc: 1, assoc: 0, asst: Math.max(0, u.coaches - 2), ops: Math.min(1, Math.max(0, u.coaches - 1)), strength: u.coaches > 3 ? 1 : 0 } })),
+      ...D3_UNIVERSITIES.map(u => ({ ...u, level: 'D3' })),
+      ...NAIA_UNIVERSITIES.map(u => ({ ...u, level: 'NAIA' })),
+      ...JUCO_UNIVERSITIES.map(u => ({ ...u, level: 'JUCO' })),
+    ];
+
+    // ===== 実コーチデータ =====
+    const SAMPLE_COACHES = [
+      { id: 1, firstName: "Rob", lastName: "Vaughn", email: "rvaughn@ua.edu", university: "Alabama", title: "Head Coach", status: "EMAIL_CLICKED" },
+      { id: 2, firstName: "Jason", lastName: "Jackson", email: "jjackson@ua.edu", university: "Alabama", title: "Associate HC", status: "EMAIL_SENT" },
+      { id: 3, firstName: "Kevin", lastName: "O'Sullivan", email: "osullivan@gators.ufl.edu", university: "Florida", title: "Head Coach", status: "RESPONDED" },
+      { id: 4, firstName: "Gregg", lastName: "Wallis", email: "gregg.wallis@gcu.edu", university: "Grand Canyon", title: "Head Coach", status: "EMAIL_OPENED" },
+      { id: 5, firstName: "Erik", lastName: "Bakich", email: "ebakich@clemson.edu", university: "Clemson", title: "Head Coach", status: "EMAIL_CLICKED" },
+      { id: 6, firstName: "David", lastName: "Esquer", email: "esquer@stanford.edu", university: "Stanford", title: "Head Coach", status: "EMAIL_SENT" },
+      { id: 7, firstName: "Tim", lastName: "Corbin", email: "tim.corbin@vanderbilt.edu", university: "Vanderbilt", title: "Head Coach", status: "RESPONDED" },
+      { id: 8, firstName: "Dusty", lastName: "Baker", email: "dbaker@lsu.edu", university: "LSU", title: "Head Coach", status: "EMAIL_CLICKED" },
+      { id: 9, firstName: "Mike", lastName: "Fox", email: "mfox@unc.edu", university: "North Carolina", title: "Head Coach", status: "EMAIL_OPENED" },
+      { id: 10, firstName: "Pete", lastName: "Hughes", email: "phughes@osu.edu", university: "Ohio State", title: "Head Coach", status: "SCHEDULED" },
+      { id: 11, firstName: "Dan", lastName: "Hartleb", email: "dhartleb@oregonstate.edu", university: "Oregon State", title: "Head Coach", status: "EMAIL_SENT" },
+      { id: 12, firstName: "Brodie", lastName: "Van Wagenen", email: "bvw@baylor.edu", university: "Baylor", title: "Head Coach", status: "BOUNCED" },
+      { id: 13, firstName: "Anthony", lastName: "Widom", email: "awidom@coastal.edu", university: "Coastal Carolina", title: "Head Coach", status: "EMAIL_CLICKED" },
+      { id: 14, firstName: "Jason", lastName: "Kelly", email: "jkelly@tamu.edu", university: "Texas A&M", title: "Head Coach", status: "EMAIL_SENT" },
+      { id: 15, firstName: "Tony", lastName: "Vitello", email: "tvitello@tennessee.edu", university: "Tennessee", title: "Head Coach", status: "EMAIL_OPENED" },
+    ];
+
+    const SAMPLE_DELIVERIES = [
+      { university: "LSU", coach: "Dusty Baker", title: "Head Coach", email: "dbaker@lsu.edu", status: "opened", sentAt: "2026/03/01 09:15", openedAt: "2026/03/01 14:22", reaction: "クリック" },
+      { university: "Coastal Carolina", coach: "Anthony Widom", title: "Head Coach", email: "awidom@coastal.edu", status: "opened", sentAt: "2026/03/01 09:16", openedAt: "2026/03/01 11:05", reaction: "クリック" },
+      { university: "North Carolina", coach: "Mike Fox", title: "Head Coach", email: "mfox@unc.edu", status: "replied", sentAt: "2026/03/01 09:17", openedAt: "2026/03/02 10:00", reaction: "返信あり!" },
+      { university: "Oklahoma", coach: "Skip Johnson", title: "Head Coach", email: "sjohnson@ou.edu", status: "sent", sentAt: "2026/03/01 09:18", openedAt: "-", reaction: "-" },
+      { university: "Louisville", coach: "Dan McDonnell", title: "Head Coach", email: "dmcdonnell@louisville.edu", status: "sent", sentAt: "2026/03/01 09:19", openedAt: "-", reaction: "-" },
+      { university: "Arkansas", coach: "Dave Van Horn", title: "Head Coach", email: "dvhorn@uark.edu", status: "opened", sentAt: "2026/03/01 09:20", openedAt: "2026/03/02 08:30", reaction: "-" },
+      { university: "UCLA", coach: "John Savage", title: "Head Coach", email: "jsavage@athletics.ucla.edu", status: "bounced", sentAt: "2026/03/01 09:24", openedAt: "-", reaction: "-" },
+      { university: "Houston", coach: "Todd Whitt", title: "Head Coach", email: "twhitt@houston.edu", status: "replied", sentAt: "2026/03/01 09:26", openedAt: "2026/03/01 10:15", reaction: "返信あり!" },
+    ];
+
+    const COACH_ROLES = [
+      { key: "hc", label: "Head Coach", labelJa: "監督", icon: "👑" },
+      { key: "assoc", label: "Associate / Co-Head Coach", labelJa: "副監督", icon: "⭐" },
+      { key: "asst", label: "Assistant Coach", labelJa: "アシスタントコーチ", icon: "🧢" },
+      { key: "ops", label: "Director of Ops / Recruiting", labelJa: "リクルーティング", icon: "📋" },
+      { key: "strength", label: "Strength & Conditioning", labelJa: "S&C", icon: "💪" },
+    ];
+
+    const TEMPLATES = [
+      { id: 1, name: "自己紹介型", desc: "初めてのコンタクトに最適", icon: "🤝",
+        subject: "Interested in {{university}} Baseball Program",
+        body: "Dear Coach {{coach_last_name}},\n\nMy name is {{player_name}} and I am a [position] from Japan. I am very interested in your baseball program at {{university}}.\n\n[Your stats and achievements here]\n\nI would love the opportunity to discuss how I might contribute to your team.\n\nThank you for your time,\n{{player_name}}",
+        bodyJa: "{{coach_last_name}}コーチ殿\n\n初めまして。{{player_name}}と申します。日本出身の[ポジション]です。{{university}}の野球プログラムに大変興味を持っております。\n\n[成績・実績をここに記載]\n\n貴チームに貢献できる機会をいただければ幸いです。\n\nよろしくお願いいたします。\n{{player_name}}" },
+      { id: 2, name: "実績アピール型", desc: "成績・受賞歴がある選手向け", icon: "📊",
+        subject: "{{player_name}} - [Position] | [Key Stats] | {{university}}",
+        body: "Dear Coach {{coach_last_name}},\n\nI hope this email finds you well. My name is {{player_name}}, a [position] from [City], Japan.\n\nKey Stats:\n- Fastball: 89-92 mph\n- ERA: 1.85\n- [Additional stats]\n\nI believe my skills would be a strong fit for {{university}}'s program.\n\nBest regards,\n{{player_name}}",
+        bodyJa: "{{coach_last_name}}コーチ殿\n\nお忙しいところ失礼いたします。日本の[都市名]出身の[ポジション]、{{player_name}}です。\n\n主な成績:\n- 球速: 143-148 km/h\n- 防御率: 1.85\n- [その他の成績]\n\n{{university}}のプログラムに適した選手であると確信しております。\n\n{{player_name}}" },
+      { id: 3, name: "動画リンク付き型", desc: "プレー動画が武器の選手向け", icon: "🎬",
+        subject: "Video Highlights - {{player_name}} | [Position]",
+        body: "Dear Coach {{coach_last_name}},\n\nPlease find my highlight video below:\n[Video Link]\n\nI am a [position] from Japan, interested in {{university}}.\n\nAdditional videos and stats available at: [Profile Link]\n\nThank you,\n{{player_name}}",
+        bodyJa: "{{coach_last_name}}コーチ殿\n\n以下のリンクからハイライト動画をご覧ください:\n[動画リンク]\n\n日本出身の[ポジション]で、{{university}}に興味がございます。\n\nその他の動画・成績: [プロフィールリンク]\n\n{{player_name}}" },
+    ];
+
+    const STATUS_CONFIG = {
+      pending: { label: "配信待ち", color: "#3B82F6", icon: "⏳" },
+      sent: { label: "配信済み", color: "#10B981", icon: "✅" },
+      bounced: { label: "バウンス", color: "#EF4444", icon: "❌" },
+      error_invalid: { label: "無効アドレス", color: "#EF4444", icon: "❌" },
+      opened: { label: "開封済み", color: "#8B5CF6", icon: "👀" },
+      replied: { label: "反応あり", color: "#F97316", icon: "💬" },
+      clicked: { label: "クリック", color: "#F97316", icon: "🔗" },
+    };
+
+    // Status names in Japanese
+    const STATUS_NAMES_JA = {
+      EMAIL_CLICKED: "クリック済",
+      BOUNCED: "バウンス",
+      EMAIL_SENT: "配信済",
+      SCHEDULED: "配信予約",
+      EMAIL_OPENED: "開封済",
+      RESPONDED: "返信あり",
+    };
+
+    const DAILY_LIMIT = 200;
+
+    const LEVEL_STATS = {
+      D1: { schools: 253, color: "#C41E3A", desc: "NCAA Division I" },
+      D2: { schools: 64, color: "#1B2A4A", desc: "NCAA Division II" },
+      D3: { schools: 395, color: "#2D5A27", desc: "NCAA Division III" },
+      NAIA: { schools: 195, color: "#C4813D", desc: "National Assoc. of Intercollegiate Athletics" },
+      JUCO: { schools: 489, color: "#6B7280", desc: "Junior College / Community College" },
+    };
+
+    // ===== Pricing Tiers =====
+    const PRICING = {
+      currency: "¥",
+      tiers: [
+        { level: "D1", rankMin: 1, rankMax: 25, price: 500, label: "D1 Top25" },
+        { level: "D1", rankMin: 26, rankMax: 50, price: 400, label: "D1 26-50" },
+        { level: "D1", rankMin: 51, rankMax: 100, price: 350, label: "D1 51-100" },
+        { level: "D1", rankMin: 101, rankMax: 9999, price: 300, label: "D1 100+" },
+        { level: "D2", rankMin: 1, rankMax: 10, price: 350, label: "D2 Top10" },
+        { level: "D2", rankMin: 11, rankMax: 30, price: 300, label: "D2 11-30" },
+        { level: "D2", rankMin: 31, rankMax: 9999, price: 200, label: "D2 31+" },
+        { level: "D3", rankMin: 1, rankMax: 9999, price: 200, label: "D3" },
+        { level: "NAIA", rankMin: 1, rankMax: 9999, price: 150, label: "NAIA" },
+        { level: "JUCO", rankMin: 1, rankMax: 9999, price: 100, label: "JUCO" },
+      ]
+    };
+
+    const getTier = (u) => {
+      const tier = PRICING.tiers.find(t => t.level === u.level && u.ranking >= t.rankMin && u.ranking <= t.rankMax);
+      return tier || PRICING.tiers[PRICING.tiers.length - 1];
+    };
+
+    // ===== SVGコンポーネント =====
+    const BaseballStitchSVG = () => (
+      <svg viewBox="0 0 200 12" className="w-full h-3 opacity-20">
+        <path d="M0,6 Q25,0 50,6 T100,6 T150,6 T200,6" fill="none" stroke="#C41E3A" strokeWidth="1.5" strokeDasharray="4 3" />
+        <path d="M0,6 Q25,12 50,6 T100,6 T150,6 T200,6" fill="none" stroke="#C41E3A" strokeWidth="1.5" strokeDasharray="4 3" />
+      </svg>
+    );
+
+    const DiamondIcon = ({ size = 16 }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M12 2 L22 12 L12 22 L2 12 Z" />
+        <circle cx="12" cy="8" r="1" fill="currentColor" />
+        <circle cx="8" cy="12" r="1" fill="currentColor" />
+        <circle cx="16" cy="12" r="1" fill="currentColor" />
+        <circle cx="12" cy="16" r="1" fill="currentColor" />
+      </svg>
+    );
+
+    const Badge = ({ children, color = "blue" }) => {
+      const colors = {
+        blue: "bg-blue-100 text-blue-800",
+        green: "bg-green-100 text-green-800",
+        red: "bg-red-100 text-red-800",
+        yellow: "bg-yellow-100 text-yellow-800",
+        purple: "bg-purple-100 text-purple-800",
+        orange: "bg-orange-100 text-orange-800",
+        gray: "bg-gray-100 text-gray-800",
+        navy: "text-white",
+        dirt: "text-white",
+      };
+      const bgOverride = color === "navy" ? { backgroundColor: THEME.navy }
+        : color === "dirt" ? { backgroundColor: THEME.dirt }
+        : {};
+      return <span style={bgOverride} className={`px-2 py-1 rounded-full text-xs font-medium ${colors[color]}`}>{children}</span>;
+    };
+
+    const Nav = ({ right, onNavigate }) => (
+      <nav style={{ backgroundColor: THEME.navy }}>
+        <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate && onNavigate("dashboard")}>
+            <span className="text-2xl">⚾</span>
+            <div>
+              <span className="font-bold text-xl text-white tracking-wide">AthleteGate</span>
+              <span className="text-xs ml-2" style={{ color: THEME.dirtLight }}>BASEBALL</span>
+            </div>
+          </div>
+          <div className="text-sm" style={{ color: THEME.dirtLight }}>{right}</div>
+        </div>
+        <BaseballStitchSVG />
+      </nav>
+    );
+
+    const AnimatedNumber = ({ target, duration = 1200 }) => {
+      const [val, setVal] = useState(0);
+      useEffect(() => {
+        let start = 0;
+        const step = Math.max(1, Math.floor(target / (duration / 16)));
+        const timer = setInterval(() => {
+          start += step;
+          if (start >= target) { setVal(target); clearInterval(timer); }
+          else setVal(start);
+        }, 16);
+        return () => clearInterval(timer);
+      }, [target, duration]);
+      return <span>{val.toLocaleString()}</span>;
+    };
+
+    // SVGラインアイコン（プロフェッショナル仕様）
+    const StatIcon = ({ type }) => {
+      const paths = {
+        school: <><path d="M2 7l10-4 10 4-10 4-10-4z" /><path d="M6 9v5c0 2 3 3.5 6 3.5s6-1.5 6-3.5V9" /><line x1="22" y1="7" x2="22" y2="14" /></>,
+        users: <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
+        send: <><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></>,
+        eye: <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></>,
+        reply: <><polyline points="9 17 4 12 9 7" /><path d="M20 18v-2a4 4 0 0 0-4-4H4" /></>,
+      };
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          {paths[type]}
+        </svg>
+      );
+    };
+
+    const ScoreboardNumber = ({ label, value, sub, iconType, highlight }) => (
+      <div className="relative overflow-hidden rounded-2xl p-5 text-center" style={{
+        background: highlight
+          ? `linear-gradient(135deg, ${THEME.dirt}, ${THEME.dirtLight})`
+          : `linear-gradient(135deg, ${THEME.navy}, ${THEME.navyLight})`,
+      }}>
+        <div className="flex items-center justify-center gap-2 mb-3">
+          <StatIcon type={iconType} />
+          <span className="text-sm font-semibold tracking-wide" style={{ color: "rgba(255,255,255,0.9)" }}>{label}</span>
+        </div>
+        <div className="flex items-baseline justify-center gap-1">
+          <span className="text-5xl font-black text-white leading-none" style={{ letterSpacing: "-0.02em" }}><AnimatedNumber target={value} /></span>
+          {sub && <span className="text-base font-semibold ml-1" style={{ color: "rgba(255,255,255,0.6)" }}>{sub}</span>}
+        </div>
+      </div>
+    );
+
+    // --- 画面1: ログイン ---
+    const LoginScreen = ({ onNavigate }) => (
+      <div className="min-h-screen relative">
+        {/* ヒーロー背景画像 */}
+        <div className="absolute inset-0" style={{
+          backgroundImage: "url('https://images.unsplash.com/photo-1461896836934-bd45ba8fcb9b?w=1600&q=80')",
+          backgroundSize: "cover", backgroundPosition: "center"
+        }}>
+          <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, ${THEME.navy}CC 0%, ${THEME.navy}99 40%, ${THEME.navy}DD 100%)` }}></div>
+        </div>
+        {/* ヒーローテキスト */}
+        <div className="relative z-10 pt-16 pb-8 px-4 text-center">
+          <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-3">AthleteGate</h1>
+          <p className="text-lg sm:text-xl font-medium mb-2" style={{ color: THEME.dirtLight }}>Your Gateway to U.S. College Sports</p>
+          <p className="text-sm text-gray-300 max-w-md mx-auto">アメリカ大学スポーツへの扉を開く。指導者に直接あなたの実力を届けるプラットフォーム。</p>
+          {/* スポーツアイコン */}
+          <div className="flex justify-center gap-4 mt-6 text-2xl opacity-80">
+            <span>⚾</span><span>🏀</span><span>🏈</span><span>⚽</span><span>🎾</span><span>🏐</span>
+          </div>
+        </div>
+        {/* ログインフォーム */}
+        <div className="relative z-10 flex justify-center px-4 pb-8">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-bold" style={{ color: THEME.navy }}>ログイン</h2>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+                <input type="email" className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:outline-none" style={{ borderColor: THEME.navy + "40" }} defaultValue="onozaki@zetalabo.biz" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">パスワード</label>
+                <input type="password" className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:outline-none" style={{ borderColor: THEME.navy + "40" }} defaultValue="********" />
+              </div>
+              <button onClick={() => onNavigate("dashboard")} className="w-full text-white py-3 rounded-lg font-bold tracking-wide hover:opacity-90 transition text-lg" style={{ backgroundColor: THEME.navy }}>
+                Sign In →
+              </button>
+              <div className="text-center">
+                <span className="text-sm text-gray-500">アカウントをお持ちでない方は </span>
+                <button className="text-sm font-medium hover:underline" style={{ color: THEME.dirt }}>新規登録</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
+    // --- 画面2: ダッシュボード ---
+    const Dashboard = ({ onNavigate, themeId, changeTheme }) => {
+      const [expandedPkgs, setExpandedPkgs] = useState({});
+      const [animStep, setAnimStep] = useState(0);
+      useEffect(() => {
+        const t = setInterval(() => setAnimStep(s => (s + 1) % 8), 2000);
+        return () => clearInterval(t);
+      }, []);
+
+      // 新しい順（登録日の降順）にソート
+      const packages = [
+        { id: 1, level: "D1", roles: "HC, Asst", states: "CA, AZ, FL", targets: 12, coachCount: 68, status: "active", createdAt: "2026-03-01", startDate: "2026/03/01",
+          stats: { pending: 5, sent: 30, opened: 20, replied: 8, error: 5 },
+          timeline: [
+            { d: "3/1", s: 40, o: 0, r: 0 }, { d: "3/2", s: 12, o: 15, r: 2 }, { d: "3/3", s: 6, o: 28, r: 5 },
+            { d: "3/4", s: 0, o: 35, r: 8 }, { d: "3/5", s: 0, o: 38, r: 12 }, { d: "3/6", s: 0, o: 40, r: 18 },
+          ]},
+        { id: 2, level: "D2+NAIA", roles: "HC", states: "FL, TX, CA", targets: 18, coachCount: 32, status: "completed", createdAt: "2026-02-15", startDate: "2026/02/15",
+          stats: { pending: 0, sent: 5, opened: 15, replied: 10, error: 2 },
+          timeline: [
+            { d: "2/15", s: 32, o: 0, r: 0 }, { d: "2/16", s: 0, o: 12, r: 2 }, { d: "2/17", s: 0, o: 22, r: 6 },
+            { d: "2/18", s: 0, o: 28, r: 10 },
+          ]},
+        { id: 3, level: "D1", roles: "HC", states: "TX, OK, AR, LA", targets: 8, coachCount: 24, status: "completed", createdAt: "2026-01-20", startDate: "2026/01/20",
+          stats: { pending: 0, sent: 2, opened: 10, replied: 12, error: 0 },
+          timeline: [] },
+      ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      const totalCoaches = packages.reduce((sum, p) => sum + Object.values(p.stats).reduce((a, b) => a + b, 0), 0);
+
+      // 登録日を「3月1日（土）」形式にフォーマット
+      const formatDate = (dateStr) => {
+        const d = new Date(dateStr);
+        const days = ["日","月","火","水","木","金","土"];
+        return `${d.getMonth()+1}月${d.getDate()}日（${days[d.getDay()]}）`;
+      };
+      // 「○日前」を計算
+      const daysAgo = (dateStr) => {
+        const diff = Math.floor((new Date("2026-03-07") - new Date(dateStr)) / 86400000);
+        if (diff === 0) return "今日";
+        if (diff === 1) return "昨日";
+        return `${diff}日前`;
+      };
+
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <nav style={{ backgroundColor: THEME.navy }}>
+            <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">⚾</span>
+                <div>
+                  <span className="font-bold text-xl text-white tracking-wide">AthleteGate</span>
+                  <span className="text-xs ml-2" style={{ color: THEME.dirtLight }}>BASEBALL</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <button onClick={() => onNavigate("dbmanage")} className="text-sm hover:text-white px-3 py-1 rounded" style={{ color: THEME.dirtLight }}>データ管理</button>
+                <div className="flex items-center gap-1.5 ml-2">
+                  {Object.values(THEME_PRESETS).map(t => (
+                    <button key={t.id} onClick={() => changeTheme(t.id)} title={t.label}
+                      className="rounded-full transition-all hover:scale-110"
+                      style={{
+                        width: themeId === t.id ? 28 : 22, height: themeId === t.id ? 28 : 22,
+                        background: `linear-gradient(135deg, ${t.preview.main} 50%, ${t.preview.accent} 50%)`,
+                        border: themeId === t.id ? "2px solid white" : "1px solid rgba(255,255,255,0.3)",
+                        boxShadow: themeId === t.id ? "0 0 8px rgba(255,255,255,0.4)" : "none",
+                      }} />
+                  ))}
+                </div>
+                <span className="text-sm text-gray-300">ザキさん</span>
+                <button onClick={() => onNavigate("login")} className="text-sm text-gray-400 hover:text-white">ログアウト</button>
+              </div>
+            </div>
+            <BaseballStitchSVG />
+          </nav>
+
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            {/* ===== ヒーロー配信実績 ===== */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-5">
+                <DiamondIcon size={22} />
+                <h2 className="font-bold text-xl tracking-wide" style={{ color: THEME.navy }}>あなたの配信実績</h2>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <ScoreboardNumber label="配信先" value={totalCoaches} sub="校" iconType="school" highlight />
+                <ScoreboardNumber label="コーチ数" value={676} sub="名" iconType="users" />
+                <ScoreboardNumber label="配信済" value={144} sub="通" iconType="send" />
+                <ScoreboardNumber label="開封済" value={89} sub="件" iconType="eye" />
+                <ScoreboardNumber label="反応" value={42} sub="件" iconType="reply" highlight />
+              </div>
+            </div>
+
+            {/* ===== ステータス分布（横棒グラフ風） ===== */}
+            <div className="bg-white rounded-2xl border p-6 mb-6 shadow-sm">
+              <h3 className="text-base font-bold mb-5 flex items-center gap-2" style={{ color: THEME.navy }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={THEME.dirt} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg> ステータス分布（全676コーチ）</h3>
+              <div className="space-y-3">
+                {[
+                  { label: "EMAIL_CLICKED", count: 242, color: "#F97316" },
+                  { label: "BOUNCED", count: 150, color: "#EF4444" },
+                  { label: "EMAIL_SENT", count: 144, color: "#10B981" },
+                  { label: "SCHEDULED", count: 98, color: "#3B82F6" },
+                  { label: "EMAIL_OPENED", count: 28, color: "#8B5CF6" },
+                  { label: "RESPONDED", count: 14, color: "#14B8A6" },
+                ].map(s => {
+                  const pct = Math.round((s.count / 676) * 100);
+                  return (
+                    <div key={s.label} className="flex items-center gap-3">
+                      <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color }}></div>
+                      <div className="w-20 text-sm font-medium text-gray-700">{STATUS_NAMES_JA[s.label]}</div>
+                      <div className="flex-1 relative h-9 rounded-lg" style={{ backgroundColor: s.color + "12" }}>
+                        <div className="absolute inset-y-0 left-0 rounded-lg transition-all duration-1000" style={{ width: `${Math.max(pct, 3)}%`, backgroundColor: s.color }} />
+                        <div className="absolute inset-0 flex items-center pl-3">
+                          <span className="text-sm font-extrabold" style={{ color: pct > 15 ? "#fff" : s.color }}>{s.count}</span>
+                        </div>
+                      </div>
+                      <div className="w-12 text-right text-sm font-bold" style={{ color: s.color }}>{pct}%</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ===== データベース収録状況 ===== */}
+            <div className="bg-white rounded-2xl border p-6 mb-6 shadow-sm">
+              <h3 className="text-base font-bold mb-4 flex items-center gap-2" style={{ color: THEME.navy }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={THEME.dirt} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" /><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" /></svg> データベース収録状況</h3>
+              <div className="grid grid-cols-5 gap-3">
+                {Object.entries(LEVEL_STATS).map(([level, info]) => (
+                  <div key={level} className="text-center rounded-xl p-4 transition-transform hover:scale-105" style={{
+                    background: `linear-gradient(135deg, ${info.color}15, ${info.color}08)`,
+                    border: `2px solid ${info.color}30`,
+                  }}>
+                    <div className="text-xs font-bold tracking-wider uppercase mb-1" style={{ color: info.color + "99" }}>{info.desc.split(" ")[0]}</div>
+                    <div className="text-lg font-black" style={{ color: info.color }}>{level}</div>
+                    <div className="text-3xl font-black my-1" style={{ color: info.color }}>{info.schools}</div>
+                    <div className="text-sm font-medium text-gray-500">校</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold" style={{ color: THEME.navy }}>My配信プラン</h2>
+            </div>
+
+            <div className="grid gap-4">
+              {packages.map((pkg, idx) => {
+                const total = Object.values(pkg.stats).reduce((a, b) => a + b, 0);
+                const statusLabel = pkg.status === "active" ? "🟢 配信中" : "✅ 完了";
+                const isActive = pkg.status === "active";
+                const isLatest = idx === 0;
+                const isExpanded = isLatest || expandedPkgs[pkg.id];
+                const toggleExpand = (e) => {
+                  if (!isLatest) {
+                    e.stopPropagation();
+                    setExpandedPkgs(prev => ({ ...prev, [pkg.id]: !prev[pkg.id] }));
+                  }
+                };
+                return (
+                  <div key={pkg.id} className="bg-white rounded-2xl shadow-sm border overflow-hidden transition-all"
+                    style={{ borderLeft: `4px solid ${isActive ? THEME.grassLight : THEME.navy}` }}>
+                    {/* ヘッダー（常に表示） */}
+                    <div className="px-4 sm:px-6 py-2.5 flex justify-between items-center cursor-pointer select-none"
+                      style={{ backgroundColor: isActive ? THEME.grassLight + "10" : THEME.navy + "06" }}
+                      onClick={isLatest ? () => onNavigate("detail") : toggleExpand}>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold flex items-center gap-1.5" style={{ color: isActive ? THEME.grassLight : THEME.navy }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill={isActive ? THEME.grassLight : THEME.navy} stroke="none"><rect x="3" y="4" width="18" height="18" rx="3" opacity="0.15" /><rect x="3" y="4" width="18" height="7" rx="3" opacity="0.3" /><circle cx="8" cy="16" r="1.5" /><circle cx="12" cy="16" r="1.5" /><circle cx="16" cy="16" r="1.5" /><rect x="7" y="1" width="2" height="5" rx="1" /><rect x="15" y="1" width="2" height="5" rx="1" /></svg>
+                          {formatDate(pkg.createdAt)}
+                        </span>
+                        {!isLatest && (
+                          <span className="flex items-center gap-1.5">
+                            <Badge color="navy">{pkg.level}</Badge>
+                            <span className="text-xs text-gray-500">{pkg.coachCount}通</span>
+                          </span>
+                        )}
+                        {isLatest && <span className="text-xs text-gray-400">{daysAgo(pkg.createdAt)}</span>}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ backgroundColor: isActive ? THEME.grassLight + "20" : THEME.navy + "10", color: isActive ? THEME.grassLight : THEME.navy }}>{statusLabel}</span>
+                        {!isLatest && (
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={THEME.navy} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                            style={{ transition: "transform 0.3s", transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>
+                            <polyline points="6 9 12 15 18 9" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                    {/* カード本体（展開時のみ表示） */}
+                    {isExpanded && (
+                      <div className="px-4 sm:px-6 py-4 cursor-pointer" onClick={() => onNavigate("detail")}>
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                              <Badge color="navy">{pkg.level}</Badge>
+                              <span className="text-xs text-gray-500">{pkg.states}</span>
+                              <span className="text-xs text-gray-400">| {pkg.roles}</span>
+                            </div>
+                            <div className="text-sm font-medium" style={{ color: THEME.navy }}>{pkg.targets}校 → {pkg.coachCount}名に配信</div>
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            <div className="text-2xl sm:text-3xl font-bold font-mono" style={{ color: THEME.navy }}>{pkg.coachCount}<span className="text-xs font-normal text-gray-500">通</span></div>
+                          </div>
+                        </div>
+                        {(() => {
+                          const segments = [
+                            { key: "replied", label: "反応", value: pkg.stats.replied, color: THEME.dirt },
+                            { key: "opened", label: "開封", value: pkg.stats.opened, color: "#8B5CF6" },
+                            { key: "sent", label: "配信", value: pkg.stats.sent, color: THEME.grassLight },
+                            { key: "pending", label: "待ち", value: pkg.stats.pending, color: "#93C5FD" },
+                          ].filter(s => s.value > 0);
+                          return (
+                            <div>
+                              <div className="w-full rounded-xl h-10 flex overflow-hidden" style={{ backgroundColor: "#F1F5F9" }}>
+                                {segments.map(seg => {
+                                  const pct = (seg.value / total) * 100;
+                                  return (
+                                    <div key={seg.key} className="h-full flex items-center justify-center transition-all duration-700 relative"
+                                      title={`${seg.label}: ${seg.value}通`}
+                                      style={{ width: `${pct}%`, backgroundColor: seg.color, minWidth: pct > 0 ? "2rem" : 0, cursor: "default" }}>
+                                      <span className="text-xs font-bold text-white truncate px-1">
+                                        {pct >= 15 ? `${seg.label} ${seg.value}` : seg.value}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              {segments.some(s => (s.value / total) * 100 < 15) && (
+                                <div className="flex gap-3 mt-1.5 pl-0.5">
+                                  {segments.filter(s => (s.value / total) * 100 < 15).map(seg => (
+                                    <div key={seg.key} className="flex items-center gap-1">
+                                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: seg.color }} />
+                                      <span className="text-xs font-medium" style={{ color: "#64748B" }}>{seg.label} {seg.value}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            {/* フッター分のスペース確保 */}
+            <div className="h-20" />
+          </div>
+
+          {/* フローティングフッター */}
+          <div className="fixed bottom-0 left-0 right-0 z-50" style={{ background: "linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0))" }}>
+            <div className="flex justify-center pb-6 pt-4">
+              <button onClick={() => onNavigate("target")}
+                className="text-white px-10 py-4 rounded-2xl font-black tracking-wide flex items-center gap-3 transition-all duration-200 active:scale-95"
+                style={{
+                  fontSize: "1.2rem",
+                  background: `linear-gradient(180deg, ${THEME.dirtLight} 0%, ${THEME.dirt} 50%, ${THEME.leather || '#7A3B10'} 100%)`,
+                  boxShadow: `0 6px 20px ${THEME.dirt}66, 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3)`,
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  textShadow: "0 1px 2px rgba(0,0,0,0.3)",
+                }}>
+                <span className="text-2xl leading-none font-black">+</span> 新規配信プラン作成
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 画面3: ターゲット設定 ---
+    const TargetSetup = ({ onNavigate, planState, setPlanState }) => {
+      const allLevels = ["D1", "D2", "D3", "NAIA", "JUCO"];
+      const allStates = ["AL","AZ","AR","CA","CO","CT","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","MA","MD","MI","MN","MO","MS","MT","NC","NE","NJ","NM","NV","NY","OH","OK","OR","PA","SC","SD","TN","TX","UT","VA","WA","WI","WV","WY"];
+      const rankGroups = [
+        { label: "Top 25", min: 1, max: 25 },
+        { label: "Top 50", min: 1, max: 50 },
+        { label: "Top 100", min: 1, max: 100 },
+        { label: "101-200", min: 101, max: 200 },
+        { label: "201+", min: 201, max: 9999 },
+        { label: "全て", min: 1, max: 9999 },
+      ];
+      const presets = [
+        { label: "🇺🇸 全米", states: allStates },
+        { label: "🌴 西海岸", states: ["CA", "OR", "WA", "AZ", "NV", "HI"] },
+        { label: "🗽 東海岸", states: ["NY", "NJ", "CT", "MA", "PA", "MD", "VA", "NC", "SC", "FL", "GA"] },
+        { label: "🤠 南部", states: ["TX", "FL", "GA", "AL", "TN", "SC", "LA", "MS", "AR", "OK"] },
+        { label: "🏔️ 山岳", states: ["CO", "UT", "MT", "ID", "NM", "WY", "SD"] },
+      ];
+
+      const toggleItem = (arr, item) => {
+        const updated = arr.includes(item) ? arr.filter(i => i !== item) : [...arr, item];
+        return updated;
+      };
+
+      const handleLevelChange = (level) => {
+        setPlanState(prev => ({
+          ...prev,
+          levels: toggleItem(prev.levels, level)
+        }));
+      };
+
+      const handleStateChange = (state) => {
+        setPlanState(prev => ({
+          ...prev,
+          states: toggleItem(prev.states, state)
+        }));
+      };
+
+      const handleRoleChange = (role) => {
+        setPlanState(prev => ({
+          ...prev,
+          roles: toggleItem(prev.roles, role)
+        }));
+      };
+
+      const handleStatePreset = (states) => {
+        setPlanState(prev => ({ ...prev, states }));
+      };
+
+      // Calculate filtered universities based on planState
+      const filteredUnis = ALL_UNIVERSITIES.filter(u =>
+        planState.levels.includes(u.level) && planState.states.includes(u.state)
+      );
+      const roundedSchools = filteredUnis.length;
+
+      // Calculate total coaches from actual data
+      const totalCoaches = filteredUnis.reduce((sum, u) => {
+        let count = 0;
+        planState.roles.forEach(role => {
+          count += u.coachBreakdown[role] || 0;
+        });
+        return sum + count;
+      }, 0);
+
+      const topUnis = [...D1_UNIVERSITIES].sort((a, b) => a.ranking - b.ranking).slice(0, 5);
+
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <Nav right="Step 1 / 5 — ターゲット設定" onNavigate={onNavigate} />
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold text-lg mb-4" style={{ color: THEME.navy }}>⚾ スポーツ</h3>
+                  <div className="flex gap-3 flex-wrap">
+                    <button className="px-5 py-3 text-white rounded-lg font-bold flex items-center gap-2" style={{ backgroundColor: THEME.navy }}>⚾ Baseball</button>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold text-lg mb-2" style={{ color: THEME.navy }}>🧢 配信先コーチの役職</h3>
+                  <p className="text-sm text-gray-500 mb-4">選択する役職を増やすと配信先コーチ数が増えます</p>
+                  <div className="space-y-2">
+                    {COACH_ROLES.map(r => (
+                      <label key={r.key} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition ${planState.roles.includes(r.key) ? "shadow-sm" : "hover:bg-gray-50"}`}
+                        style={planState.roles.includes(r.key) ? { borderColor: THEME.navy, backgroundColor: THEME.navy + "08" } : {}}>
+                        <input type="checkbox" checked={planState.roles.includes(r.key)} onChange={() => handleRoleChange(r.key)} className="rounded w-4 h-4" />
+                        <span className="text-lg">{r.icon}</span>
+                        <div className="flex-1">
+                          <span className="font-medium text-sm">{r.label}</span>
+                          <span className="text-xs text-gray-400 ml-2">({r.labelJa})</span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold text-lg mb-2" style={{ color: THEME.navy }}>🏆 レベル（複数選択可）</h3>
+                  <p className="text-sm text-gray-500 mb-4">D1は最高レベル、JUCOは短大リーグです</p>
+                  <div className="space-y-2">
+                    {allLevels.map(l => {
+                      const info = LEVEL_STATS[l];
+                      return (
+                        <label key={l} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition ${planState.levels.includes(l) ? "shadow-sm" : "hover:bg-gray-50"}`}
+                          style={planState.levels.includes(l) ? { borderColor: info.color, backgroundColor: info.color + "08" } : {}}>
+                          <input type="checkbox" checked={planState.levels.includes(l)} onChange={() => handleLevelChange(l)} className="rounded w-4 h-4" />
+                          <div className="flex-1">
+                            <span className="font-bold" style={{ color: info.color }}>{l}</span>
+                            <span className="text-xs text-gray-500 ml-2">{info.desc}</span>
+                          </div>
+                          <span className="font-mono text-sm font-bold" style={{ color: info.color }}>{info.schools}校</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold text-lg mb-2" style={{ color: THEME.navy }}>🏅 ランキング範囲（複数選択可）</h3>
+                  <p className="text-sm text-gray-500 mb-4">大学のランキングで絞り込み</p>
+                  <div className="flex flex-wrap gap-2">
+                    {rankGroups.map(rg => (
+                      <button key={rg.label}
+                        onClick={() => setPlanState(prev => ({ ...prev, rankings: rg.label }))}
+                        className={`px-4 py-2 rounded-full font-medium transition text-sm ${planState.rankings === rg.label ? "text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                        style={planState.rankings === rg.label ? { backgroundColor: THEME.navy } : {}}>{rg.label}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold text-lg mb-4" style={{ color: THEME.navy }}>📍 州（複数選択可）</h3>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {presets.map(p => (
+                      <button key={p.label} onClick={() => handleStatePreset(p.states)} className="px-3 py-1.5 text-sm rounded-full border font-medium hover:opacity-80 transition" style={{ borderColor: THEME.dirt, color: THEME.dirt }}>{p.label}</button>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {allStates.map(s => (
+                      <button key={s} onClick={() => handleStateChange(s)}
+                        className={`px-3 py-1 text-sm rounded transition font-medium ${planState.states.includes(s) ? "text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                        style={planState.states.includes(s) ? { backgroundColor: THEME.navy } : {}}>{s}</button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div className="rounded-2xl shadow-lg p-6 sticky top-4 text-white" style={{ backgroundColor: THEME.navy }}>
+                  <div className="flex items-center gap-2 mb-4">
+                    <DiamondIcon size={20} />
+                    <h3 className="font-bold text-lg">ターゲット概要</h3>
+                  </div>
+                  <div className="text-5xl font-bold font-mono mb-1"><AnimatedNumber target={roundedSchools} /><span className="text-lg font-normal opacity-70">校</span></div>
+                  <div className="text-sm mb-3" style={{ color: THEME.dirtLight }}>配信コーチ 約<AnimatedNumber target={totalCoaches} />名</div>
+                  <button onClick={() => onNavigate("confirm")} className="w-full mt-4 py-3 rounded-lg font-bold hover:opacity-90 transition" style={{ backgroundColor: THEME.dirt, color: "#fff" }}>
+                    対象大学リストを確認 →
+                  </button>
+                </div>
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold text-sm mb-3" style={{ color: THEME.navy }}>🔥 2025 Top 5</h3>
+                  {topUnis.map((u, i) => (
+                    <div key={u.id} className="flex justify-between items-center py-2 border-b last:border-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm w-5" style={{ color: i < 3 ? THEME.dirt : "#999" }}>#{u.ranking}</span>
+                        <div>
+                          <span className="text-sm font-medium">{u.name}</span>
+                        </div>
+                      </div>
+                      <span className="text-xs text-gray-400">{u.conf}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 画面4: ターゲット確認 ---
+    const TargetConfirm = ({ onNavigate, planState }) => {
+      const filteredUnis = ALL_UNIVERSITIES.filter(u =>
+        planState.levels.includes(u.level) && planState.states.includes(u.state)
+      );
+
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <Nav right="Step 2 / 5 — 対象確認" onNavigate={onNavigate} />
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h2 className="text-xl font-bold mb-4" style={{ color: THEME.navy }}>配信対象一覧 ({filteredUnis.length}校)</h2>
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {filteredUnis.map(u => (
+                      <div key={u.id} className="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50">
+                        <div>
+                          <div className="font-bold">{u.name}</div>
+                          <div className="text-xs text-gray-500">{u.conf} • {u.state}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold text-sm" style={{ color: THEME.navy }}>#{u.ranking}</div>
+                          <div className="text-xs text-gray-500">{u.level}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="font-bold mb-3" style={{ color: THEME.navy }}>確認情報</h3>
+                  <div className="space-y-2 text-sm">
+                    <div><span className="font-medium">レベル:</span> {planState.levels.join(", ")}</div>
+                    <div><span className="font-medium">州:</span> {planState.states.length}つ選択</div>
+                    <div><span className="font-medium">役職:</span> {planState.roles.join(", ")}</div>
+                    <div className="pt-3 border-t mt-3">
+                      <div style={{ color: THEME.navy }} className="font-bold text-lg">{filteredUnis.length}校</div>
+                      <div className="text-xs text-gray-500">配信対象大学</div>
+                    </div>
+                  </div>
+                  <button onClick={() => onNavigate("template")} className="w-full mt-4 py-3 rounded-lg font-bold text-white" style={{ backgroundColor: THEME.dirt }}>
+                    テンプレート選択へ →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 画面5: テンプレート選択 ---
+    const TemplateSetup = ({ onNavigate, planState, setPlanState }) => {
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <Nav right="Step 3 / 5 — テンプレート選択" onNavigate={onNavigate} />
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <h2 className="text-2xl font-bold mb-6" style={{ color: THEME.navy }}>送信テンプレートを選択</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              {TEMPLATES.map(t => (
+                <div key={t.id}
+                  onClick={() => setPlanState(prev => ({ ...prev, templateId: t.id }))}
+                  className={`p-6 rounded-xl border cursor-pointer transition ${planState.templateId === t.id ? "shadow-lg" : "shadow-sm hover:shadow-md"}`}
+                  style={planState.templateId === t.id ? { borderColor: THEME.dirt, backgroundColor: THEME.dirt + "08" } : {}}>
+                  <div className="text-3xl mb-2">{t.icon}</div>
+                  <h3 className="font-bold text-lg mb-2" style={{ color: THEME.navy }}>{t.name}</h3>
+                  <p className="text-sm text-gray-600 mb-4">{t.desc}</p>
+                  <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded">
+                    <div className="font-mono whitespace-pre-wrap">{t.subject.substring(0, 50)}...</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-4">
+              <button onClick={() => onNavigate("confirm")} className="px-6 py-3 rounded-lg border font-bold hover:bg-gray-50">戻る</button>
+              <button onClick={() => onNavigate("schedule")} className="px-6 py-3 rounded-lg text-white font-bold" style={{ backgroundColor: THEME.dirt }}>配信日時設定へ →</button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 画面6: スケジュール設定 ---
+    const ScheduleSetup = ({ onNavigate, planState, setPlanState }) => {
+      const today = new Date().toISOString().split('T')[0];
+
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <Nav right="Step 4 / 5 — スケジュール設定" onNavigate={onNavigate} />
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-sm border p-8">
+              <h2 className="text-2xl font-bold mb-6" style={{ color: THEME.navy }}>配信日時を設定</h2>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-bold mb-2" style={{ color: THEME.navy }}>配信開始日</label>
+                  <input type="date"
+                    min={today}
+                    value={planState.startDate}
+                    onChange={(e) => setPlanState(prev => ({ ...prev, startDate: e.target.value }))}
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:outline-none"
+                    style={{ borderColor: THEME.navy + "40" }} />
+                  <p className="text-xs text-gray-500 mt-1">過去の日付は選択できません</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold mb-2" style={{ color: THEME.navy }}>配信方法</label>
+                  <select className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:outline-none" style={{ borderColor: THEME.navy + "40" }}>
+                    <option>すぐに配信開始</option>
+                    <option>予約配信</option>
+                  </select>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-sm text-blue-800">ℹ️ 1日の配信上限は{DAILY_LIMIT}通です。スケジュールに応じて自動調整されます。</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4 mt-8">
+                <button onClick={() => onNavigate("template")} className="px-6 py-3 rounded-lg border font-bold hover:bg-gray-50">戻る</button>
+                <button onClick={() => onNavigate("payment")} className="px-6 py-3 rounded-lg text-white font-bold" style={{ backgroundColor: THEME.dirt }}>支払い確認へ →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 画面7: 支払い確認 ---
+    const PaymentScreen = ({ onNavigate, planState }) => {
+      const filteredUnis = ALL_UNIVERSITIES.filter(u =>
+        planState.levels.includes(u.level) && planState.states.includes(u.state)
+      );
+
+      // Calculate total by tier
+      const tierBreakdown = {};
+      let totalPrice = 0;
+      filteredUnis.forEach(u => {
+        const tier = getTier(u);
+        if (!tierBreakdown[tier.label]) {
+          tierBreakdown[tier.label] = { count: 0, price: tier.price };
+        }
+        tierBreakdown[tier.label].count += 1;
+        totalPrice += tier.price;
+      });
+
+      const selectedTemplate = TEMPLATES.find(t => t.id === planState.templateId);
+
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <Nav right="Step 5 / 5 — 支払い確認" onNavigate={onNavigate} />
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
+                  <h3 className="text-xl font-bold mb-4" style={{ color: THEME.navy }}>プラン概要</h3>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between border-b pb-2">
+                      <span>配信対象校:</span>
+                      <span className="font-bold">{filteredUnis.length}校</span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                      <span>レベル:</span>
+                      <span className="font-bold">{planState.levels.join(", ")}</span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                      <span>テンプレート:</span>
+                      <span className="font-bold">{selectedTemplate?.name}</span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                      <span>配信開始日:</span>
+                      <span className="font-bold">{planState.startDate || "未設定"}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <h3 className="text-lg font-bold mb-4" style={{ color: THEME.navy }}>料金内訳</h3>
+                  <div className="space-y-2 mb-4">
+                    {Object.entries(tierBreakdown).map(([label, data]) => (
+                      <div key={label} className="flex justify-between items-center p-3 border rounded-lg">
+                        <div>
+                          <div className="font-medium">{label}</div>
+                          <div className="text-xs text-gray-500">{data.count}校</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold">¥{(data.price * data.count).toLocaleString()}</div>
+                          <div className="text-xs text-gray-500">¥{data.price} × {data.count}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="border-t-2 pt-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold">合計</span>
+                      <span className="text-3xl font-bold" style={{ color: THEME.navy }}>¥{totalPrice.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="bg-white rounded-xl shadow-sm border p-6 sticky top-4">
+                  <h3 className="font-bold mb-4" style={{ color: THEME.navy }}>確認</h3>
+                  <div className="space-y-3 text-sm mb-6">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" defaultChecked className="rounded" />
+                      <span>利用規約に同意します</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" defaultChecked className="rounded" />
+                      <span>プライバシーポリシーに同意します</span>
+                    </label>
+                  </div>
+                  <button onClick={() => onNavigate("dashboard")} className="w-full py-3 rounded-lg text-white font-bold hover:opacity-90 transition" style={{ backgroundColor: THEME.navy }}>
+                    購入確定 → ダッシュボードへ
+                  </button>
+                  <button onClick={() => onNavigate("schedule")} className="w-full mt-2 py-2 rounded-lg border font-medium hover:bg-gray-50">
+                    前に戻る
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 画面8: 詳細ビュー ---
+    const DetailView = ({ onNavigate }) => {
+      const activePackage = {
+        id: 1, level: "D1", roles: "HC, Asst", states: "CA, AZ, FL", targets: 12, coachCount: 68,
+        stats: { pending: 5, sent: 30, opened: 20, replied: 8, error: 5 },
+      };
+
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <Nav right="" onNavigate={onNavigate} />
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <button onClick={() => onNavigate("dashboard")} className="mb-6 px-4 py-2 rounded-lg border hover:bg-gray-50 font-medium">← 戻る</button>
+
+            <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
+              <h2 className="text-2xl font-bold mb-4" style={{ color: THEME.navy }}>プラン詳細</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center">
+                  <div className="font-bold text-lg" style={{ color: THEME.navy }}>{activePackage.targets}</div>
+                  <div className="text-sm text-gray-500">対象校</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-bold text-lg" style={{ color: THEME.navy }}>{activePackage.coachCount}</div>
+                  <div className="text-sm text-gray-500">配信先</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-bold text-lg" style={{ color: THEME.navy }}>{activePackage.stats.sent}</div>
+                  <div className="text-sm text-gray-500">配信済</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-bold text-lg" style={{ color: THEME.navy }}>{activePackage.stats.replied}</div>
+                  <div className="text-sm text-gray-500">反応</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border p-6">
+              <h3 className="font-bold mb-4" style={{ color: THEME.navy }}>配信履歴</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2 px-3">大学</th>
+                      <th className="text-left py-2 px-3">コーチ</th>
+                      <th className="text-left py-2 px-3">ステータス</th>
+                      <th className="text-left py-2 px-3">送信日時</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {SAMPLE_DELIVERIES.map((d, i) => (
+                      <tr key={i} className="border-b hover:bg-gray-50">
+                        <td className="py-3 px-3 font-medium">{d.university}</td>
+                        <td className="py-3 px-3">{d.coach}</td>
+                        <td className="py-3 px-3">
+                          <Badge color={d.status === "opened" ? "purple" : d.status === "replied" ? "orange" : "green"}>
+                            {d.status}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-3 text-gray-500">{d.sentAt}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 画面9: DB管理 ---
+    const DBManage = ({ onNavigate }) => {
+      return (
+        <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
+          <Nav right="" onNavigate={onNavigate} />
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <button onClick={() => onNavigate("dashboard")} className="mb-6 px-4 py-2 rounded-lg border hover:bg-gray-50 font-medium">← ダッシュボードに戻る</button>
+
+            <div className="bg-white rounded-xl shadow-sm border p-6">
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2" style={{ color: THEME.navy }}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={THEME.dirt} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" /><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" /></svg> データベース管理</h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+                {Object.entries(LEVEL_STATS).map(([level, info]) => (
+                  <div key={level} className="text-center p-4 rounded-lg" style={{ backgroundColor: info.color + "10", border: `2px solid ${info.color}` }}>
+                    <div className="text-sm font-bold mb-1" style={{ color: info.color }}>{level}</div>
+                    <div className="text-3xl font-bold" style={{ color: info.color }}>{info.schools}</div>
+                    <div className="text-xs text-gray-500">学校</div>
+                  </div>
+                ))}
+              </div>
+
+              <h3 className="font-bold text-lg mb-4" style={{ color: THEME.navy }}>最新更新情報</h3>
+              <div className="space-y-3">
+                <div className="p-4 border rounded-lg">
+                  <div className="font-bold">D1データ更新</div>
+                  <div className="text-sm text-gray-600">2026年3月1日</div>
+                </div>
+                <div className="p-4 border rounded-lg">
+                  <div className="font-bold">D2/D3データ追加</div>
+                  <div className="text-sm text-gray-600">2026年2月28日</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ===== メインアプリケーション =====
+    const App = () => {
+      const [currentScreen, setCurrentScreen] = useState("login");
+      const [themeId, setThemeId] = useState("classic");
+      const [planState, setPlanState] = useState({
+        levels: ["D1"],
+        states: ["CA", "TX", "FL"],
+        roles: ["hc", "asst"],
+        rankings: "全て",
+        templateId: 1,
+        startDate: "",
+        excluded: []
+      });
+
+      // テーマ切り替え
+      const changeTheme = (id) => {
+        Object.assign(THEME, THEME_PRESETS[id]);
+        setThemeId(id);
+      };
+
+      const onNavigate = (screen) => setCurrentScreen(screen);
+
+      return (
+        <>
+          {currentScreen === "login" && <LoginScreen onNavigate={onNavigate} />}
+          {currentScreen === "dashboard" && <Dashboard onNavigate={onNavigate} themeId={themeId} changeTheme={changeTheme} />}
+          {currentScreen === "target" && <TargetSetup onNavigate={onNavigate} planState={planState} setPlanState={setPlanState} />}
+          {currentScreen === "confirm" && <TargetConfirm onNavigate={onNavigate} planState={planState} />}
+          {currentScreen === "template" && <TemplateSetup onNavigate={onNavigate} planState={planState} setPlanState={setPlanState} />}
+          {currentScreen === "schedule" && <ScheduleSetup onNavigate={onNavigate} planState={planState} setPlanState={setPlanState} />}
+          {currentScreen === "payment" && <PaymentScreen onNavigate={onNavigate} planState={planState} />}
+          {currentScreen === "detail" && <DetailView onNavigate={onNavigate} />}
+          {currentScreen === "dbmanage" && <DBManage onNavigate={onNavigate} />}
+        </>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
