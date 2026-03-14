@@ -641,16 +641,16 @@
     };
 
     const ScoreboardNumber = ({ label, value, sub, iconType, highlight }) => (
-      <div className="relative overflow-hidden rounded-2xl p-5" style={{
+      <div className="relative overflow-hidden rounded-2xl p-5 text-center" style={{
         background: highlight
           ? `linear-gradient(135deg, ${THEME.dirt}, ${THEME.dirtLight})`
           : `linear-gradient(135deg, ${THEME.navy}, ${THEME.navyLight})`,
       }}>
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center justify-center gap-2 mb-3">
           <StatIcon type={iconType} />
           <span className="text-sm font-semibold tracking-wide" style={{ color: "rgba(255,255,255,0.9)" }}>{label}</span>
         </div>
-        <div className="flex items-baseline gap-1">
+        <div className="flex items-baseline justify-center gap-1">
           <span className="text-5xl font-black text-white leading-none" style={{ letterSpacing: "-0.02em" }}><AnimatedNumber target={value} /></span>
           {sub && <span className="text-base font-semibold ml-1" style={{ color: "rgba(255,255,255,0.6)" }}>{sub}</span>}
         </div>
@@ -813,9 +813,10 @@
                     <div key={s.label} className="flex items-center gap-3">
                       <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color }}></div>
                       <div className="w-20 text-sm font-medium text-gray-700">{STATUS_NAMES_JA[s.label]}</div>
-                      <div className="flex-1 h-9 rounded-lg overflow-hidden" style={{ backgroundColor: s.color + "15" }}>
-                        <div className="h-full rounded-lg flex items-center transition-all duration-1000" style={{ width: `${pct}%`, backgroundColor: s.color }}>
-                          <span className="text-white text-sm font-extrabold ml-3">{s.count}</span>
+                      <div className="flex-1 relative h-9 rounded-lg" style={{ backgroundColor: s.color + "12" }}>
+                        <div className="absolute inset-y-0 left-0 rounded-lg transition-all duration-1000" style={{ width: `${Math.max(pct, 3)}%`, backgroundColor: s.color }} />
+                        <div className="absolute inset-0 flex items-center pl-3">
+                          <span className="text-sm font-extrabold" style={{ color: pct > 15 ? "#fff" : s.color }}>{s.count}</span>
                         </div>
                       </div>
                       <div className="w-12 text-right text-sm font-bold" style={{ color: s.color }}>{pct}%</div>
