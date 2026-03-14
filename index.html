@@ -708,16 +708,6 @@
             <div style={{ fontSize: 28, fontWeight: 900, color: "#fff", letterSpacing: -0.5, lineHeight: 1.1, marginTop: 4 }}>Your Gateway to<br/>U.S. College Baseball</div>
           </div>
 
-          {/* キャプション */}
-          <div style={{
-            position: "absolute", bottom: 36, left: 0, right: 0, textAlign: "center",
-            opacity: fading ? 0 : 1, transition: "opacity 0.6s ease",
-          }}>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.75)", letterSpacing: 1 }}>
-              {SLIDE_PHOTOS[slide].caption}
-            </div>
-          </div>
-
           {/* ドットナビ */}
           <div style={{ position: "absolute", bottom: 14, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 6 }}>
             {SLIDE_PHOTOS.map((_, i) => (
