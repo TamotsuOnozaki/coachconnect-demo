@@ -891,18 +891,31 @@
                           { key: "pending", label: "待ち", value: pkg.stats.pending, color: "#93C5FD" },
                         ].filter(s => s.value > 0);
                         return (
-                          <div className="w-full rounded-xl h-10 flex overflow-hidden" style={{ backgroundColor: "#F1F5F9" }}>
-                            {segments.map(seg => {
-                              const pct = (seg.value / total) * 100;
-                              return (
-                                <div key={seg.key} className="h-full flex items-center justify-center transition-all duration-700 relative group"
-                                  style={{ width: `${pct}%`, backgroundColor: seg.color, minWidth: pct > 0 ? "2rem" : 0 }}>
-                                  <span className="text-xs font-bold text-white truncate px-1">
-                                    {pct >= 12 ? `${seg.label} ${seg.value}` : seg.value}
-                                  </span>
-                                </div>
-                              );
-                            })}
+                          <div>
+                            <div className="w-full rounded-xl h-10 flex overflow-hidden" style={{ backgroundColor: "#F1F5F9" }}>
+                              {segments.map(seg => {
+                                const pct = (seg.value / total) * 100;
+                                return (
+                                  <div key={seg.key} className="h-full flex items-center justify-center transition-all duration-700 relative"
+                                    title={`${seg.label}: ${seg.value}通`}
+                                    style={{ width: `${pct}%`, backgroundColor: seg.color, minWidth: pct > 0 ? "2rem" : 0, cursor: "default" }}>
+                                    <span className="text-xs font-bold text-white truncate px-1">
+                                      {pct >= 15 ? `${seg.label} ${seg.value}` : seg.value}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            {segments.some(s => (s.value / total) * 100 < 15) && (
+                              <div className="flex gap-3 mt-1.5 pl-0.5">
+                                {segments.filter(s => (s.value / total) * 100 < 15).map(seg => (
+                                  <div key={seg.key} className="flex items-center gap-1">
+                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: seg.color }} />
+                                    <span className="text-xs font-medium" style={{ color: "#64748B" }}>{seg.label} {seg.value}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         );
                       })()}
