@@ -703,9 +703,12 @@
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(13,27,48,0.25) 0%, rgba(13,27,48,0.5) 60%, rgba(13,27,48,0.95) 100%)" }} />
 
           {/* タイトルロゴ */}
-          <div style={{ position: "absolute", top: 24, left: 0, right: 0, textAlign: "center" }}>
-            <div style={{ fontSize: 11, letterSpacing: 4, color: "rgba(255,180,60,0.9)", fontWeight: 700 }}>ATHLETE GATE</div>
-            <div style={{ fontSize: 28, fontWeight: 900, color: "#fff", letterSpacing: -0.5, lineHeight: 1.1, marginTop: 4 }}>Your Gateway to<br/>U.S. College Baseball</div>
+          <div style={{ position: "absolute", top: "15%", left: 0, right: 0, textAlign: "center", padding: "0 16px" }}>
+            <div style={{ fontSize: "clamp(16px, 4vw, 22px)", letterSpacing: "clamp(6px, 2vw, 14px)", color: "rgba(255,190,60,0.95)", fontWeight: 800, textTransform: "uppercase", marginBottom: 12 }}>ATHLETE GATE</div>
+            <div style={{ fontSize: "clamp(36px, 9vw, 64px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.02em", lineHeight: 1.05, marginTop: 0, textShadow: "0 4px 24px rgba(0,0,0,0.6)" }}>
+              Your Gateway to<br/>
+              <span style={{ background: "linear-gradient(90deg, #FFB83C, #FF8C00)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>U.S. College Baseball</span>
+            </div>
           </div>
 
           {/* ドットナビ */}
