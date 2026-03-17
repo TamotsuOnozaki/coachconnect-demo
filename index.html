@@ -939,41 +939,38 @@
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-5">
                 <DiamondIcon size={22} />
-                <h2 className="font-bold text-xl tracking-wide" style={{ color: textColor }}>あなたの配信実績</h2>
+                <h2 className="font-bold text-xl tracking-wide" style={{ color: textColor }}>AthleteGate の実力</h2>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                <ScoreboardNumber label="配信先" value={totalCoaches} sub="校" iconType="school" highlight />
-                <ScoreboardNumber label="コーチ数" value={676} sub="名" iconType="users" />
-                <ScoreboardNumber label="配信済" value={144} sub="通" iconType="send" />
-                <ScoreboardNumber label="開封済" value={89} sub="件" iconType="eye" />
-                <ScoreboardNumber label="反応" value={42} sub="件" iconType="reply" highlight />
+                <ScoreboardNumber label="登録大学" value={300} sub="校" iconType="school" highlight />
+                <ScoreboardNumber label="登録コーチ" value={700} sub="人" iconType="users" />
+                <ScoreboardNumber label="カテゴリ" value={5} sub="種" iconType="send" />
+                <ScoreboardNumber label="利用者数" value={120} sub="人" iconType="eye" />
+                <ScoreboardNumber label="成約率" value={87} sub="%" iconType="reply" highlight />
               </div>
             </div>
 
             {/* ===== ステータス分布（横棒グラフ風） ===== */}
             <div className="bg-white rounded-2xl border p-6 mb-6 shadow-sm">
-              <h3 className="text-base font-bold mb-5 flex items-center gap-2" style={{ color: THEME.navy }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={THEME.dirt} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg> ステータス分布（全676コーチ）</h3>
+              <h3 className="text-base font-bold mb-5 flex items-center gap-2" style={{ color: THEME.navy }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={THEME.dirt} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg> プラットフォーム全体パフォーマンス</h3>
               <div className="space-y-3">
                 {[
-                  { label: "EMAIL_CLICKED", count: 242, color: "#F97316" },
-                  { label: "BOUNCED", count: 150, color: "#EF4444" },
-                  { label: "EMAIL_SENT", count: 144, color: "#10B981" },
-                  { label: "SCHEDULED", count: 98, color: "#3B82F6" },
-                  { label: "EMAIL_OPENED", count: 28, color: "#8B5CF6" },
-                  { label: "RESPONDED", count: 14, color: "#14B8A6" },
+                  { label: "開封率", pct: 68, color: "#10B981" },
+                  { label: "クリック率", pct: 42, color: "#F97316" },
+                  { label: "返信率", pct: 18, color: "#8B5CF6" },
+                  { label: "成約率", pct: 12, color: "#14B8A6" },
+                  { label: "バウンス率", pct: 5, color: "#EF4444" },
                 ].map(s => {
-                  const pct = Math.round((s.count / 676) * 100);
                   return (
                     <div key={s.label} className="flex items-center gap-3">
                       <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color }}></div>
-                      <div className="w-20 text-sm font-medium text-gray-700">{STATUS_NAMES_JA[s.label]}</div>
+                      <div className="w-20 text-sm font-medium text-gray-700">{s.label}</div>
                       <div className="flex-1 relative h-9 rounded-lg" style={{ backgroundColor: s.color + "12" }}>
-                        <div className="absolute inset-y-0 left-0 rounded-lg transition-all duration-1000 flex items-center justify-start pl-2" style={{ width: `${Math.max(pct, 3)}%`, backgroundColor: s.color }} />
-                        <div className="absolute inset-0 flex items-center pl-3">
-                          <span className="text-sm font-extrabold" style={{ color: pct > 15 ? "#fff" : s.color }}>{s.count}</span>
+                        <div className="absolute inset-y-0 left-0 rounded-lg transition-all duration-1000 flex items-center justify-end pr-3" style={{ width: `${Math.max(s.pct, 3)}%`, backgroundColor: s.color }}>
+                          <span className="text-sm font-extrabold text-white">{s.pct}%</span>
                         </div>
                       </div>
-                      <div className="w-12 text-right text-sm font-bold" style={{ color: s.color }}>{pct}%</div>
+                      <div className="w-12 text-right text-sm font-bold" style={{ color: s.color }}>{s.pct}%</div>
                     </div>
                   );
                 })}
