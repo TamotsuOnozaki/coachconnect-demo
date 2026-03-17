@@ -18,7 +18,7 @@
   <!-- Recharts UMD -->
   <script src="https://unpkg.com/recharts@2/dist/Recharts.js"></script>
 </head>
-<body>
+<body style="font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif; font-size: 16px; line-height: 1.8;">
   <div id="root"></div>
 
   <script type="text/babel">
@@ -903,32 +903,44 @@
                 </div>
 
                 {/* なぜコーチへのアプローチが重要か */}
-                <div style={{ background:"linear-gradient(135deg, #FFF7ED, #FEF3C7)", borderRadius:12, padding:"20px 22px", marginBottom:20, borderLeft:`5px solid ${THEME.dirt}`, display:"flex", gap:20, alignItems:"center" }}>
-                  <div style={{ flex:1 }}>
-                    <div style={{ fontSize:17, fontWeight:800, color:THEME.navy, marginBottom:10 }}>なぜコーチへの直接アプローチが重要？</div>
-                    <div style={{ fontSize:14, color:"#475569", lineHeight:2.0 }}>
+                <div style={{ background:`linear-gradient(135deg, ${THEME.navy}, ${THEME.navyLight})`, borderRadius:16, padding:"28px 28px", marginBottom:24, display:"flex", gap:24, alignItems:"center", position:"relative", overflow:"hidden", boxShadow:"0 8px 32px rgba(27,42,74,0.25)" }}>
+                  <div style={{ position:"absolute", top:-40, right:-40, width:160, height:160, borderRadius:"50%", background:"rgba(196,129,61,0.1)" }} />
+                  <div style={{ position:"absolute", bottom:-60, left:-30, width:200, height:200, borderRadius:"50%", background:"rgba(255,255,255,0.03)" }} />
+                  <div style={{ flex:1, position:"relative", zIndex:1 }}>
+                    <div style={{ fontSize:11, fontWeight:700, color:THEME.dirt, letterSpacing:2, textTransform:"uppercase", marginBottom:8 }}>WHY DIRECT APPROACH?</div>
+                    <div style={{ fontSize:20, fontWeight:800, color:"#fff", marginBottom:12, lineHeight:1.5 }}>なぜコーチへの直接アプローチが重要？</div>
+                    <div style={{ fontSize:14, color:"rgba(255,255,255,0.8)", lineHeight:2.0 }}>
                       アメリカの大学野球は「入試」ではなく「スカウト」。コーチが「このチームに欲しい」と思わなければ始まりません。自分のレベルに合う大学を見つけ、監督に直接アピールすることが入部への最短ルートです。
                     </div>
                   </div>
-                  <div style={{ width:120, height:120, borderRadius:12, overflow:"hidden", flexShrink:0 }}>
+                  <div style={{ width:110, height:110, borderRadius:16, overflow:"hidden", flexShrink:0, border:"3px solid rgba(196,129,61,0.5)", boxShadow:"0 4px 20px rgba(0,0,0,0.3)", position:"relative", zIndex:1 }}>
                     <img src="data:image/jpeg;base64,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" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                   </div>
                 </div>
 
                 {/* AthleteGateができること */}
-                <div style={{ fontSize:17, fontWeight:800, color:THEME.navy, marginBottom:12 }}>AthleteGate でできること</div>
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:20 }}>
+                <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
+                  <div style={{ width:4, height:24, background:`linear-gradient(180deg, ${THEME.dirt}, ${THEME.dirtLight})`, borderRadius:2 }} />
+                  <div style={{ fontSize:18, fontWeight:800, color:THEME.navy, letterSpacing:0.5 }}>AthleteGate でできること</div>
+                </div>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:24 }}>
                   {[
-                    { title:"コーチDB", desc:"D1〜NAIAまで676名以上の監督に直接コンタクト", color:"#3B82F6" },
-                    { title:"大学マッチング", desc:"気候・立地・奨学金・ロースター構成で最適校を絞り込み", color:"#10B981" },
-                    { title:"英文メール自動生成", desc:"AIが効果的なアピールメールを英語で作成", color:"#F59E0B" },
-                    { title:"反応トラッキング", desc:"開封・返信状況をリアルタイムで追跡", color:"#8B5CF6" },
-                    { title:"戦略コンサル", desc:"どんなメッセージでコーチの興味を引けるかをアドバイス", color:"#EF4444" },
-                    { title:"段階的アプローチ", desc:"コミカレで実績→D1へ。ステップアップ戦略もサポート", color:"#06B6D4" },
+                    { title:"コーチDB", desc:"D1〜NAIAまで676名以上の監督に直接コンタクト", color:"#3B82F6", icon:"M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" },
+                    { title:"大学マッチング", desc:"気候・立地・奨学金・ロースター構成で最適校を絞り込み", color:"#10B981", icon:"M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" },
+                    { title:"英文メール自動生成", desc:"AIが効果的なアピールメールを英語で作成", color:"#F59E0B", icon:"M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" },
+                    { title:"反応トラッキング", desc:"開封・返信状況をリアルタイムで追跡", color:"#8B5CF6", icon:"M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+                    { title:"戦略コンサル", desc:"どんなメッセージでコーチの興味を引けるかをアドバイス", color:"#EF4444", icon:"M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" },
+                    { title:"段階的アプローチ", desc:"コミカレで実績→D1へ。ステップアップ戦略もサポート", color:"#06B6D4", icon:"M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
                   ].map((item, i) => (
-                    <div key={i} style={{ background:"#fff", borderRadius:12, padding:"16px 18px", border:"1px solid #E2E8F0", borderTop:`3px solid ${item.color}` }}>
-                      <div style={{ fontSize:15, fontWeight:800, color:THEME.navy, marginBottom:6 }}>{item.title}</div>
-                      <div style={{ fontSize:13, color:"#64748B", lineHeight:1.8 }}>{item.desc}</div>
+                    <div key={i} style={{ background:"#fff", borderRadius:14, padding:"20px 20px", border:"1px solid #E2E8F0", boxShadow:"0 2px 12px rgba(0,0,0,0.04)", position:"relative", overflow:"hidden" }}>
+                      <div style={{ position:"absolute", top:0, left:0, right:0, height:3, background:`linear-gradient(90deg, ${item.color}, ${item.color}88)` }} />
+                      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:8 }}>
+                        <div style={{ width:36, height:36, borderRadius:10, background:`${item.color}12`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={item.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={item.icon} /></svg>
+                        </div>
+                        <div style={{ fontSize:15, fontWeight:800, color:THEME.navy }}>{item.title}</div>
+                      </div>
+                      <div style={{ fontSize:13, color:"#64748B", lineHeight:1.8, paddingLeft:46 }}>{item.desc}</div>
                     </div>
                   ))}
                 </div>
@@ -962,11 +974,25 @@
                 <h2 className="font-bold text-xl tracking-wide" style={{ color: textColor }}>AthleteGate の実力</h2>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                <ScoreboardNumber label="登録大学" value={300} sub="校" iconType="school" highlight />
+                <ScoreboardNumber label="登録大学" value={1396} sub="校" iconType="school" highlight />
                 <ScoreboardNumber label="登録コーチ" value={700} sub="人" iconType="users" />
                 <ScoreboardNumber label="カテゴリ" value={5} sub="種" iconType="send" />
                 <ScoreboardNumber label="利用者数" value={120} sub="人" iconType="eye" />
                 <ScoreboardNumber label="オファー率" value={1.5} sub="%" iconType="reply" highlight />
+              </div>
+              {/* データベース収録状況（カード直下） */}
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mt-4">
+                {Object.entries(LEVEL_STATS).map(([level, info]) => (
+                  <div key={level} className="text-center rounded-xl p-3 sm:p-5 transition-transform hover:scale-105" style={{
+                    background: `linear-gradient(135deg, ${info.color}15, ${info.color}08)`,
+                    border: `2px solid ${info.color}30`,
+                  }}>
+                    <div className="text-sm font-bold tracking-wider uppercase mb-1" style={{ color: info.color + "99" }}>{info.desc.split(" ")[0]}</div>
+                    <div className="text-lg sm:text-xl font-black" style={{ color: info.color }}>{level}</div>
+                    <div className="text-3xl sm:text-4xl font-black my-1" style={{ color: info.color }}>{info.schools}</div>
+                    <div className="text-base font-medium text-gray-500">校</div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -1022,23 +1048,6 @@
               );
             })()}
 
-            {/* ===== データベース収録状況 ===== */}
-            <div className="bg-white rounded-2xl border p-6 mb-6 shadow-sm">
-              <h3 className="text-base font-bold mb-4 flex items-center gap-2" style={{ color: THEME.navy }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={THEME.dirt} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" /><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" /></svg> データベース収録状況</h3>
-              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                {Object.entries(LEVEL_STATS).map(([level, info]) => (
-                  <div key={level} className="text-center rounded-xl p-2 sm:p-4 transition-transform hover:scale-105" style={{
-                    background: `linear-gradient(135deg, ${info.color}15, ${info.color}08)`,
-                    border: `2px solid ${info.color}30`,
-                  }}>
-                    <div className="text-xs font-bold tracking-wider uppercase mb-1" style={{ color: info.color + "99" }}>{info.desc.split(" ")[0]}</div>
-                    <div className="text-sm sm:text-lg font-black" style={{ color: info.color }}>{level}</div>
-                    <div className="text-2xl sm:text-3xl font-black my-1" style={{ color: info.color }}>{info.schools}</div>
-                    <div className="text-sm font-medium text-gray-500">校</div>
-                  </div>
-                ))}
-              </div>
-            </div>
 
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold" style={{ color: THEME.navy }}>My配信プラン</h2>
