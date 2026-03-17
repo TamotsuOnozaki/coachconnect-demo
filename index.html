@@ -593,14 +593,37 @@
       return <span style={bgOverride} className={`px-2 py-1 rounded-full text-xs font-medium ${colors[color]}`}>{children}</span>;
     };
 
-    const Nav = ({ right, onNavigate }) => (
+    const AGLogo = ({ size = 40 }) => (
+      <svg width={size} height={size} viewBox="0 0 80 80" fill="none">
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="80" y2="80">
+            <stop offset="0%" stopColor="#FFB83C" />
+            <stop offset="100%" stopColor="#E87A00" />
+          </linearGradient>
+        </defs>
+        <rect width="80" height="80" rx="18" fill={THEME.navy} />
+        <rect x="3" y="3" width="74" height="74" rx="15" fill="none" stroke="url(#logoGrad)" strokeWidth="2.5" />
+        <text x="40" y="36" textAnchor="middle" fontSize="28" fontWeight="900" fill="url(#logoGrad)" fontFamily="Arial, sans-serif">AG</text>
+        <text x="40" y="56" textAnchor="middle" fontSize="10" fontWeight="700" fill="rgba(255,255,255,0.7)" letterSpacing="3" fontFamily="Arial, sans-serif">BASEBALL</text>
+        <circle cx="40" cy="67" r="2" fill="#FFB83C" opacity="0.6" />
+      </svg>
+    );
+
+    const Nav = ({ right, onNavigate, showBack }) => (
       <nav style={{ backgroundColor: THEME.navy }}>
         <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate && onNavigate("dashboard")}>
-            <span className="text-2xl">⚾</span>
-            <div>
-              <span className="font-bold text-xl text-white tracking-wide">AthleteGate</span>
-              <span className="text-xs ml-2" style={{ color: THEME.dirtLight }}>BASEBALL</span>
+          <div className="flex items-center gap-4">
+            {showBack && (
+              <button onClick={() => onNavigate && onNavigate("dashboard")} style={{ background:"rgba(255,255,255,0.1)", border:"1px solid rgba(255,255,255,0.2)", borderRadius:8, padding:"6px 14px", color:"#fff", fontSize:14, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
+                <span style={{ fontSize:18 }}>&larr;</span> 戻る
+              </button>
+            )}
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate && onNavigate("dashboard")}>
+              <AGLogo size={44} />
+              <div>
+                <span className="font-bold text-2xl text-white tracking-wide">AthleteGate</span>
+                <span className="text-sm ml-2" style={{ color: THEME.dirtLight }}>BASEBALL</span>
+              </div>
             </div>
           </div>
           <div className="text-sm" style={{ color: THEME.dirtLight }}>{right}</div>
@@ -825,10 +848,10 @@
           <nav style={{ backgroundColor: darkMode ? "#161b22" : THEME.navy, borderBottom: darkMode ? "1px solid #30363d" : "none" }}>
             <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
               <div className="flex items-center gap-3">
-                <span className="text-2xl">⚾</span>
+                <AGLogo size={44} />
                 <div>
-                  <span className="font-bold text-xl text-white tracking-wide">AthleteGate</span>
-                  <span className="text-xs ml-2" style={{ color: THEME.dirtLight }}>BASEBALL</span>
+                  <span className="font-bold text-2xl text-white tracking-wide">AthleteGate</span>
+                  <span className="text-sm ml-2" style={{ color: THEME.dirtLight }}>BASEBALL</span>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-4">
@@ -897,7 +920,7 @@
                     <div key={i} style={{ background:`linear-gradient(135deg, ${THEME.navy}, ${THEME.navyLight})`, borderRadius:12, padding:"18px 16px", textAlign:"center" }}>
                       <div style={{ fontSize:28, fontWeight:900, color:THEME.dirt, lineHeight:1 }}>{item.num}</div>
                       <div style={{ fontSize:15, fontWeight:800, color:"#fff", marginTop:6, marginBottom:6 }}>{item.title}</div>
-                      <div style={{ fontSize:13, color:"rgba(255,255,255,0.75)", lineHeight:1.6 }}>{item.desc}</div>
+                      <div style={{ fontSize:16, color:"rgba(255,255,255,0.85)", lineHeight:1.7 }}>{item.desc}</div>
                     </div>
                   ))}
                 </div>
@@ -907,9 +930,9 @@
                   <div style={{ position:"absolute", top:-40, right:-40, width:160, height:160, borderRadius:"50%", background:"rgba(196,129,61,0.1)" }} />
                   <div style={{ position:"absolute", bottom:-60, left:-30, width:200, height:200, borderRadius:"50%", background:"rgba(255,255,255,0.03)" }} />
                   <div style={{ flex:1, position:"relative", zIndex:1 }}>
-                    <div style={{ fontSize:11, fontWeight:700, color:THEME.dirt, letterSpacing:2, textTransform:"uppercase", marginBottom:8 }}>WHY DIRECT APPROACH?</div>
-                    <div style={{ fontSize:20, fontWeight:800, color:"#fff", marginBottom:12, lineHeight:1.5 }}>なぜコーチへの直接アプローチが重要？</div>
-                    <div style={{ fontSize:14, color:"rgba(255,255,255,0.8)", lineHeight:2.0 }}>
+                    <div style={{ fontSize:13, fontWeight:700, color:THEME.dirt, letterSpacing:2, textTransform:"uppercase", marginBottom:8 }}>WHY DIRECT APPROACH?</div>
+                    <div style={{ fontSize:24, fontWeight:800, color:"#fff", marginBottom:14, lineHeight:1.5 }}>なぜコーチへの直接アプローチが重要？</div>
+                    <div style={{ fontSize:17, color:"rgba(255,255,255,0.85)", lineHeight:2.0 }}>
                       アメリカの大学野球は「入試」ではなく「スカウト」。コーチが「このチームに欲しい」と思わなければ始まりません。自分のレベルに合う大学を見つけ、監督に直接アピールすることが入部への最短ルートです。
                     </div>
                   </div>
@@ -938,17 +961,20 @@
                         <div style={{ width:36, height:36, borderRadius:10, background:`${item.color}12`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={item.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={item.icon} /></svg>
                         </div>
-                        <div style={{ fontSize:15, fontWeight:800, color:THEME.navy }}>{item.title}</div>
+                        <div style={{ fontSize:17, fontWeight:800, color:THEME.navy }}>{item.title}</div>
                       </div>
-                      <div style={{ fontSize:13, color:"#64748B", lineHeight:1.8, paddingLeft:46 }}>{item.desc}</div>
+                      <div style={{ fontSize:15, color:"#64748B", lineHeight:1.8, paddingLeft:46 }}>{item.desc}</div>
                     </div>
                   ))}
                 </div>
 
                 {/* こんな人にオススメ */}
-                <div style={{ background:`linear-gradient(135deg, ${THEME.navy}, ${THEME.navyLight})`, borderRadius:12, padding:"20px 22px" }}>
-                  <div style={{ fontSize:16, fontWeight:800, color:"#FFB83C", marginBottom:12 }}>こんな悩みをお持ちの方へ</div>
-                  <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
+                <div style={{ background:`linear-gradient(135deg, ${THEME.navy}, ${THEME.navyLight})`, borderRadius:16, padding:"28px 26px", position:"relative", overflow:"hidden", boxShadow:"0 8px 32px rgba(27,42,74,0.2)" }}>
+                  <div style={{ position:"absolute", top:-30, right:-30, width:120, height:120, borderRadius:"50%", background:"rgba(255,184,60,0.08)" }} />
+                  <div style={{ position:"absolute", bottom:-50, left:-20, width:180, height:180, borderRadius:"50%", background:"rgba(255,255,255,0.02)" }} />
+                  <div style={{ fontSize:13, fontWeight:700, color:THEME.dirt, letterSpacing:2, textTransform:"uppercase", marginBottom:6, position:"relative", zIndex:1 }}>PAIN POINTS</div>
+                  <div style={{ fontSize:22, fontWeight:800, color:"#fff", marginBottom:16, position:"relative", zIndex:1 }}>こんな悩みをお持ちの方へ</div>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:10, position:"relative", zIndex:1 }}>
                     {[
                       "編入先・進学先が見つからない",
                       "野球の成績が目立たない",
@@ -957,10 +983,10 @@
                       "どの大学に連絡すればいいか分からない",
                       "英語でのアピールが苦手",
                     ].map((t, i) => (
-                      <span key={i} style={{ fontSize:13, color:"#fff", background:"rgba(255,255,255,0.1)", borderRadius:24, padding:"7px 16px", border:"1px solid rgba(255,255,255,0.25)", fontWeight:600 }}>{t}</span>
+                      <span key={i} style={{ fontSize:15, color:"#fff", background:"rgba(255,255,255,0.08)", backdropFilter:"blur(8px)", borderRadius:28, padding:"9px 18px", border:"1px solid rgba(255,255,255,0.15)", fontWeight:600 }}>{t}</span>
                     ))}
                   </div>
-                  <div style={{ fontSize:14, color:"rgba(255,255,255,0.9)", lineHeight:1.9, marginTop:14 }}>
+                  <div style={{ fontSize:17, color:"rgba(255,255,255,0.9)", lineHeight:1.9, marginTop:18, position:"relative", zIndex:1, borderTop:"1px solid rgba(255,255,255,0.1)", paddingTop:16 }}>
                     AthleteGate なら、あなたの条件に合った大学を見つけ、コーチへの効果的なアプローチまで一気通貫でサポートします。
                   </div>
                 </div>
@@ -1643,7 +1669,7 @@
       return (
         <>
         <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
-          <Nav right="Step 1 / 5 — ターゲット設定" onNavigate={onNavigate} />
+          <Nav right="Step 1 / 5 — ターゲット設定" onNavigate={onNavigate} showBack />
           <div className="max-w-6xl mx-auto px-4 py-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
@@ -1792,7 +1818,7 @@
 
       return (
         <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
-          <Nav right="Step 2 / 5 — 対象確認" onNavigate={onNavigate} />
+          <Nav right="Step 2 / 5 — 対象確認" onNavigate={onNavigate} showBack />
 
           {/* ===== ヒーローバナー ===== */}
           <div style={{ background: `linear-gradient(135deg, ${THEME.navy} 0%, ${THEME.navyLight} 100%)`, padding: "28px 20px 24px", textAlign: "center" }}>
@@ -2024,7 +2050,7 @@
       if (step === "overview") {
         return (
           <div className="min-h-screen" style={{ backgroundColor: chalk }}>
-            <Nav right="Step 3 / 5 — メール作成" onNavigate={onNavigate} />
+            <Nav right="Step 3 / 5 — メール作成" onNavigate={onNavigate} showBack />
             <div style={{ maxWidth: 640, margin: "0 auto", padding: "16px 16px 80px" }}>
 
               <div style={{ background: "white", borderRadius: 14, border: "1px solid #E5E7EB", padding: "18px", marginBottom: 14 }}>
@@ -2093,7 +2119,7 @@
       if (step === "chat") {
         return (
           <div style={{ display: "flex", flexDirection: "column", height: "100vh", backgroundColor: chalk }}>
-            <Nav right="Step 3 / 5 — メール作成" onNavigate={onNavigate} />
+            <Nav right="Step 3 / 5 — メール作成" onNavigate={onNavigate} showBack />
 
             <div style={{ background: navy, padding: "8px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div style={{ color: "white", fontSize: 12, fontWeight: 700 }}>
@@ -2178,7 +2204,7 @@
       // ===== STEP: 翻訳 =====
       return (
         <div className="min-h-screen" style={{ backgroundColor: chalk }}>
-          <Nav right="Step 3 / 5 — 英語翻訳" onNavigate={onNavigate} />
+          <Nav right="Step 3 / 5 — 英語翻訳" onNavigate={onNavigate} showBack />
           <div style={{ maxWidth: 640, margin: "0 auto", padding: "16px 16px 80px" }}>
 
             {translating ? (
@@ -2240,7 +2266,7 @@
 
       return (
         <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
-          <Nav right="Step 4 / 5 — スケジュール設定" onNavigate={onNavigate} />
+          <Nav right="Step 4 / 5 — スケジュール設定" onNavigate={onNavigate} showBack />
           <div className="max-w-6xl mx-auto px-4 py-8">
             <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-sm border p-8">
               <h2 className="text-2xl font-bold mb-6" style={{ color: THEME.navy }}>配信日時を設定</h2>
@@ -2302,7 +2328,7 @@
 
       return (
         <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
-          <Nav right="Step 5 / 5 — 支払い確認" onNavigate={onNavigate} />
+          <Nav right="Step 5 / 5 — 支払い確認" onNavigate={onNavigate} showBack />
           <div className="max-w-6xl mx-auto px-4 py-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
@@ -2389,7 +2415,7 @@
 
       return (
         <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
-          <Nav right="" onNavigate={onNavigate} />
+          <Nav right="" onNavigate={onNavigate} showBack />
           <div className="max-w-6xl mx-auto px-4 py-8">
             <button onClick={() => onNavigate("dashboard")} className="mb-6 px-4 py-2 rounded-lg border hover:bg-gray-50 font-medium">← 戻る</button>
 
@@ -2453,7 +2479,7 @@
     const DBManage = ({ onNavigate }) => {
       return (
         <div className="min-h-screen" style={{ backgroundColor: THEME.chalk }}>
-          <Nav right="" onNavigate={onNavigate} />
+          <Nav right="" onNavigate={onNavigate} showBack />
           <div className="max-w-6xl mx-auto px-4 py-8">
             <button onClick={() => onNavigate("dashboard")} className="mb-6 px-4 py-2 rounded-lg border hover:bg-gray-50 font-medium">← ダッシュボードに戻る</button>
 
@@ -2844,10 +2870,27 @@
         setThemeId(id);
       };
 
-      const onNavigate = (screen) => setCurrentScreen(screen);
+      const onNavigate = (screen) => { setCurrentScreen(screen); window.scrollTo({ top: 0, behavior: "smooth" }); };
+
+      const ScrollToTop = () => {
+        const [show, setShow] = useState(false);
+        useEffect(() => {
+          const onScroll = () => setShow(window.scrollY > 300);
+          window.addEventListener("scroll", onScroll);
+          return () => window.removeEventListener("scroll", onScroll);
+        }, []);
+        if (!show) return null;
+        return (
+          <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            style={{ position:"fixed", bottom:24, right:24, width:48, height:48, borderRadius:12, background:THEME.navy, border:`2px solid ${THEME.dirt}`, cursor:"pointer", boxShadow:"0 4px 16px rgba(0,0,0,0.3)", zIndex:100, display:"flex", alignItems:"center", justifyContent:"center", transition:"opacity 0.3s" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFB83C" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15" /></svg>
+          </button>
+        );
+      };
 
       return (
         <>
+          <ScrollToTop />
           {currentScreen === "login" && <LoginScreen onNavigate={onNavigate} />}
           {currentScreen === "dashboard" && <Dashboard onNavigate={onNavigate} themeId={themeId} changeTheme={changeTheme} darkMode={darkMode} setDarkMode={setDarkMode} qaOpen={qaOpen} setQaOpen={setQaOpen} />}
           {currentScreen === "target" && <TargetSetup onNavigate={onNavigate} planState={planState} setPlanState={setPlanState} />}
