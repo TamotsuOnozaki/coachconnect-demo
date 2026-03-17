@@ -611,17 +611,20 @@
 
     const AnimatedNumber = ({ target, duration = 1200 }) => {
       const [val, setVal] = useState(0);
+      const isDecimal = target % 1 !== 0;
       useEffect(() => {
-        let start = 0;
-        const step = Math.max(1, Math.floor(target / (duration / 16)));
-        const timer = setInterval(() => {
-          start += step;
-          if (start >= target) { setVal(target); clearInterval(timer); }
-          else setVal(start);
-        }, 16);
-        return () => clearInterval(timer);
+        const startTime = performance.now();
+        const tick = (now) => {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = eased * target;
+          setVal(isDecimal ? parseFloat(current.toFixed(1)) : Math.round(current));
+          if (progress < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
       }, [target, duration]);
-      return <span>{val.toLocaleString()}</span>;
+      return <span>{isDecimal ? val.toFixed(1) : val.toLocaleString()}</span>;
     };
 
     // SVGラインアイコン（プロフェッショナル仕様）
@@ -960,17 +963,35 @@
                   { label: "返信率", pct: 6, color: "#8B5CF6" },
                   { label: "オファー率", pct: 1.5, color: "#14B8A6" },
                   { label: "配信エラー率", pct: 5, color: "#EF4444" },
-                ].map(s => {
+                ].map((s, idx) => {
+                  const [barWidth, setBarWidth] = useState(0);
+                  const [displayPct, setDisplayPct] = useState(0);
+                  useEffect(() => {
+                    const delay = setTimeout(() => {
+                      const startTime = performance.now();
+                      const duration = 1500;
+                      const tick = (now) => {
+                        const elapsed = now - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        setBarWidth(eased * s.pct);
+                        setDisplayPct(s.pct % 1 !== 0 ? parseFloat((eased * s.pct).toFixed(1)) : Math.round(eased * s.pct));
+                        if (progress < 1) requestAnimationFrame(tick);
+                      };
+                      requestAnimationFrame(tick);
+                    }, idx * 200);
+                    return () => clearTimeout(delay);
+                  }, []);
                   return (
                     <div key={s.label} className="flex items-center gap-3">
                       <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color }}></div>
-                      <div className="w-20 text-sm font-medium text-gray-700">{s.label}</div>
+                      <div className="w-24 text-sm font-medium text-gray-700">{s.label}</div>
                       <div className="flex-1 relative h-9 rounded-lg" style={{ backgroundColor: s.color + "12" }}>
-                        <div className="absolute inset-y-0 left-0 rounded-lg transition-all duration-1000 flex items-center justify-end pr-3" style={{ width: `${Math.max(s.pct, 3)}%`, backgroundColor: s.color }}>
-                          <span className="text-sm font-extrabold text-white">{s.pct}%</span>
+                        <div className="absolute inset-y-0 left-0 rounded-lg flex items-center justify-end pr-3" style={{ width: `${Math.max(barWidth, 2)}%`, backgroundColor: s.color }}>
+                          {barWidth > 8 && <span className="text-sm font-extrabold text-white">{displayPct}%</span>}
                         </div>
                       </div>
-                      <div className="w-12 text-right text-sm font-bold" style={{ color: s.color }}>{s.pct}%</div>
+                      <div className="w-14 text-right text-sm font-bold" style={{ color: s.color }}>{displayPct}%</div>
                     </div>
                   );
                 })}
