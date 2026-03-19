@@ -1,0 +1,1908 @@
+{
+  "d1": [
+    {
+      "name": "Abilene Christian University",
+      "conf": "WAC",
+      "coaches": 4,
+      "state": "TX"
+    },
+    {
+      "name": "Air Force",
+      "conf": "MW",
+      "coaches": 1,
+      "state": "CO"
+    },
+    {
+      "name": "Akron",
+      "conf": "MAC",
+      "coaches": 1,
+      "state": "OH"
+    },
+    {
+      "name": "Alabama A&M University",
+      "conf": "SEC",
+      "coaches": 1,
+      "state": "AL"
+    },
+    {
+      "name": "Alabama State University",
+      "conf": "SEC",
+      "coaches": 2,
+      "state": "AL"
+    },
+    {
+      "name": "Alcorn State",
+      "conf": "SWAC",
+      "coaches": 1,
+      "state": "MS"
+    },
+    {
+      "name": "Appalachian State University",
+      "conf": "Sun Belt",
+      "coaches": 6,
+      "state": "NC"
+    },
+    {
+      "name": "Arkansas State",
+      "conf": "Sun Belt",
+      "coaches": 1,
+      "state": "AR"
+    },
+    {
+      "name": "Arkansas State University",
+      "conf": "Big 12",
+      "coaches": 1,
+      "state": "AR"
+    },
+    {
+      "name": "Army West Point",
+      "conf": "Patriot",
+      "coaches": 1,
+      "state": "NY"
+    },
+    {
+      "name": "Auburn University",
+      "conf": "SEC",
+      "coaches": 5,
+      "state": "AL"
+    },
+    {
+      "name": "Austin Peay State University",
+      "conf": "ASUN",
+      "coaches": 2,
+      "state": "TN"
+    },
+    {
+      "name": "Ball State University",
+      "conf": "MAC",
+      "coaches": 4,
+      "state": "IN"
+    },
+    {
+      "name": "Baylor University",
+      "conf": "Big 12",
+      "coaches": 4,
+      "state": "TX"
+    },
+    {
+      "name": "Belmont University",
+      "conf": "MVC",
+      "coaches": 2,
+      "state": "TN"
+    },
+    {
+      "name": "Bethune-Cookman University",
+      "conf": "SWAC",
+      "coaches": 3,
+      "state": "FL"
+    },
+    {
+      "name": "Binghamton University",
+      "conf": "America East",
+      "coaches": 4,
+      "state": "NY"
+    },
+    {
+      "name": "Boston College",
+      "conf": "ACC",
+      "coaches": 5,
+      "state": "MA"
+    },
+    {
+      "name": "Bowling Green State University",
+      "conf": "MAC",
+      "coaches": 4,
+      "state": "OH"
+    },
+    {
+      "name": "Bradley University",
+      "conf": "MVC",
+      "coaches": 1,
+      "state": "IL"
+    },
+    {
+      "name": "Brown University",
+      "conf": "Ivy",
+      "coaches": 1,
+      "state": "RI"
+    },
+    {
+      "name": "Bryant University",
+      "conf": "America East",
+      "coaches": 3,
+      "state": "RI"
+    },
+    {
+      "name": "Bucknell University",
+      "conf": "Patriot",
+      "coaches": 2,
+      "state": "PA"
+    },
+    {
+      "name": "Butler University",
+      "conf": "Big East",
+      "coaches": 2,
+      "state": "IN"
+    },
+    {
+      "name": "Cal Poly",
+      "conf": "Big West",
+      "coaches": 6,
+      "state": "CA"
+    },
+    {
+      "name": "Cal State Fullerton",
+      "conf": "Big West",
+      "coaches": 1,
+      "state": "CA"
+    },
+    {
+      "name": "California State University",
+      "conf": "ACC",
+      "coaches": 2,
+      "state": "CA"
+    },
+    {
+      "name": "California State University, Bakersfield",
+      "conf": "ACC",
+      "coaches": 1,
+      "state": "CA"
+    },
+    {
+      "name": "California State University, Fresno",
+      "conf": "ACC",
+      "coaches": 2,
+      "state": "CA"
+    },
+    {
+      "name": "California State University, Fullerton",
+      "conf": "ACC",
+      "coaches": 4,
+      "state": "CA"
+    },
+    {
+      "name": "California State University, Northridge",
+      "conf": "ACC",
+      "coaches": 2,
+      "state": "CA"
+    },
+    {
+      "name": "California State University, Sacramento",
+      "conf": "ACC",
+      "coaches": 1,
+      "state": "CA"
+    },
+    {
+      "name": "Campbell University",
+      "conf": "CAA",
+      "coaches": 4,
+      "state": "NC"
+    },
+    {
+      "name": "Canisius University",
+      "conf": "MAAC",
+      "coaches": 1,
+      "state": "NY"
+    },
+    {
+      "name": "Central Michigan University",
+      "conf": "Big Ten",
+      "coaches": 6,
+      "state": "MI"
+    },
+    {
+      "name": "Charleston Southern University",
+      "conf": "Big South",
+      "coaches": 1,
+      "state": "SC"
+    },
+    {
+      "name": "College of Charleston",
+      "conf": "CAA",
+      "coaches": 1,
+      "state": "SC"
+    },
+    {
+      "name": "College of the Holy Cross",
+      "conf": "Patriot",
+      "coaches": 2,
+      "state": "MA"
+    },
+    {
+      "name": "Columbia University-Barnard College",
+      "conf": "Ivy",
+      "coaches": 2,
+      "state": "NY"
+    },
+    {
+      "name": "Coppin State University",
+      "conf": "NEC (Assoc)",
+      "coaches": 4,
+      "state": "MD"
+    },
+    {
+      "name": "Cornell University",
+      "conf": "Ivy",
+      "coaches": 1,
+      "state": "NY"
+    },
+    {
+      "name": "Creighton University",
+      "conf": "Big East",
+      "coaches": 2,
+      "state": "NE"
+    },
+    {
+      "name": "Dartmouth College",
+      "conf": "Ivy",
+      "coaches": 3,
+      "state": "NH"
+    },
+    {
+      "name": "Davidson College",
+      "conf": "A-10",
+      "coaches": 1,
+      "state": "NC"
+    },
+    {
+      "name": "Dayton",
+      "conf": "A-10",
+      "coaches": 1,
+      "state": "OH"
+    },
+    {
+      "name": "Delaware",
+      "conf": "CUSA",
+      "coaches": 1,
+      "state": "DE"
+    },
+    {
+      "name": "Delaware State",
+      "conf": "NEC (Assoc)",
+      "coaches": 1,
+      "state": "DE"
+    },
+    {
+      "name": "Duke University",
+      "conf": "ACC",
+      "coaches": 1,
+      "state": "NC"
+    },
+    {
+      "name": "East Carolina University",
+      "conf": "AAC",
+      "coaches": 2,
+      "state": "NC"
+    },
+    {
+      "name": "Eastern Illinois",
+      "conf": "OVC",
+      "coaches": 1,
+      "state": "IL"
+    },
+    {
+      "name": "Eastern Illinois University",
+      "conf": "Big Ten",
+      "coaches": 2,
+      "state": "IL"
+    },
+    {
+      "name": "Eastern Michigan University",
+      "conf": "Big Ten",
+      "coaches": 4,
+      "state": "MI"
+    },
+    {
+      "name": "Elon University",
+      "conf": "CAA",
+      "coaches": 2,
+      "state": "NC"
+    },
+    {
+      "name": "ETSU",
+      "conf": "SoCon",
+      "coaches": 1,
+      "state": "TN"
+    },
+    {
+      "name": "Fairfield University",
+      "conf": "MAAC",
+      "coaches": 1,
+      "state": "CT"
+    },
+    {
+      "name": "Fairleigh Dickinson University",
+      "conf": "NEC",
+      "coaches": 1,
+      "state": "NJ"
+    },
+    {
+      "name": "Fairleigh Dickinson University, Metropolitan Campus",
+      "conf": "NEC",
+      "coaches": 2,
+      "state": "NJ"
+    },
+    {
+      "name": "Florida A&M University",
+      "conf": "SEC",
+      "coaches": 2,
+      "state": "FL"
+    },
+    {
+      "name": "Florida Atlantic University",
+      "conf": "AAC",
+      "coaches": 3,
+      "state": "FL"
+    },
+    {
+      "name": "Florida State University",
+      "conf": "ACC",
+      "coaches": 2,
+      "state": "FL"
+    },
+    {
+      "name": "Fordham University",
+      "conf": "A-10",
+      "coaches": 2,
+      "state": "NY"
+    },
+    {
+      "name": "Gardner-Webb University",
+      "conf": "Big South",
+      "coaches": 5,
+      "state": "NC"
+    },
+    {
+      "name": "George Mason University",
+      "conf": "A-10",
+      "coaches": 6,
+      "state": "VA"
+    },
+    {
+      "name": "George Washington University",
+      "conf": "A-10",
+      "coaches": 2,
+      "state": "DC"
+    },
+    {
+      "name": "Georgetown University",
+      "conf": "Big East",
+      "coaches": 4,
+      "state": "DC"
+    },
+    {
+      "name": "Georgia Southern University",
+      "conf": "SEC",
+      "coaches": 5,
+      "state": "GA"
+    },
+    {
+      "name": "Georgia State",
+      "conf": "Sun Belt",
+      "coaches": 1,
+      "state": "GA"
+    },
+    {
+      "name": "Georgia State University",
+      "conf": "SEC",
+      "coaches": 1,
+      "state": "GA"
+    },
+    {
+      "name": "Gonzaga University",
+      "conf": "WCC",
+      "coaches": 4,
+      "state": "WA"
+    },
+    {
+      "name": "Grambling State University",
+      "conf": "SWAC",
+      "coaches": 1,
+      "state": "LA"
+    },
+    {
+      "name": "Grand Canyon University",
+      "conf": "WAC",
+      "coaches": 2,
+      "state": "AZ"
+    },
+    {
+      "name": "Harvard University",
+      "conf": "Ivy",
+      "coaches": 4,
+      "state": "MA"
+    },
+    {
+      "name": "High Point University",
+      "conf": "Big South",
+      "coaches": 5,
+      "state": "NC"
+    },
+    {
+      "name": "Hofstra University",
+      "conf": "CAA",
+      "coaches": 2,
+      "state": "NY"
+    },
+    {
+      "name": "Houston Christian University",
+      "conf": "Big 12",
+      "coaches": 2,
+      "state": "TX"
+    },
+    {
+      "name": "Indiana State University",
+      "conf": "Big Ten",
+      "coaches": 4,
+      "state": "IN"
+    },
+    {
+      "name": "Jackson State University",
+      "conf": "SWAC",
+      "coaches": 1,
+      "state": "MS"
+    },
+    {
+      "name": "Jacksonville State University",
+      "conf": "ASUN",
+      "coaches": 2,
+      "state": "AL"
+    },
+    {
+      "name": "Jacksonville University",
+      "conf": "ASUN",
+      "coaches": 2,
+      "state": "FL"
+    },
+    {
+      "name": "James Madison University",
+      "conf": "Sun Belt",
+      "coaches": 5,
+      "state": "VA"
+    },
+    {
+      "name": "Kennesaw State University",
+      "conf": "CUSA",
+      "coaches": 3,
+      "state": "GA"
+    },
+    {
+      "name": "Kent State University",
+      "conf": "MAC",
+      "coaches": 3,
+      "state": "OH"
+    },
+    {
+      "name": "Lafayette College",
+      "conf": "Patriot",
+      "coaches": 3,
+      "state": "PA"
+    },
+    {
+      "name": "Lamar University",
+      "conf": "Southland",
+      "coaches": 2,
+      "state": "TX"
+    },
+    {
+      "name": "Le Moyne",
+      "conf": "NEC",
+      "coaches": 1,
+      "state": "NY"
+    },
+    {
+      "name": "Lehigh University",
+      "conf": "Patriot",
+      "coaches": 3,
+      "state": "PA"
+    },
+    {
+      "name": "Liberty University",
+      "conf": "CUSA",
+      "coaches": 1,
+      "state": "VA"
+    },
+    {
+      "name": "Lindenwood",
+      "conf": "OVC",
+      "coaches": 1,
+      "state": "MO"
+    },
+    {
+      "name": "Lipscomb University",
+      "conf": "ASUN",
+      "coaches": 3,
+      "state": "TN"
+    },
+    {
+      "name": "Long Beach State",
+      "conf": "Big West",
+      "coaches": 1,
+      "state": "CA"
+    },
+    {
+      "name": "Long Island University",
+      "conf": "NEC",
+      "coaches": 3,
+      "state": "NY"
+    },
+    {
+      "name": "Longwood University",
+      "conf": "Big South",
+      "coaches": 1,
+      "state": "VA"
+    },
+    {
+      "name": "Loyola Marymount University",
+      "conf": "WCC",
+      "coaches": 1,
+      "state": "CA"
+    },
+    {
+      "name": "Manhattan College",
+      "conf": "MAAC",
+      "coaches": 2,
+      "state": "NY"
+    },
+    {
+      "name": "Marist College",
+      "conf": "MAAC",
+      "coaches": 2,
+      "state": "NY"
+    },
+    {
+      "name": "Marshall",
+      "conf": "Sun Belt",
+      "coaches": 1,
+      "state": "WV"
+    },
+    {
+      "name": "Massachusetts",
+      "conf": "Atlantic 10",
+      "coaches": 1,
+      "state": "MA"
+    },
+    {
+      "name": "McNeese State University",
+      "conf": "Atlantic 10",
+      "coaches": 2,
+      "state": "LA"
+    },
+    {
+      "name": "Mercer University",
+      "conf": "SoCon",
+      "coaches": 1,
+      "state": "GA"
+    },
+    {
+      "name": "Merrimack College",
+      "conf": "MAAC",
+      "coaches": 2,
+      "state": "MA"
+    },
+    {
+      "name": "Miami University",
+      "conf": "MAC",
+      "coaches": 3,
+      "state": "FL"
+    },
+    {
+      "name": "Miami University (Ohio)",
+      "conf": "MAC",
+      "coaches": 1,
+      "state": "OH"
+    },
+    {
+      "name": "Michigan State University",
+      "conf": "Big Ten",
+      "coaches": 3,
+      "state": "MI"
+    },
+    {
+      "name": "Milwaukee",
+      "conf": "Horizon",
+      "coaches": 1,
+      "state": "WI"
+    },
+    {
+      "name": "Mississippi State",
+      "conf": "SEC",
+      "coaches": 1,
+      "state": "MS"
+    },
+    {
+      "name": "Missouri State University",
+      "conf": "CUSA",
+      "coaches": 6,
+      "state": "MO"
+    },
+    {
+      "name": "Morehead State University",
+      "conf": "OVC",
+      "coaches": 4,
+      "state": "KY"
+    },
+    {
+      "name": "Mount St. Mary s University",
+      "conf": "NEC",
+      "coaches": 1,
+      "state": "MD"
+    },
+    {
+      "name": "Murray State",
+      "conf": "MVC",
+      "coaches": 1,
+      "state": "KY"
+    },
+    {
+      "name": "MVSU",
+      "conf": "SWAC",
+      "coaches": 1,
+      "state": "MS"
+    },
+    {
+      "name": "Nevada",
+      "conf": "MW",
+      "coaches": 1,
+      "state": "NV"
+    },
+    {
+      "name": "New Haven",
+      "conf": "NEC",
+      "coaches": 1,
+      "state": "CT"
+    },
+    {
+      "name": "New Jersey Institute of Technology",
+      "conf": "America East",
+      "coaches": 4,
+      "state": "NJ"
+    },
+    {
+      "name": "New Mexico State University",
+      "conf": "CUSA",
+      "coaches": 4,
+      "state": "NM"
+    },
+    {
+      "name": "New Orleans",
+      "conf": "Southland",
+      "coaches": 2,
+      "state": "LA"
+    },
+    {
+      "name": "Niagara University",
+      "conf": "MAAC",
+      "coaches": 1,
+      "state": "NY"
+    },
+    {
+      "name": "Norfolk State University",
+      "conf": "NEC (Assoc)",
+      "coaches": 2,
+      "state": "VA"
+    },
+    {
+      "name": "North Carolina A&T State University",
+      "conf": "ACC",
+      "coaches": 3,
+      "state": "NC"
+    },
+    {
+      "name": "North Carolina State University",
+      "conf": "ACC",
+      "coaches": 6,
+      "state": "NC"
+    },
+    {
+      "name": "North Dakota State University",
+      "conf": "Summit",
+      "coaches": 2,
+      "state": "ND"
+    },
+    {
+      "name": "Northeastern University",
+      "conf": "CAA",
+      "coaches": 2,
+      "state": "MA"
+    },
+    {
+      "name": "Northern Illinois University",
+      "conf": "Big Ten",
+      "coaches": 2,
+      "state": "IL"
+    },
+    {
+      "name": "Northern Kentucky University",
+      "conf": "Horizon",
+      "coaches": 3,
+      "state": "KY"
+    },
+    {
+      "name": "Northwestern State University",
+      "conf": "Big Ten",
+      "coaches": 7,
+      "state": "OK"
+    },
+    {
+      "name": "Northwestern University",
+      "conf": "Big Ten",
+      "coaches": 1,
+      "state": "IL"
+    },
+    {
+      "name": "Ohio University",
+      "conf": "MAC",
+      "coaches": 2,
+      "state": "OH"
+    },
+    {
+      "name": "Oklahoma State University",
+      "conf": "Big 12",
+      "coaches": 4,
+      "state": "OK"
+    },
+    {
+      "name": "Old Dominion University",
+      "conf": "Sun Belt",
+      "coaches": 5,
+      "state": "VA"
+    },
+    {
+      "name": "Ole Miss",
+      "conf": "SEC",
+      "coaches": 1,
+      "state": "MS"
+    },
+    {
+      "name": "Omaha",
+      "conf": "Summit",
+      "coaches": 1,
+      "state": "NE"
+    },
+    {
+      "name": "Oral Roberts University",
+      "conf": "Summit",
+      "coaches": 5,
+      "state": "OK"
+    },
+    {
+      "name": "Oregon State University",
+      "conf": "Big Ten",
+      "coaches": 3,
+      "state": "OR"
+    },
+    {
+      "name": "Pennsylvania State University",
+      "conf": "Ivy",
+      "coaches": 4,
+      "state": "PA"
+    },
+    {
+      "name": "Pepperdine University",
+      "conf": "WCC",
+      "coaches": 1,
+      "state": "CA"
+    },
+    {
+      "name": "Prairie View A&M University",
+      "conf": "SWAC",
+      "coaches": 2,
+      "state": "TX"
+    },
+    {
+      "name": "Presbyterian College",
+      "conf": "Big South",
+      "coaches": 3,
+      "state": "SC"
+    },
+    {
+      "name": "Princeton",
+      "conf": "Ivy",
+      "coaches": 1,
+      "state": "NJ"
+    },
+    {
+      "name": "Purdue Fort Wayne",
+      "conf": "Horizon",
+      "coaches": 1,
+      "state": "IN"
+    },
+    {
+      "name": "Queens University",
+      "conf": "Big South",
+      "coaches": 1,
+      "state": "NC"
+    },
+    {
+      "name": "Quinnipiac University",
+      "conf": "MAAC",
+      "coaches": 3,
+      "state": "CT"
+    },
+    {
+      "name": "Radford University",
+      "conf": "Big South",
+      "coaches": 3,
+      "state": "VA"
+    },
+    {
+      "name": "Rider University",
+      "conf": "MAAC",
+      "coaches": 2,
+      "state": "NJ"
+    },
+    {
+      "name": "Rutgers",
+      "conf": "Big Ten",
+      "coaches": 1,
+      "state": "NJ"
+    },
+    {
+      "name": "Rutgers, The State University of New Jersey",
+      "conf": "Big Ten",
+      "coaches": 5,
+      "state": "NJ"
+    },
+    {
+      "name": "Sacred Heart University",
+      "conf": "MAAC",
+      "coaches": 3,
+      "state": "CT"
+    },
+    {
+      "name": "Saint Joseph s University",
+      "conf": "Atlantic 10",
+      "coaches": 1,
+      "state": "PA"
+    },
+    {
+      "name": "Saint Louis University",
+      "conf": "A-10",
+      "coaches": 3,
+      "state": "MO"
+    },
+    {
+      "name": "Saint Mary s College of California",
+      "conf": "ACC",
+      "coaches": 5,
+      "state": "CA"
+    },
+    {
+      "name": "Sam Houston State University",
+      "conf": "Big 12",
+      "coaches": 2,
+      "state": "TX"
+    },
+    {
+      "name": "Samford University",
+      "conf": "SoCon",
+      "coaches": 3,
+      "state": "AL"
+    },
+    {
+      "name": "San Diego State University",
+      "conf": "MW",
+      "coaches": 1,
+      "state": "CA"
+    },
+    {
+      "name": "Santa Clara",
+      "conf": "WCC",
+      "coaches": 1,
+      "state": "CA"
+    },
+    {
+      "name": "Seton Hall",
+      "conf": "Big East",
+      "coaches": 1,
+      "state": "NJ"
+    },
+    {
+      "name": "Siena College",
+      "conf": "MAAC",
+      "coaches": 2,
+      "state": "NY"
+    },
+    {
+      "name": "South Dakota State University",
+      "conf": "Summit",
+      "coaches": 1,
+      "state": "SD"
+    },
+    {
+      "name": "Southeast Missouri State University",
+      "conf": "CUSA",
+      "coaches": 2,
+      "state": "MO"
+    },
+    {
+      "name": "Southeastern Louisiana University",
+      "conf": "Sun Belt",
+      "coaches": 3,
+      "state": "LA"
+    },
+    {
+      "name": "Southern Illinois",
+      "conf": "MVC",
+      "coaches": 1,
+      "state": "IL"
+    },
+    {
+      "name": "Southern Illinois University Edwardsville",
+      "conf": "Big Ten",
+      "coaches": 1,
+      "state": "IL"
+    },
+    {
+      "name": "Southern University, Baton Rouge",
+      "conf": "SWAC",
+      "coaches": 1,
+      "state": "LA"
+    },
+    {
+      "name": "St. Bonaventure University",
+      "conf": "A-10",
+      "coaches": 2,
+      "state": "NY"
+    },
+    {
+      "name": "St. John's",
+      "conf": "Big East",
+      "coaches": 1,
+      "state": "NY"
+    },
+    {
+      "name": "Stanford University",
+      "conf": "ACC",
+      "coaches": 4,
+      "state": "CA"
+    },
+    {
+      "name": "Stephen F. Austin",
+      "conf": "Southland",
+      "coaches": 1,
+      "state": "TX"
+    },
+    {
+      "name": "Stetson University",
+      "conf": "ASUN",
+      "coaches": 2,
+      "state": "FL"
+    },
+    {
+      "name": "Stony Brook",
+      "conf": "CAA",
+      "coaches": 1,
+      "state": "NY"
+    },
+    {
+      "name": "Tarleton State",
+      "conf": "WAC",
+      "coaches": 1,
+      "state": "TX"
+    },
+    {
+      "name": "TCU",
+      "conf": "Big 12",
+      "coaches": 1,
+      "state": "TX"
+    },
+    {
+      "name": "Tennessee",
+      "conf": "SEC",
+      "coaches": 1,
+      "state": "TN"
+    },
+    {
+      "name": "Texas A&M-CC",
+      "conf": "Southland",
+      "coaches": 1,
+      "state": "TX"
+    },
+    {
+      "name": "Texas State",
+      "conf": "Sun Belt",
+      "coaches": 1,
+      "state": "TX"
+    },
+    {
+      "name": "The University of North Carolina at Charlotte",
+      "conf": "AAC",
+      "coaches": 7,
+      "state": "NC"
+    },
+    {
+      "name": "The University of North Carolina at Greensboro",
+      "conf": "ACC",
+      "coaches": 2,
+      "state": "NC"
+    },
+    {
+      "name": "Toledo",
+      "conf": "MAC",
+      "coaches": 1,
+      "state": "OH"
+    },
+    {
+      "name": "Troy",
+      "conf": "Sun Belt",
+      "coaches": 1,
+      "state": "AL"
+    },
+    {
+      "name": "ULM",
+      "conf": "Sun Belt",
+      "coaches": 1,
+      "state": "LA"
+    },
+    {
+      "name": "UNCW",
+      "conf": "CAA",
+      "coaches": 1,
+      "state": "NC"
+    },
+    {
+      "name": "University of Alabama",
+      "conf": "SEC",
+      "coaches": 7,
+      "state": "AL"
+    },
+    {
+      "name": "University of Arizona",
+      "conf": "Big 12",
+      "coaches": 2,
+      "state": "AZ"
+    },
+    {
+      "name": "University of Arkansas",
+      "conf": "Big 12",
+      "coaches": 1,
+      "state": "AR"
+    },
+    {
+      "name": "University of Arkansas at Little Rock",
+      "conf": "Big 12",
+      "coaches": 3,
+      "state": "AR"
+    },
+    {
+      "name": "University of Arkansas, Fayetteville",
+      "conf": "Big 12",
+      "coaches": 3,
+      "state": "AR"
+    },
+    {
+      "name": "University of Arkansas, Pine Bluff",
+      "conf": "Big 12",
+      "coaches": 2,
+      "state": "AR"
+    },
+    {
+      "name": "University of California, Berkeley",
+      "conf": "ACC",
+      "coaches": 2,
+      "state": "CA"
+    },
+    {
+      "name": "University of California, Davis",
+      "conf": "ACC",
+      "coaches": 4,
+      "state": "CA"
+    },
+    {
+      "name": "University of California, Irvine",
+      "conf": "ACC",
+      "coaches": 5,
+      "state": "CA"
+    },
+    {
+      "name": "University of California, Riverside",
+      "conf": "ACC",
+      "coaches": 3,
+      "state": "CA"
+    },
+    {
+      "name": "University of California, Santa Barbara",
+      "conf": "ACC",
+      "coaches": 6,
+      "state": "CA"
+    },
+    {
+      "name": "University of Central Arkansas",
+      "conf": "ASUN",
+      "coaches": 2,
+      "state": "AR"
+    },
+    {
+      "name": "University of Central Florida",
+      "conf": "SEC",
+      "coaches": 2,
+      "state": "FL"
+    },
+    {
+      "name": "University of Cincinnati",
+      "conf": "Big 12",
+      "coaches": 4,
+      "state": "OH"
+    },
+    {
+      "name": "University of Connecticut",
+      "conf": "Big East",
+      "coaches": 2,
+      "state": "CT"
+    },
+    {
+      "name": "University of Dayton",
+      "conf": "A-10",
+      "coaches": 1,
+      "state": "OH"
+    },
+    {
+      "name": "University of Delaware",
+      "conf": "CUSA",
+      "coaches": 2,
+      "state": "DE"
+    },
+    {
+      "name": "University of Florida",
+      "conf": "SEC",
+      "coaches": 2,
+      "state": "FL"
+    },
+    {
+      "name": "University of Georgia",
+      "conf": "SEC",
+      "coaches": 3,
+      "state": "GA"
+    },
+    {
+      "name": "University of Hartford",
+      "conf": "America East",
+      "coaches": 1,
+      "state": "CT"
+    },
+    {
+      "name": "University of Hawaii, Manoa",
+      "conf": "Big West",
+      "coaches": 4,
+      "state": "HI"
+    },
+    {
+      "name": "University of Illinois Chicago",
+      "conf": "Big Ten",
+      "coaches": 4,
+      "state": "IL"
+    },
+    {
+      "name": "University of Iowa",
+      "conf": "Big Ten",
+      "coaches": 2,
+      "state": "IA"
+    },
+    {
+      "name": "University of Kansas",
+      "conf": "Big 12",
+      "coaches": 3,
+      "state": "KS"
+    },
+    {
+      "name": "University of Kentucky",
+      "conf": "SEC",
+      "coaches": 4,
+      "state": "KY"
+    },
+    {
+      "name": "University of Louisiana at Lafayette",
+      "conf": "Patriot",
+      "coaches": 1,
+      "state": "LA"
+    },
+    {
+      "name": "University of Louisville",
+      "conf": "ACC",
+      "coaches": 4,
+      "state": "KY"
+    },
+    {
+      "name": "University of Maine",
+      "conf": "America East",
+      "coaches": 6,
+      "state": "ME"
+    },
+    {
+      "name": "University of Maryland Eastern Shore",
+      "conf": "Big Ten",
+      "coaches": 2,
+      "state": "MD"
+    },
+    {
+      "name": "University of Maryland, Baltimore County",
+      "conf": "Big Ten",
+      "coaches": 3,
+      "state": "MD"
+    },
+    {
+      "name": "University of Maryland, College Park",
+      "conf": "Big Ten",
+      "coaches": 3,
+      "state": "MD"
+    },
+    {
+      "name": "University of Massachusetts Lowell",
+      "conf": "America East",
+      "coaches": 2,
+      "state": "MA"
+    },
+    {
+      "name": "University of Miami",
+      "conf": "ACC",
+      "coaches": 3,
+      "state": "FL"
+    },
+    {
+      "name": "University of Minnesota, Twin Cities",
+      "conf": "Big Ten",
+      "coaches": 2,
+      "state": "MN"
+    },
+    {
+      "name": "University of Missouri, Columbia",
+      "conf": "Ivy",
+      "coaches": 1,
+      "state": "MO"
+    },
+    {
+      "name": "University of Nevada, Las Vegas",
+      "conf": "MW",
+      "coaches": 2,
+      "state": "NV"
+    },
+    {
+      "name": "University of New Mexico",
+      "conf": "MW",
+      "coaches": 2,
+      "state": "NM"
+    },
+    {
+      "name": "University of North Alabama",
+      "conf": "ASUN",
+      "coaches": 2,
+      "state": "AL"
+    },
+    {
+      "name": "University of North Carolina Asheville",
+      "conf": "ACC",
+      "coaches": 1,
+      "state": "NC"
+    },
+    {
+      "name": "University of North Carolina Wilmington",
+      "conf": "ACC",
+      "coaches": 3,
+      "state": "NC"
+    },
+    {
+      "name": "University of North Carolina, Chapel Hill",
+      "conf": "ACC",
+      "coaches": 5,
+      "state": "NC"
+    },
+    {
+      "name": "University of North Florida",
+      "conf": "ASUN",
+      "coaches": 1,
+      "state": "FL"
+    },
+    {
+      "name": "University of Northern Colorado",
+      "conf": "Summit",
+      "coaches": 2,
+      "state": "CO"
+    },
+    {
+      "name": "University of Notre Dame",
+      "conf": "ACC",
+      "coaches": 1,
+      "state": "IN"
+    },
+    {
+      "name": "University of Pennsylvania",
+      "conf": "Ivy",
+      "coaches": 2,
+      "state": "PA"
+    },
+    {
+      "name": "University of Pittsburgh",
+      "conf": "ACC",
+      "coaches": 5,
+      "state": "PA"
+    },
+    {
+      "name": "University of Portland",
+      "conf": "WCC",
+      "coaches": 4,
+      "state": "OR"
+    },
+    {
+      "name": "University of Rhode Island",
+      "conf": "A-10",
+      "coaches": 5,
+      "state": "RI"
+    },
+    {
+      "name": "University of Richmond",
+      "conf": "A-10",
+      "coaches": 4,
+      "state": "VA"
+    },
+    {
+      "name": "University of San Diego",
+      "conf": "WCC",
+      "coaches": 4,
+      "state": "CA"
+    },
+    {
+      "name": "University of San Francisco",
+      "conf": "WCC",
+      "coaches": 4,
+      "state": "CA"
+    },
+    {
+      "name": "University of South Alabama",
+      "conf": "SEC",
+      "coaches": 1,
+      "state": "AL"
+    },
+    {
+      "name": "University of South Carolina Upstate",
+      "conf": "SEC",
+      "coaches": 2,
+      "state": "SC"
+    },
+    {
+      "name": "University of South Florida",
+      "conf": "AAC",
+      "coaches": 1,
+      "state": "FL"
+    },
+    {
+      "name": "University of Southern California",
+      "conf": "ACC",
+      "coaches": 4,
+      "state": "CA"
+    },
+    {
+      "name": "University of the Incarnate Word",
+      "conf": "Southland",
+      "coaches": 4,
+      "state": "TX"
+    },
+    {
+      "name": "University of the Pacific",
+      "conf": "WCC",
+      "coaches": 2,
+      "state": "CA"
+    },
+    {
+      "name": "UT Arlington",
+      "conf": "WAC",
+      "coaches": 2,
+      "state": "TX"
+    },
+    {
+      "name": "UT Martin",
+      "conf": "OVC",
+      "coaches": 1,
+      "state": "TN"
+    },
+    {
+      "name": "Utah Valley",
+      "conf": "WAC",
+      "coaches": 1,
+      "state": "UT"
+    },
+    {
+      "name": "UTRGV",
+      "conf": "Southland",
+      "coaches": 1,
+      "state": "TX"
+    },
+    {
+      "name": "Valparaiso",
+      "conf": "MVC",
+      "coaches": 1,
+      "state": "IN"
+    },
+    {
+      "name": "VCU",
+      "conf": "A-10",
+      "coaches": 2,
+      "state": "VA"
+    },
+    {
+      "name": "Villanova University",
+      "conf": "Big East",
+      "coaches": 1,
+      "state": "PA"
+    },
+    {
+      "name": "VMI",
+      "conf": "SoCon",
+      "coaches": 1,
+      "state": "VA"
+    },
+    {
+      "name": "Wagner College",
+      "conf": "NEC",
+      "coaches": 1,
+      "state": "NY"
+    },
+    {
+      "name": "Western Carolina",
+      "conf": "SoCon",
+      "coaches": 1,
+      "state": "NC"
+    },
+    {
+      "name": "Western Illinois",
+      "conf": "OVC",
+      "coaches": 1,
+      "state": "IL"
+    },
+    {
+      "name": "Western Michigan",
+      "conf": "MAC",
+      "coaches": 1,
+      "state": "MI"
+    },
+    {
+      "name": "William & Mary",
+      "conf": "CAA",
+      "coaches": 2,
+      "state": "VA"
+    },
+    {
+      "name": "Winthrop University",
+      "conf": "Big South",
+      "coaches": 1,
+      "state": "SC"
+    },
+    {
+      "name": "Wofford College",
+      "conf": "SoCon",
+      "coaches": 1,
+      "state": "SC"
+    },
+    {
+      "name": "Wright State",
+      "conf": "Horizon",
+      "coaches": 1,
+      "state": "OH"
+    },
+    {
+      "name": "Xavier University",
+      "conf": "Big East",
+      "coaches": 1,
+      "state": "OH"
+    },
+    {
+      "name": "Yale",
+      "conf": "Ivy",
+      "coaches": 1,
+      "state": "CT"
+    },
+    {
+      "name": "Youngstown State",
+      "conf": "Horizon",
+      "coaches": 1,
+      "state": "OH"
+    }
+  ],
+  "d2": [
+    {
+      "name": "Albany State",
+      "conf": "SIAC",
+      "coaches": 3,
+      "state": "GA"
+    },
+    {
+      "name": "Angelo State",
+      "conf": "LSC (Lone Star)",
+      "coaches": 3,
+      "state": "TX"
+    },
+    {
+      "name": "Arkansas Tech",
+      "conf": "GAC (Great American)",
+      "coaches": 1,
+      "state": "AR"
+    },
+    {
+      "name": "Assumption",
+      "conf": "NE-10 (Northeast-10)",
+      "coaches": 1,
+      "state": "MA"
+    },
+    {
+      "name": "Augustana",
+      "conf": "NSIC",
+      "coaches": 2,
+      "state": "SD"
+    },
+    {
+      "name": "Belmont Abbey",
+      "conf": "Conf. Carolinas",
+      "coaches": 3,
+      "state": "NC"
+    },
+    {
+      "name": "Bentley",
+      "conf": "NE-10 (Northeast-10)",
+      "coaches": 2,
+      "state": "MA"
+    },
+    {
+      "name": "Cal Poly Pomona",
+      "conf": "CCAA (California Collegiate)",
+      "coaches": 2,
+      "state": "CA"
+    },
+    {
+      "name": "Cal State Monterey Bay",
+      "conf": "CCAA (California Collegiate)",
+      "coaches": 3,
+      "state": "CA"
+    },
+    {
+      "name": "Catawba",
+      "conf": "SAC (South Atlantic)",
+      "coaches": 3,
+      "state": "NC"
+    },
+    {
+      "name": "Central Missouri",
+      "conf": "MIAA",
+      "coaches": 3,
+      "state": "MO"
+    },
+    {
+      "name": "Central Oklahoma",
+      "conf": "MIAA",
+      "coaches": 1,
+      "state": "OK"
+    },
+    {
+      "name": "Central Washington",
+      "conf": "GNAC (Great Northwest)",
+      "coaches": 2,
+      "state": "WA"
+    },
+    {
+      "name": "Charleston (WV)",
+      "conf": "MEC (Mountain East)",
+      "coaches": 3,
+      "state": "WV"
+    },
+    {
+      "name": "Chico State",
+      "conf": "CCAA (California Collegiate)",
+      "coaches": 1,
+      "state": "CA"
+    },
+    {
+      "name": "Colorado Mesa",
+      "conf": "RMAC",
+      "coaches": 2,
+      "state": "CO"
+    },
+    {
+      "name": "Columbus State",
+      "conf": "PBC (Peach Belt)",
+      "coaches": 3,
+      "state": "GA"
+    },
+    {
+      "name": "Concord",
+      "conf": "MEC (Mountain East)",
+      "coaches": 1,
+      "state": "WV"
+    },
+    {
+      "name": "CS Pueblo",
+      "conf": "RMAC",
+      "coaches": 1,
+      "state": "CO"
+    },
+    {
+      "name": "Davenport",
+      "conf": "GLIAC",
+      "coaches": 2,
+      "state": "MI"
+    },
+    {
+      "name": "Delta State",
+      "conf": "GSC (Gulf South)",
+      "coaches": 1,
+      "state": "MS"
+    },
+    {
+      "name": "East Stroudsburg",
+      "conf": "PSAC",
+      "coaches": 1,
+      "state": "PA"
+    },
+    {
+      "name": "Felician",
+      "conf": "CACC",
+      "coaches": 3,
+      "state": "NJ"
+    },
+    {
+      "name": "Florida Southern",
+      "conf": "SSC (Sunshine State)",
+      "coaches": 3,
+      "state": "FL"
+    },
+    {
+      "name": "Francis Marion",
+      "conf": "Conf. Carolinas",
+      "coaches": 3,
+      "state": "SC"
+    },
+    {
+      "name": "Frostburg State",
+      "conf": "MEC (Mountain East)",
+      "coaches": 1,
+      "state": "MD"
+    },
+    {
+      "name": "Grand Valley State",
+      "conf": "GLIAC",
+      "coaches": 2,
+      "state": "MI"
+    },
+    {
+      "name": "Harding",
+      "conf": "GAC (Great American)",
+      "coaches": 3,
+      "state": "AR"
+    },
+    {
+      "name": "Hawaii Pacific",
+      "conf": "PacWest",
+      "coaches": 2,
+      "state": "HI"
+    },
+    {
+      "name": "Illinois Springfield",
+      "conf": "GLVC",
+      "coaches": 3,
+      "state": "IL"
+    },
+    {
+      "name": "Indianapolis (UIndy)",
+      "conf": "GLVC",
+      "coaches": 2,
+      "state": "IN"
+    },
+    {
+      "name": "Jefferson",
+      "conf": "CACC",
+      "coaches": 1,
+      "state": "PA"
+    },
+    {
+      "name": "Lander",
+      "conf": "PBC (Peach Belt)",
+      "coaches": 3,
+      "state": "SC"
+    },
+    {
+      "name": "Lenoir-Rhyne",
+      "conf": "SAC (South Atlantic)",
+      "coaches": 3,
+      "state": "NC"
+    },
+    {
+      "name": "Lubbock Christian",
+      "conf": "LSC (Lone Star)",
+      "coaches": 2,
+      "state": "TX"
+    },
+    {
+      "name": "Maryville",
+      "conf": "GLVC",
+      "coaches": 2,
+      "state": "MO"
+    },
+    {
+      "name": "Metro State Denver",
+      "conf": "RMAC",
+      "coaches": 1,
+      "state": "CO"
+    },
+    {
+      "name": "Millersville",
+      "conf": "PSAC",
+      "coaches": 3,
+      "state": "PA"
+    },
+    {
+      "name": "Minnesota State",
+      "conf": "NSIC",
+      "coaches": 1,
+      "state": "MN"
+    },
+    {
+      "name": "Mississippi College",
+      "conf": "GSC (Gulf South)",
+      "coaches": 1,
+      "state": "MS"
+    },
+    {
+      "name": "Molloy",
+      "conf": "ECC (East Coast)",
+      "coaches": 1,
+      "state": "NY"
+    },
+    {
+      "name": "North Georgia",
+      "conf": "PBC (Peach Belt)",
+      "coaches": 3,
+      "state": "GA"
+    },
+    {
+      "name": "North Greenville",
+      "conf": "Conf. Carolinas",
+      "coaches": 2,
+      "state": "SC"
+    },
+    {
+      "name": "Northwest Nazarene",
+      "conf": "GNAC (Great Northwest)",
+      "coaches": 1,
+      "state": "ID"
+    },
+    {
+      "name": "Northwood",
+      "conf": "G-MAC (Great Midwest)",
+      "coaches": 1,
+      "state": "MI"
+    },
+    {
+      "name": "Pittsburg State",
+      "conf": "MIAA",
+      "coaches": 2,
+      "state": "KS"
+    },
+    {
+      "name": "Point Loma Nazarene",
+      "conf": "PacWest",
+      "coaches": 3,
+      "state": "CA"
+    },
+    {
+      "name": "Post",
+      "conf": "CACC",
+      "coaches": 1,
+      "state": "CT"
+    },
+    {
+      "name": "Rollins",
+      "conf": "SSC (Sunshine State)",
+      "coaches": 2,
+      "state": "FL"
+    },
+    {
+      "name": "Seton Hill",
+      "conf": "PSAC",
+      "coaches": 3,
+      "state": "PA"
+    },
+    {
+      "name": "Southern Arkansas",
+      "conf": "GAC (Great American)",
+      "coaches": 1,
+      "state": "AR"
+    },
+    {
+      "name": "Southern New Hampshire",
+      "conf": "NE-10 (Northeast-10)",
+      "coaches": 2,
+      "state": "NH"
+    },
+    {
+      "name": "St. Cloud State",
+      "conf": "NSIC",
+      "coaches": 1,
+      "state": "MN"
+    },
+    {
+      "name": "Tampa",
+      "conf": "SSC (Sunshine State)",
+      "coaches": 4,
+      "state": "FL"
+    },
+    {
+      "name": "Tiffin",
+      "conf": "G-MAC (Great Midwest)",
+      "coaches": 1,
+      "state": "OH"
+    },
+    {
+      "name": "Tuskegee",
+      "conf": "SIAC",
+      "coaches": 1,
+      "state": "AL"
+    },
+    {
+      "name": "UT Tyler",
+      "conf": "LSC (Lone Star)",
+      "coaches": 4,
+      "state": "TX"
+    },
+    {
+      "name": "Virginia State",
+      "conf": "CIAA",
+      "coaches": 3,
+      "state": "VA"
+    },
+    {
+      "name": "Walsh",
+      "conf": "G-MAC (Great Midwest)",
+      "coaches": 2,
+      "state": "OH"
+    },
+    {
+      "name": "Wayne State",
+      "conf": "GLIAC",
+      "coaches": 3,
+      "state": "MI"
+    },
+    {
+      "name": "West Florida",
+      "conf": "GSC (Gulf South)",
+      "coaches": 3,
+      "state": "FL"
+    },
+    {
+      "name": "Western Oregon",
+      "conf": "GNAC (Great Northwest)",
+      "coaches": 1,
+      "state": "OR"
+    },
+    {
+      "name": "Westmont",
+      "conf": "PacWest",
+      "coaches": 2,
+      "state": "CA"
+    },
+    {
+      "name": "Wingate",
+      "conf": "SAC (South Atlantic)",
+      "coaches": 2,
+      "state": "NC"
+    }
+  ]
+}
