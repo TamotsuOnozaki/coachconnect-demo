@@ -159,11 +159,13 @@
           <table class="w-full text-sm">
             <thead>
               <tr class="bg-slate-50 border-b">
-                <th class="text-left px-4 py-3 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('name')">大学名 ↕</th>
-                <th class="text-center px-3 py-3 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('level')">Div ↕</th>
-                <th class="text-left px-3 py-3 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('conf')">Conference ↕</th>
-                <th class="text-center px-3 py-3 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('state')">State ↕</th>
-                <th class="text-center px-3 py-3 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('coaches')">コーチ数 ↕</th>
+                <th class="text-left px-3 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('name')">大学名 ↕</th>
+                <th class="text-center px-2 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('level')">Div</th>
+                <th class="text-left px-2 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('conf')">Conference</th>
+                <th class="text-center px-2 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('state')">St</th>
+                <th class="text-left px-2 py-2 text-xs font-bold text-slate-500">HC</th>
+                <th class="text-left px-2 py-2 text-xs font-bold text-slate-500">Email</th>
+                <th class="text-center px-2 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('coaches')">他</th>
               </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -245,19 +247,34 @@
         if (!match) throw new Error('gviz parse failed');
         const gviz = JSON.parse(match[1]);
 
-        // 大学レベルに集約（同じ大学+Divisionのコーチを合算）
+        // 大学レベルに集約（コーチ個人データを保持）
         const uniMap = {};
         gviz.table.rows.forEach(r => {
           const div = r.c[1]?.v || '';
           const conf = r.c[2]?.v || '';
           const state = r.c[3]?.v || '';
           const uni = r.c[4]?.v || '';
+          const fname = r.c[5]?.v || '';
+          const lname = r.c[6]?.v || '';
+          const email = r.c[7]?.v || '';
+          const merge = r.c[8]?.v || '';
+          const ranking = r.c[12]?.v || '';
+          const record = r.c[13]?.v || '';
           if (!uni) return;
           const key = uni + '|' + div;
-          if (!uniMap[key]) uniMap[key] = { name: uni, level: div, conf, state, coaches: 0 };
-          uniMap[key].coaches++;
+          if (!uniMap[key]) uniMap[key] = { name: uni, level: div, conf, state, coachList: [], ranking, record };
+          uniMap[key].coachList.push({ fname, lname, email, merge });
+          // ranking/recordは最初のデータで上書き
+          if (ranking && !uniMap[key].ranking) uniMap[key].ranking = ranking;
+          if (record && !uniMap[key].record) uniMap[key].record = record;
         });
-        ALL_DATA = Object.values(uniMap);
+        ALL_DATA = Object.values(uniMap).map(u => ({
+          ...u,
+          coaches: u.coachList.length,
+          hcName: u.coachList[0] ? `${u.coachList[0].fname} ${u.coachList[0].lname}`.trim() : '-',
+          hcEmail: u.coachList[0]?.email || '',
+          otherCount: Math.max(0, u.coachList.length - 1),
+        }));
 
         // Division一覧を動的に取得してボタン生成
         const divs = [...new Set(ALL_DATA.map(u => u.level))].sort();
@@ -496,22 +513,29 @@
       const page = filtered.slice(start, start + PER_PAGE);
       const totalPages = Math.ceil(filtered.length / PER_PAGE);
 
+      const DIV_BADGE = { D1:'bg-red-100 text-red-700', D2:'bg-blue-100 text-blue-800', D3:'bg-green-100 text-green-700', NAIA:'bg-amber-100 text-amber-700', HBCUD1:'bg-purple-100 text-purple-700', HBCUD2:'bg-purple-50 text-purple-600' };
       const tbody = document.getElementById('tableBody');
-      tbody.innerHTML = page.map((u, i) => `
-        <tr class="table-row border-b border-slate-100 fade-in">
-          <td class="px-4 py-3">
-            <div class="font-medium text-slate-800">${u.name}</div>
+      tbody.innerHTML = page.map((u, i) => {
+        const badge = DIV_BADGE[u.level] || 'bg-slate-100 text-slate-700';
+        const hcDisplay = u.hcName && u.hcName !== '-' ? u.hcName : '<span class="text-slate-300">-</span>';
+        const emailDisplay = u.hcEmail ? `<span class="text-blue-500 text-xs">${u.hcEmail}</span>` : '<span class="text-slate-300 text-xs">-</span>';
+        const otherDisplay = u.otherCount > 0 ? `<span class="text-xs font-bold text-slate-500">+${u.otherCount}</span>` : '<span class="text-xs text-slate-300">-</span>';
+        const note = u.ranking || u.record || '';
+        const noteRow = note ? `<span class="text-slate-400">${note}</span>` : '';
+        return `
+        <tr class="table-row border-b border-slate-100 fade-in align-top">
+          <td class="px-3 py-2">
+            <div class="font-medium text-slate-800 text-sm leading-tight">${u.name}</div>
+            ${noteRow ? `<div class="text-xs mt-0.5 leading-tight truncate max-w-xs" title="${note}">${noteRow}</div>` : ''}
           </td>
-          <td class="px-3 py-3 text-center">
-            <span class="px-2 py-0.5 rounded text-xs font-bold ${u.level === 'D1' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-800'}">${u.level}</span>
-          </td>
-          <td class="px-3 py-3 text-slate-600">${u.conf}</td>
-          <td class="px-3 py-3 text-center">
-            <span class="px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700">${u.state}</span>
-          </td>
-          <td class="px-3 py-3 text-center font-bold text-slate-800">${u.coaches || '-'}</td>
-        </tr>
-      `).join('');
+          <td class="px-2 py-2 text-center"><span class="px-1.5 py-0.5 rounded text-xs font-bold ${badge}">${u.level}</span></td>
+          <td class="px-2 py-2 text-xs text-slate-600">${u.conf}</td>
+          <td class="px-2 py-2 text-center"><span class="text-xs font-medium text-slate-600">${u.state}</span></td>
+          <td class="px-2 py-2 text-xs text-slate-800">${hcDisplay}</td>
+          <td class="px-2 py-2">${emailDisplay}</td>
+          <td class="px-2 py-2 text-center">${otherDisplay}</td>
+        </tr>`;
+      }).join('');
 
       document.getElementById('tablePageInfo').textContent = `${filtered.length}件中 ${start + 1}〜${Math.min(start + PER_PAGE, filtered.length)}件を表示 (${currentPage}/${totalPages}ページ)`;
       document.getElementById('prevBtn').disabled = currentPage <= 1;
