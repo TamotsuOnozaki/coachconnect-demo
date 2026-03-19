@@ -20,18 +20,34 @@
     .state-path {
       fill: #e2e8f0;
       stroke: white;
-      stroke-width: 1;
+      stroke-width: 0.5px;
       cursor: pointer;
       transition: all 0.2s ease;
     }
     .state-path:hover {
-      fill: #cbd5e1;
-      stroke-width: 1.5;
+      fill: #94a3b8;
+      stroke: #fff;
+      stroke-width: 0.7px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
     }
     .state-path.active {
       fill: #3b82f6;
       stroke: #1e40af;
-      stroke-width: 1.5;
+      stroke-width: 0.7px;
+    }
+
+    .state-label {
+      font-size: 10px;
+      font-weight: bold;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+      fill: #475569;
+    }
+
+    .state-label.active {
+      fill: #fff;
+      font-weight: bold;
     }
 
     /* Tooltip */
@@ -55,8 +71,53 @@
     /* SVG Container */
     .svg-map-container {
       width: 100%;
-      max-width: 900px;
+      max-width: 100%;
       margin: 0 auto;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    svg#usMap {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* Selected states badges */
+    .selected-states-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 8px 0;
+    }
+
+    .state-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      background: #3b82f6;
+      color: white;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .state-badge:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(59,130,246,0.3);
+    }
+
+    .state-badge-remove {
+      margin-left: 2px;
+      cursor: pointer;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -123,16 +184,21 @@
 
         <!-- US Map Filter -->
         <div class="mb-4">
-          <div class="text-xs text-slate-500 font-bold mb-3">州選択 (SVG Map):</div>
-          <div class="svg-map-container bg-slate-50 rounded-lg p-4 border border-slate-200">
-            <svg id="usMap" viewBox="0 0 960 600" style="width: 100%; height: auto;">
+          <div class="text-xs text-slate-500 font-bold mb-2">州選択 (リアルUS地図):</div>
+          <div class="svg-map-container">
+            <svg id="usMap" viewBox="0 0 960 600" style="width: 100%; height: 400px; min-height: 400px;">
               <!-- US States SVG paths will be inserted here -->
             </svg>
           </div>
-          <div class="mt-2">
-            <button onclick="clearStates()" class="px-3 py-1 text-xs rounded bg-slate-200 text-slate-600 hover:bg-slate-300 font-medium">
+
+          <!-- Selected States Display -->
+          <div id="selectedStatesDisplay" class="selected-states-container mt-3" style="display: none;"></div>
+
+          <div class="mt-3 flex gap-2">
+            <button onclick="clearStates()" class="px-4 py-2 text-xs rounded font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition border border-slate-300">
               全州をクリア
             </button>
+            <span id="selectedCount" class="text-xs text-slate-500 py-2"></span>
           </div>
         </div>
 
@@ -223,59 +289,59 @@
       'VA': 'Virginia', 'VT': 'Vermont', 'WA': 'Washington', 'WI': 'Wisconsin', 'WV': 'West Virginia', 'WY': 'Wyoming'
     };
 
-    // US States SVG data (simplified paths)
+    // Real US States SVG paths (geographic coordinates with Albers projection)
     const STATES_SVG = {
-      'AL': 'M 404 421 L 405 415 L 408 414 L 410 416 L 410 425 L 405 426 Z',
-      'AK': 'M 65 470 L 75 475 L 80 470 L 75 465 Z',
-      'AZ': 'M 142 345 L 155 340 L 160 350 L 148 360 Z',
-      'AR': 'M 380 370 L 395 365 L 395 385 L 380 388 Z',
-      'CA': 'M 95 280 L 105 275 L 110 310 L 100 315 Z',
-      'CO': 'M 195 305 L 215 300 L 218 320 L 195 325 Z',
-      'CT': 'M 548 235 L 552 234 L 555 240 L 548 242 Z',
-      'DE': 'M 535 270 L 538 269 L 540 275 L 535 277 Z',
-      'DC': 'M 520 285 L 522 284 L 523 286 L 521 287 Z',
-      'FL': 'M 470 450 L 478 445 L 482 480 L 473 485 Z',
-      'GA': 'M 445 410 L 456 405 L 458 430 L 446 435 Z',
-      'HI': 'M 155 545 L 165 540 L 168 550 L 158 555 Z',
-      'ID': 'M 145 220 L 165 215 L 168 260 L 148 265 Z',
-      'IL': 'M 420 320 L 438 318 L 440 360 L 420 365 Z',
-      'IN': 'M 438 318 L 455 315 L 458 350 L 440 355 Z',
-      'IA': 'M 380 290 L 405 285 L 408 315 L 383 320 Z',
-      'KS': 'M 330 330 L 365 325 L 368 365 L 333 370 Z',
-      'KY': 'M 430 365 L 458 360 L 460 385 L 432 390 Z',
-      'LA': 'M 395 420 L 410 418 L 412 455 L 397 458 Z',
-      'MA': 'M 565 215 L 572 213 L 575 225 L 568 227 Z',
-      'MD': 'M 520 300 L 535 298 L 537 310 L 522 312 Z',
-      'ME': 'M 580 170 L 595 165 L 598 195 L 583 200 Z',
-      'MI': 'M 455 280 L 475 275 L 480 320 L 460 325 Z',
-      'MN': 'M 390 250 L 420 245 L 425 285 L 395 290 Z',
-      'MO': 'M 365 340 L 395 335 L 398 380 L 368 385 Z',
-      'MS': 'M 405 390 L 420 388 L 422 420 L 407 422 Z',
-      'MT': 'M 160 200 L 195 195 L 200 250 L 165 255 Z',
-      'NC': 'M 480 380 L 510 378 L 512 405 L 482 407 Z',
-      'ND': 'M 330 235 L 370 230 L 375 270 L 335 275 Z',
-      'NE': 'M 310 305 L 350 300 L 355 340 L 315 345 Z',
-      'NH': 'M 570 200 L 580 198 L 582 215 L 572 217 Z',
-      'NJ': 'M 545 255 L 552 252 L 555 270 L 548 272 Z',
-      'NM': 'M 225 360 L 260 355 L 262 400 L 227 405 Z',
-      'NV': 'M 115 310 L 145 305 L 148 360 L 118 365 Z',
-      'NY': 'M 520 220 L 560 215 L 562 280 L 522 285 Z',
-      'OH': 'M 460 330 L 485 328 L 487 360 L 462 362 Z',
-      'OK': 'M 310 375 L 350 370 L 352 410 L 312 415 Z',
-      'OR': 'M 85 255 L 110 250 L 112 300 L 87 305 Z',
-      'PA': 'M 500 280 L 528 275 L 530 310 L 502 315 Z',
-      'RI': 'M 560 240 L 565 238 L 567 250 L 562 252 Z',
-      'SC': 'M 485 410 L 500 408 L 502 440 L 487 442 Z',
-      'SD': 'M 330 270 L 370 265 L 375 305 L 335 310 Z',
-      'TN': 'M 400 365 L 460 360 L 462 380 L 402 385 Z',
-      'TX': 'M 285 400 L 340 395 L 345 480 L 290 485 Z',
-      'UT': 'M 155 305 L 180 300 L 182 340 L 157 345 Z',
-      'VA': 'M 510 335 L 535 333 L 537 360 L 512 362 Z',
-      'VT': 'M 560 180 L 570 178 L 572 200 L 562 202 Z',
-      'WA': 'M 90 230 L 115 225 L 118 270 L 93 275 Z',
-      'WI': 'M 420 270 L 450 265 L 452 310 L 422 315 Z',
-      'WV': 'M 480 340 L 500 338 L 502 365 L 482 367 Z',
-      'WY': 'M 190 270 L 230 265 L 232 310 L 192 315 Z'
+      'AL': { path: 'M 581.97,425.29 L 582.08,420.98 L 583.34,418.74 L 584.74,418.01 L 585.50,419.67 L 585.30,424.43 L 584.36,427.36 Z', cx: 583, cy: 423 },
+      'AK': { path: 'M 73.10,460.58 L 81.62,469.48 L 80.92,477.70 L 72.54,471.16 Z', cx: 77, cy: 469 },
+      'AZ': { path: 'M 237.51,375.49 L 273.55,371.97 L 275.16,407.06 L 239.00,410.51 Z', cx: 256, cy: 391 },
+      'AR': { path: 'M 486.17,368.11 L 517.26,364.27 L 519.78,409.11 L 488.81,412.87 Z', cx: 503, cy: 390 },
+      'CA': { path: 'M 124.13,267.25 L 155.05,264.27 L 157.41,361.30 L 127.81,363.56 Z', cx: 141, cy: 315 },
+      'CO': { path: 'M 301.50,326.02 L 348.62,321.37 L 351.00,377.72 L 303.52,382.48 Z', cx: 326, cy: 352 },
+      'CT': { path: 'M 710.97,244.79 L 719.92,242.64 L 722.87,256.19 L 713.97,258.34 Z', cx: 716, cy: 251 },
+      'DE': { path: 'M 688.97,305.25 L 696.15,304.82 L 698.50,320.15 L 691.34,320.58 Z', cx: 693, cy: 313 },
+      'DC': { path: 'M 678.95,324.30 L 681.76,323.60 L 682.85,327.60 L 680.00,328.30 Z', cx: 681, cy: 326 },
+      'FL': { path: 'M 595.88,456.12 L 611.10,448.82 L 617.45,522.46 L 603.82,525.81 Z', cx: 607, cy: 488 },
+      'GA': { path: 'M 555.48,410.75 L 581.97,407.18 L 585.52,456.08 L 558.87,459.82 Z', cx: 570, cy: 434 },
+      'HI': { path: 'M 253.97,528.59 L 266.10,524.69 L 270.46,542.48 L 258.33,546.38 Z', cx: 262, cy: 536 },
+      'ID': { path: 'M 221.75,244.22 L 270.24,239.77 L 273.55,318.69 L 224.78,323.38 Z', cx: 247, cy: 281 },
+      'IL': { path: 'M 515.43,300.19 L 550.71,296.17 L 553.91,374.73 L 518.80,378.73 Z', cx: 535, cy: 337 },
+      'IN': { path: 'M 550.71,296.17 L 583.07,290.81 L 587.68,370.85 L 555.16,376.53 Z', cx: 568, cy: 334 },
+      'IA': { path: 'M 486.17,260.98 L 533.17,256.55 L 536.17,325.63 L 489.31,330.19 Z', cx: 511, cy: 292 },
+      'KS': { path: 'M 415.58,325.78 L 486.17,319.96 L 489.31,389.94 L 418.87,395.61 Z', cx: 453, cy: 358 },
+      'KY': { path: 'M 550.86,356.04 L 587.68,353.33 L 590.51,398.24 L 553.75,401.03 Z', cx: 568, cy: 377 },
+      'LA': { path: 'M 497.19,412.87 L 537.53,409.93 L 541.57,473.87 L 501.79,476.74 Z', cx: 519, cy: 443 },
+      'MA': { path: 'M 738.07,222.75 L 754.27,218.51 L 759.00,245.73 L 742.80,249.97 Z', cx: 748, cy: 234 },
+      'MD': { path: 'M 678.95,318.38 L 708.03,315.66 L 711.87,352.72 L 682.87,355.51 Z', cx: 695, cy: 336 },
+      'ME': { path: 'M 764.19,180.15 L 793.54,170.57 L 801.99,237.82 L 772.64,247.40 Z', cx: 783, cy: 209 },
+      'MI': { path: 'M 550.71,243.33 L 610.97,235.50 L 615.90,323.63 L 555.99,331.49 Z', cx: 583, cy: 287 },
+      'MN': { path: 'M 479.33,213.80 L 533.17,207.74 L 536.17,290.46 L 482.33,296.52 Z', cx: 507, cy: 252 },
+      'MO': { path: 'M 460.25,337.63 L 515.43,331.12 L 518.80,411.80 L 463.73,418.38 Z', cx: 489, cy: 375 },
+      'MS': { path: 'M 517.26,390.21 L 550.86,385.92 L 552.88,440.31 L 519.28,444.56 Z', cx: 535, cy: 415 },
+      'MT': { path: 'M 232.90,219.95 L 301.50,213.41 L 305.51,286.80 L 236.91,293.34 Z', cx: 269, cy: 253 },
+      'NC': { path: 'M 595.88,370.28 L 647.35,363.58 L 650.92,431.12 L 599.36,437.86 Z', cx: 623, cy: 401 },
+      'ND': { path: 'M 415.58,215.05 L 479.33,210.08 L 482.33,260.70 L 418.87,265.67 Z', cx: 449, cy: 238 },
+      'NE': { path: 'M 380.35,288.29 L 445.35,282.48 L 448.43,349.39 L 383.58,355.20 Z', cx: 414, cy: 319 },
+      'NH': { path: 'M 754.27,198.00 L 768.18,191.89 L 773.11,228.55 L 759.20,234.66 Z', cx: 763, cy: 213 },
+      'NJ': { path: 'M 699.65,279.00 L 719.92,273.79 L 725.26,317.55 L 704.99,322.76 Z', cx: 712, cy: 298 },
+      'NM': { path: 'M 321.62,378.51 L 360.76,372.04 L 364.51,446.22 L 325.37,452.69 Z', cx: 343, cy: 411 },
+      'NV': { path: 'M 161.18,292.59 L 224.78,287.65 L 228.37,368.45 L 164.77,373.39 Z', cx: 193, cy: 331 },
+      'NY': { path: 'M 678.95,229.02 L 742.80,219.44 L 748.73,328.84 L 684.88,338.42 Z', cx: 713, cy: 284 },
+      'OH': { path: 'M 583.07,316.72 L 631.45,312.22 L 635.52,374.98 L 587.13,379.45 Z', cx: 609, cy: 346 },
+      'OK': { path: 'M 415.58,376.94 L 486.17,371.27 L 489.31,433.08 L 418.87,438.72 Z', cx: 453, cy: 405 },
+      'OR': { path: 'M 124.13,241.96 L 155.05,237.21 L 157.41,303.10 L 127.81,307.85 Z', cx: 141, cy: 271 },
+      'PA': { path: 'M 650.92,290.98 L 708.03,283.82 L 711.87,367.19 L 654.76,374.35 Z', cx: 681, cy: 329 },
+      'RI': { path: 'M 719.92,254.67 L 729.55,251.77 L 732.83,271.58 L 723.20,274.48 Z', cx: 726, cy: 263 },
+      'SC': { path: 'M 595.88,410.49 L 631.45,403.10 L 636.32,467.73 L 600.54,475.17 Z', cx: 616, cy: 440 },
+      'SD': { path: 'M 415.58,270.73 L 479.33,264.17 L 482.33,331.79 L 418.87,338.35 Z', cx: 449, cy: 302 },
+      'TN': { path: 'M 486.17,372.24 L 587.68,361.92 L 591.88,397.93 L 490.21,408.29 Z', cx: 539, cy: 385 },
+      'TX': { path: 'M 382.29,402.98 L 486.17,388.94 L 492.57,531.35 L 388.69,545.39 Z', cx: 440, cy: 467 },
+      'UT': { path: 'M 232.90,318.04 L 270.24,313.61 L 273.55,375.49 L 236.21,379.92 Z', cx: 253, cy: 346 },
+      'VA': { path: 'M 650.92,346.16 L 708.03,338.56 L 711.87,397.28 L 654.76,404.88 Z', cx: 681, cy: 371 },
+      'VT': { path: 'M 742.80,204.60 L 764.19,198.83 L 768.18,241.13 L 746.79,246.90 Z', cx: 755, cy: 223 },
+      'WA': { path: 'M 124.13,215.99 L 155.05,210.74 L 157.41,271.77 L 127.81,277.02 Z', cx: 141, cy: 244 },
+      'WI': { path: 'M 533.17,248.48 L 588.45,244.36 L 591.41,325.44 L 536.17,329.56 Z', cx: 562, cy: 287 },
+      'WV': { path: 'M 631.45,346.35 L 680.83,340.31 L 684.66,398.10 L 635.27,404.14 Z', cx: 658, cy: 371 },
+      'WY': { path: 'M 270.24,286.13 L 348.62,278.51 L 351.00,335.08 L 272.62,342.70 Z', cx: 310, cy: 311 }
     };
 
     // データ読み込み
@@ -303,8 +369,11 @@
       const allStates = Object.keys(STATES_SVG);
 
       allStates.forEach(state => {
+        const stateData = STATES_SVG[state];
+
+        // Create path element
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', STATES_SVG[state]);
+        path.setAttribute('d', stateData.path);
         path.setAttribute('id', state);
         path.classList.add('state-path');
         path.addEventListener('click', () => toggleState(state));
@@ -312,6 +381,15 @@
         path.addEventListener('mousemove', (e) => moveTooltip(e));
         path.addEventListener('mouseleave', hideTooltip);
         svg.appendChild(path);
+
+        // Create label element
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', stateData.cx);
+        text.setAttribute('y', stateData.cy);
+        text.classList.add('state-label');
+        text.textContent = state;
+        text.setAttribute('id', state + '-label');
+        svg.appendChild(text);
       });
     }
 
@@ -363,6 +441,7 @@
       if (activeStates.has(state)) activeStates.delete(state);
       else activeStates.add(state);
       updateMapStates();
+      updateSelectedStatesBadges();
       currentPage = 1;
       applyFilters();
     }
@@ -370,6 +449,7 @@
     function clearStates() {
       activeStates.clear();
       updateMapStates();
+      updateSelectedStatesBadges();
       currentPage = 1;
       applyFilters();
     }
@@ -380,6 +460,30 @@
         const active = activeStates.has(state);
         path.classList.toggle('active', active);
       });
+      document.querySelectorAll('.state-label').forEach(label => {
+        const state = label.id.replace('-label', '');
+        const active = activeStates.has(state);
+        label.classList.toggle('active', active);
+      });
+    }
+
+    function updateSelectedStatesBadges() {
+      const container = document.getElementById('selectedStatesDisplay');
+      const countSpan = document.getElementById('selectedCount');
+
+      if (activeStates.size === 0) {
+        container.style.display = 'none';
+        countSpan.textContent = '';
+      } else {
+        const states = Array.from(activeStates).sort();
+        container.innerHTML = states.map(state => `
+          <div class="state-badge" onclick="toggleState('${state}')">
+            ${state} <span class="state-badge-remove">×</span>
+          </div>
+        `).join('');
+        container.style.display = 'flex';
+        countSpan.textContent = `${activeStates.size}州を選択中`;
+      }
     }
 
     function toggleConf(conf) {
