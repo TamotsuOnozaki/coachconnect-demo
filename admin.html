@@ -17,7 +17,12 @@
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     /* Grid Map */
-    .grid-map { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; max-width: 700px; }
+    .grid-map-wrap {
+      position: relative; background: #f8fafc; border-radius: 12px; padding: 16px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 960 600'%3E%3Cpath d='M220 130 C230 100,320 80,380 90 C420 95,450 110,500 105 C540 100,580 85,620 90 C660 95,700 110,740 130 C770 145,790 170,800 200 C810 230,800 260,790 280 C780 300,760 310,750 330 C740 350,720 360,700 370 C680 380,660 390,640 400 C620 410,600 420,580 430 C560 440,540 450,520 460 C500 470,460 480,440 490 C420 500,380 510,360 520 C340 530,300 530,280 520 C260 510,240 500,230 480 C220 460,210 430,200 400 C190 370,180 340,180 310 C180 280,190 250,200 220 C210 190,215 160,220 130 Z' fill='%23e2e8f0' opacity='0.5'/%3E%3Cpath d='M100 350 C90 330,80 310,85 290 C90 270,105 260,110 280 C115 300,110 330,100 350 Z' fill='%23e2e8f0' opacity='0.4'/%3E%3Cpath d='M130 470 C125 460,135 455,145 458 C155 461,150 475,140 478 C135 479,130 475,130 470 Z' fill='%23e2e8f0' opacity='0.4'/%3E%3C/svg%3E");
+      background-size: 100% 100%; background-repeat: no-repeat;
+    }
+    .grid-map { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; max-width: 700px; position: relative; z-index: 1; }
     .grid-cell {
       aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
       font-size: 11px; font-weight: 700; color: #475569; background: #e8ecf1;
@@ -50,6 +55,10 @@
       font-weight: 600; cursor: pointer; transition: all 0.15s;
     }
     .sel-badge:hover { background: #1d4ed8; }
+
+    /* Division toggle buttons */
+    .div-btn.off { opacity: 0.3; box-shadow: none; transform: scale(0.95); }
+    .div-btn:hover { transform: scale(1.08); }
   </style>
 </head>
 <body>
@@ -73,24 +82,13 @@
     <!-- メインコンテンツ -->
     <div class="max-w-7xl mx-auto px-4 py-6">
 
-      <!-- 統計カード -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="stat-card bg-white rounded-xl p-4 shadow-sm border-l-4 border-red-500">
-          <div class="text-xs text-slate-500 mb-1">D1 大学数</div>
-          <div class="text-2xl font-black text-slate-800" id="statD1">-</div>
-        </div>
-        <div class="stat-card bg-white rounded-xl p-4 shadow-sm border-l-4 border-blue-800">
-          <div class="text-xs text-slate-500 mb-1">D2 大学数</div>
-          <div class="text-2xl font-black text-slate-800" id="statD2">-</div>
-        </div>
-        <div class="stat-card bg-white rounded-xl p-4 shadow-sm border-l-4 border-green-600">
-          <div class="text-xs text-slate-500 mb-1">全コーチ数</div>
-          <div class="text-2xl font-black text-slate-800" id="statCoaches">-</div>
-        </div>
-        <div class="stat-card bg-white rounded-xl p-4 shadow-sm border-l-4 border-amber-500">
-          <div class="text-xs text-slate-500 mb-1">表示中</div>
-          <div class="text-2xl font-black text-slate-800" id="statFiltered">-</div>
-        </div>
+      <!-- 統計バー -->
+      <div class="bg-white rounded-xl shadow-sm p-4 mb-6 flex flex-wrap items-center gap-6">
+        <div class="text-sm text-slate-600">データ内 <span class="text-2xl font-black text-slate-800" id="statTotal">-</span> 校</div>
+        <div class="text-sm text-slate-400">→</div>
+        <div class="text-sm text-slate-600">絞り込み結果 <span class="text-2xl font-black text-blue-600" id="statFiltered">-</span> 校</div>
+        <div class="text-sm text-slate-400">|</div>
+        <div class="text-sm text-slate-600">コーチ <span class="font-bold text-slate-800" id="statCoaches">-</span> 名</div>
       </div>
 
       <!-- 検索・フィルター -->
@@ -104,12 +102,14 @@
             <input type="text" id="searchInput" placeholder="大学名、カンファレンス、州で検索..."
               class="w-full pl-10 pr-4 py-2.5 border rounded-lg text-sm focus:outline-none focus:border-blue-400">
           </div>
-          <!-- Division フィルター -->
+          <!-- Division フィルター（複数選択トグル） -->
           <div class="flex gap-2 items-center">
             <span class="text-xs text-slate-500 font-bold">Division:</span>
-            <button onclick="toggleDivision('ALL')" class="filter-badge active px-3 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-white cursor-pointer" data-div="ALL">ALL</button>
-            <button onclick="toggleDivision('D1')" class="filter-badge px-3 py-1.5 rounded-full text-xs font-bold bg-red-100 text-red-700 cursor-pointer" data-div="D1">D1</button>
-            <button onclick="toggleDivision('D2')" class="filter-badge px-3 py-1.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 cursor-pointer" data-div="D2">D2</button>
+            <button onclick="toggleDiv('ALL')" id="divALL" class="div-btn px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all bg-slate-700 text-white shadow">ALL</button>
+            <button onclick="toggleDiv('D1')" id="divD1" class="div-btn px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all bg-red-500 text-white shadow">D1</button>
+            <button onclick="toggleDiv('D2')" id="divD2" class="div-btn px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all bg-blue-700 text-white shadow">D2</button>
+            <button onclick="toggleDiv('D3')" id="divD3" class="div-btn px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all bg-green-600 text-white shadow">D3</button>
+            <button onclick="toggleDiv('NAIA')" id="divNAIA" class="div-btn px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all bg-amber-600 text-white shadow">NAIA</button>
           </div>
         </div>
 
@@ -122,7 +122,7 @@
               <button onclick="clearStates()" class="px-3 py-1 text-xs rounded-full font-medium bg-slate-200 text-slate-600 hover:bg-slate-300 transition">全州クリア</button>
             </div>
           </div>
-          <div class="bg-white border rounded-xl p-4 shadow-sm">
+          <div class="grid-map-wrap border shadow-sm">
             <div id="gridMap" class="grid-map mx-auto"></div>
           </div>
           <div id="selectedBadges" class="sel-badges mt-2"></div>
@@ -197,7 +197,7 @@
     let currentPage = 1;
     let PER_PAGE = 50;
     let currentSort = { key: 'name', asc: true };
-    let activeDiv = 'ALL';
+    let activeDivs = new Set(['D1','D2','D3','NAIA']); // all selected by default
     let activeStates = new Set();
     let activeConfs = new Set();
 
@@ -302,16 +302,29 @@
         confs.map(c => `<button onclick="toggleConf('${c}')" class="conf-btn px-2 py-1 rounded text-xs bg-slate-100 text-slate-600 hover:bg-blue-100" data-conf="${c}">${c}</button>`).join('');
     }
 
-    // ===== フィルター操作 =====
-    function toggleDivision(div) {
-      activeDiv = div;
-      document.querySelectorAll('[data-div]').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.div === div);
-        btn.classList.toggle('bg-slate-800', btn.dataset.div === div && div === 'ALL');
-        btn.classList.toggle('text-white', btn.dataset.div === div);
-      });
+    // ===== Division トグル（複数選択） =====
+    const DIV_LIST = ['D1','D2','D3','NAIA'];
+    function toggleDiv(div) {
+      if (div === 'ALL') {
+        // 全選択 or 全解除
+        const allOn = DIV_LIST.every(d => activeDivs.has(d));
+        if (allOn) activeDivs.clear();
+        else DIV_LIST.forEach(d => activeDivs.add(d));
+      } else {
+        if (activeDivs.has(div)) activeDivs.delete(div);
+        else activeDivs.add(div);
+      }
+      updateDivButtons();
       currentPage = 1;
       applyFilters();
+    }
+    function updateDivButtons() {
+      const allOn = DIV_LIST.every(d => activeDivs.has(d));
+      const el = document.getElementById('divALL');
+      el.classList.toggle('off', !allOn);
+      DIV_LIST.forEach(d => {
+        document.getElementById('div' + d).classList.toggle('off', !activeDivs.has(d));
+      });
     }
 
     function toggleState(state) {
@@ -381,7 +394,7 @@
       const search = document.getElementById('searchInput').value.toLowerCase().trim();
 
       filtered = ALL_DATA.filter(u => {
-        if (activeDiv !== 'ALL' && u.level !== activeDiv) return false;
+        if (activeDivs.size > 0 && !activeDivs.has(u.level)) return false;
         if (activeStates.size > 0 && !activeStates.has(u.state)) return false;
         if (activeConfs.size > 0 && !activeConfs.has(u.conf)) return false;
         if (search) {
@@ -412,13 +425,11 @@
 
     // ===== 統計更新 =====
     function updateStats() {
-      const d1 = ALL_DATA.filter(u => u.level === 'D1').length;
-      const d2 = ALL_DATA.filter(u => u.level === 'D2').length;
-      const coaches = ALL_DATA.reduce((s, u) => s + (u.coaches || 0), 0);
-      document.getElementById('statD1').textContent = d1;
-      document.getElementById('statD2').textContent = d2;
+      const total = ALL_DATA.length;
+      const coaches = filtered.reduce((s, u) => s + (u.coaches || 0), 0);
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statFiltered').textContent = filtered.length;
       document.getElementById('statCoaches').textContent = coaches;
-      document.getElementById('statFiltered').textContent = filtered.length + '校';
     }
 
     // ===== テーブル描画 =====
