@@ -107,14 +107,12 @@
             <input type="text" id="searchInput" placeholder="大学名、カンファレンス、州で検索..."
               class="w-full pl-10 pr-4 py-2.5 border rounded-lg text-sm focus:outline-none focus:border-blue-400">
           </div>
-          <!-- Division フィルター（複数選択トグル） -->
-          <div class="flex gap-2 items-center">
+          <!-- Division フィルター（複数選択トグル・動的生成） -->
+          <div class="flex gap-2 items-center flex-wrap">
             <span class="text-xs text-slate-500 font-bold">Division:</span>
-            <button onclick="toggleDiv('ALL')" id="divALL" class="div-btn px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all bg-slate-700 text-white shadow">ALL</button>
-            <button onclick="toggleDiv('D1')" id="divD1" class="div-btn px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all bg-red-500 text-white shadow">D1</button>
-            <button onclick="toggleDiv('D2')" id="divD2" class="div-btn px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all bg-blue-700 text-white shadow">D2</button>
-            <button onclick="toggleDiv('D3')" id="divD3" class="div-btn px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all bg-green-600 text-white shadow">D3</button>
-            <button onclick="toggleDiv('NAIA')" id="divNAIA" class="div-btn px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all bg-amber-600 text-white shadow">NAIA</button>
+            <div id="divButtonsContainer" class="flex gap-2 flex-wrap">
+              <span class="text-xs text-slate-400">読み込み中...</span>
+            </div>
           </div>
         </div>
 
@@ -233,23 +231,73 @@
       ['AK',null,'HI','TX',null,null,null,'FL',null,null,null,null],
     ];
 
-    // データ読み込み
+    // データ読み込み（Google Sheets gviz APIからライブ取得）
+    const SHEET_ID = '1EZlrh_Gws65PSJLJYBLBtlmtzvUrBNZ8ORMGXNtB9HM';
+    const SHEET_GID = '919719835';
+
     async function loadData() {
       try {
-        const res = await fetch('data.json');
-        const json = await res.json();
-        ALL_DATA = [
-          ...json.d1.map(u => ({ ...u, level: 'D1' })),
-          ...json.d2.map(u => ({ ...u, level: 'D2' })),
-        ];
-        document.getElementById('lastUpdate').textContent = '更新: ' + new Date().toLocaleDateString('ja-JP');
+        // Google Sheets gviz APIから最新データ取得
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${SHEET_GID}`;
+        const res = await fetch(url);
+        const text = await res.text();
+        const match = text.match(/google\.visualization\.Query\.setResponse\((.+)\)/s);
+        if (!match) throw new Error('gviz parse failed');
+        const gviz = JSON.parse(match[1]);
+
+        // 大学レベルに集約（同じ大学+Divisionのコーチを合算）
+        const uniMap = {};
+        gviz.table.rows.forEach(r => {
+          const div = r.c[1]?.v || '';
+          const conf = r.c[2]?.v || '';
+          const state = r.c[3]?.v || '';
+          const uni = r.c[4]?.v || '';
+          if (!uni) return;
+          const key = uni + '|' + div;
+          if (!uniMap[key]) uniMap[key] = { name: uni, level: div, conf, state, coaches: 0 };
+          uniMap[key].coaches++;
+        });
+        ALL_DATA = Object.values(uniMap);
+
+        // Division一覧を動的に取得してボタン生成
+        const divs = [...new Set(ALL_DATA.map(u => u.level))].sort();
+        activeDivs = new Set(divs);
+        buildDivButtons(divs);
+
+        document.getElementById('lastUpdate').textContent = '同期: ' + new Date().toLocaleString('ja-JP', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
         initMap();
         initFilters();
         applyFilters();
       } catch (e) {
-        console.error('Data load error:', e);
-        document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-8 text-center text-red-500">データの読み込みに失敗しました</td></tr>';
+        console.error('Live fetch failed, falling back to data.json:', e);
+        // フォールバック: data.jsonから読み込み
+        try {
+          const res2 = await fetch('data.json');
+          const json = await res2.json();
+          if (Array.isArray(json)) { ALL_DATA = json; }
+          else { ALL_DATA = [...(json.d1||[]).map(u=>({...u,level:'D1'})), ...(json.d2||[]).map(u=>({...u,level:'D2'}))]; }
+          const divs = [...new Set(ALL_DATA.map(u => u.level))].sort();
+          activeDivs = new Set(divs);
+          buildDivButtons(divs);
+          document.getElementById('lastUpdate').textContent = 'オフライン（data.json）';
+          initMap(); initFilters(); applyFilters();
+        } catch (e2) {
+          document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-8 text-center text-red-500">データの読み込みに失敗しました</td></tr>';
+        }
       }
+    }
+
+    // Division ボタンを動的生成
+    const DIV_COLORS = { D1:'bg-red-500', D2:'bg-blue-700', D3:'bg-green-600', NAIA:'bg-amber-600', HBCUD1:'bg-purple-600', HBCUD2:'bg-purple-400', JUCO:'bg-gray-600' };
+    function buildDivButtons(divs) {
+      const container = document.getElementById('divButtonsContainer');
+      container.innerHTML = `<button onclick="toggleDiv('ALL')" id="divALL" class="div-btn px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all bg-slate-700 text-white shadow">ALL</button>`;
+      divs.forEach(d => {
+        const color = DIV_COLORS[d] || 'bg-slate-500';
+        container.innerHTML += `<button onclick="toggleDiv('${d}')" id="div${d}" class="div-btn px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all ${color} text-white shadow">${d}</button>`;
+      });
+      DIV_LIST.length = 0;
+      divs.forEach(d => DIV_LIST.push(d));
     }
 
     // Initialize Grid Map
@@ -276,16 +324,20 @@
       });
     }
 
-    // Tooltip
+    // Tooltip（全Division動的表示）
     function showTooltip(state, event) {
       const name = STATE_NAMES[state] || state;
-      const d1 = ALL_DATA.filter(u => u.state === state && u.level === 'D1').length;
-      const d2 = ALL_DATA.filter(u => u.state === state && u.level === 'D2').length;
+      const stateUnis = ALL_DATA.filter(u => u.state === state);
+      const byDiv = {};
+      stateUnis.forEach(u => { byDiv[u.level] = (byDiv[u.level] || 0) + 1; });
       const tt = document.getElementById('stateTooltip');
-      tt.innerHTML = `<strong>${name} (${state})</strong>` +
-        `<div class="tt-row"><span class="tt-label">D1</span><span class="tt-val">${d1}校</span></div>` +
-        `<div class="tt-row"><span class="tt-label">D2</span><span class="tt-val">${d2}校</span></div>` +
-        `<div class="tt-row" style="border-top:1px solid #374151;padding-top:4px;margin-top:2px"><span class="tt-label">合計</span><span class="tt-val">${d1+d2}校</span></div>`;
+      let html = `<strong>${name} (${state})</strong>`;
+      DIV_LIST.forEach(d => {
+        if (byDiv[d]) html += `<div class="tt-row"><span class="tt-label">${d}</span><span class="tt-val">${byDiv[d]}校</span></div>`;
+      });
+      const total = stateUnis.length;
+      html += `<div class="tt-row" style="border-top:1px solid #374151;padding-top:4px;margin-top:2px"><span class="tt-label">合計</span><span class="tt-val">${total}校</span></div>`;
+      tt.innerHTML = html;
       tt.classList.add('visible');
       moveTooltip(event);
     }
@@ -309,7 +361,7 @@
     }
 
     // ===== Division トグル（複数選択） =====
-    const DIV_LIST = ['D1','D2','D3','NAIA'];
+    const DIV_LIST = []; // populated dynamically from data
     function toggleDiv(div) {
       if (div === 'ALL') {
         // 全選択 or 全解除
