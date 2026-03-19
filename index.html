@@ -1316,7 +1316,7 @@
         WA:"SEA", MA:"BOS", GA:"ATL", CO:"DEN", WA:"SEA",
       };
 
-      const CW=54, CH=46;
+      const CW=58, CH=50;
 
       // ===== 地理的SVG背景パス（地図投影 → 396×270にスケール） =====
       // x = (lon + 128) * 6.0   y = (50 - lat) * 10
@@ -1387,38 +1387,38 @@
           <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:10}}>
             {REGION_META.map(r=>(
               <div key={r.key} style={{
-                background:RC[r.key],borderRadius:8,padding:"3px 8px",
-                fontSize:10,fontWeight:700,border:"1px solid rgba(0,0,0,0.1)",
+                background:RC[r.key],borderRadius:8,padding:"4px 10px",
+                fontSize:12,fontWeight:700,border:"1px solid rgba(0,0,0,0.1)",
                 lineHeight:1.4,
               }}>
                 <div>{r.label}</div>
-                <div style={{fontSize:9,fontWeight:400,color:"#555"}}>{r.sub}</div>
+                <div style={{fontSize:10,fontWeight:400,color:"#555"}}>{r.sub}</div>
               </div>
             ))}
-            <div style={{background:"#E5E7EB",borderRadius:8,padding:"3px 8px",fontSize:10,fontWeight:600,color:"#9CA3AF",border:"1px solid rgba(0,0,0,0.08)"}}>□ 対象外</div>
+            <div style={{background:"#E5E7EB",borderRadius:8,padding:"4px 10px",fontSize:12,fontWeight:600,color:"#9CA3AF",border:"1px solid rgba(0,0,0,0.08)"}}>□ 対象外</div>
           </div>
 
           {/* マップ外枠 */}
           <div style={{position:"relative"}}>
             {/* 方位・海ラベル */}
-            <div style={{display:"flex",justifyContent:"space-between",marginBottom:2,paddingLeft:2,paddingRight:2}}>
-              <span style={{fontSize:9,color:"#3B82F6",fontWeight:700}}>🌊 太平洋（西）</span>
-              <span style={{fontSize:9,color:"#6366F1",fontWeight:700}}>（東）🌊 大西洋</span>
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:4,paddingLeft:2,paddingRight:2}}>
+              <span style={{fontSize:12,color:"#60A5FA",fontWeight:700}}>🌊 太平洋（西）</span>
+              <span style={{fontSize:12,color:"#818CF8",fontWeight:700}}>（東）🌊 大西洋</span>
             </div>
 
             {/* スクロールヒント */}
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4,padding:"0 2px"}}>
-              <div style={{display:"flex",alignItems:"center",gap:4}}>
-                <span style={{fontSize:11,color:"#60A5FA",fontWeight:700}}>⬅ 西海岸・山岳部</span>
-                <span style={{fontSize:9,color:"#94A3B8"}}>(スクロール)</span>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6,padding:"0 2px"}}>
+              <div style={{display:"flex",alignItems:"center",gap:6}}>
+                <span style={{fontSize:13,color:"#60A5FA",fontWeight:700}}>⬅ 西海岸・山岳部</span>
+                <span style={{fontSize:11,color:"#94A3B8"}}>(スクロール)</span>
               </div>
-              <div style={{display:"flex",alignItems:"center",gap:4}}>
-                <span style={{fontSize:9,color:"#94A3B8"}}>(ここから表示)</span>
-                <span style={{fontSize:11,color:"#A78BFA",fontWeight:700}}>東海岸 ➡</span>
+              <div style={{display:"flex",alignItems:"center",gap:6}}>
+                <span style={{fontSize:11,color:"#94A3B8"}}>(ここから表示)</span>
+                <span style={{fontSize:13,color:"#A78BFA",fontWeight:700}}>東海岸 ➡</span>
               </div>
             </div>
             {/* スクロール可能マップ */}
-            <div ref={scrollRef} style={{overflowX:"auto",WebkitOverflowScrolling:"touch",borderRadius:10,border:"1px solid #3B82F6",padding:"4px 4px 2px",background:"#1e3a5f",scrollBehavior:"smooth"}}>
+            <div ref={scrollRef} style={{overflowX:"auto",WebkitOverflowScrolling:"touch",borderRadius:12,border:"none",padding:"8px 8px 4px",background:"linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",scrollBehavior:"smooth",boxShadow:"0 4px 20px rgba(0,0,0,0.3)"}}>
               <div style={{position:"relative",width:TW,height:TH,minWidth:TW}}>
 
                 {/* ===== 地理的SVG背景マップ ===== */}
@@ -1427,7 +1427,7 @@
                   style={{position:"absolute",top:0,left:0,width:TW,height:TH,pointerEvents:"none",zIndex:0}}
                 >
                   {/* 海洋（背景） */}
-                  <rect x="0" y="0" width={TW} height={TH} fill="#1e3a5f"/>
+                  <rect x="0" y="0" width={TW} height={TH} fill="#0f172a"/>
 
                   {/* 太平洋 */}
                   <text x="9" y="130" fontSize="8" fill="#60A5FA" fontWeight="700" opacity="0.7"
@@ -1511,15 +1511,15 @@
                   const hasBigCity = ["CA","TX","NY","FL","IL","WA","MA","GA","CO","PA","OH","MI","NC","VA"].includes(code);
 
                   const bg = selected
-                    ? "rgba(27,42,74,0.92)"
+                    ? "#f59e0b"
                     : canSelect
-                      ? "rgba(255,255,255,0.75)"
-                      : "rgba(200,210,230,0.45)";
-                  const textCol = selected ? "#FFFFFF" : canSelect ? "#1a202c" : "#94A3B8";
-                  const border = selected ? "2px solid #FCD34D"
-                    : isActive ? "2px solid #818CF8"
-                    : canSelect ? "1px solid rgba(255,255,255,0.6)"
-                    : "1px solid rgba(200,215,240,0.35)";
+                      ? "rgba(59,130,246,0.7)"
+                      : "rgba(30,41,59,0.5)";
+                  const textCol = "#FFFFFF";
+                  const border = selected ? "2px solid #fbbf24"
+                    : isActive ? "2px solid #93c5fd"
+                    : canSelect ? "1px solid rgba(147,197,253,0.4)"
+                    : "1px solid rgba(71,85,105,0.3)";
 
                   return (
                     <div key={code}
@@ -1533,16 +1533,16 @@
                         cursor:canSelect?"pointer":"default",
                         transition:"all 0.12s",
                         boxShadow:selected
-                          ?"0 0 10px rgba(252,211,77,0.5), 0 2px 6px rgba(0,0,0,0.4)"
-                          :isActive?"0 0 0 2px #A5B4FC":"none",
+                          ?"0 0 14px rgba(245,158,11,0.6)"
+                          :isActive?"0 0 16px rgba(96,165,250,0.5)":"none",
                         userSelect:"none",
                         WebkitTapHighlightColor:"transparent",
                         zIndex:selected||isActive?4:2,
                         backdropFilter:"blur(2px)",
                       }}>
-                      <span style={{fontSize:11,fontWeight:selected?800:600,color:textCol,lineHeight:1,textShadow:selected?"0 1px 3px rgba(0,0,0,0.5)":"none"}}>{code}</span>
+                      <span style={{fontSize:13,fontWeight:800,color:textCol,lineHeight:1,textShadow:"0 1px 2px rgba(0,0,0,0.3)"}}>{code}</span>
                       {hasBigCity && canSelect && (
-                        <span style={{fontSize:7,color:selected?"#FCD34D":"rgba(255,255,100,0.7)",marginTop:1}}>★</span>
+                        <span style={{fontSize:9,color:selected?"#fff":"#fbbf24",marginTop:2}}>★</span>
                       )}
                     </div>
                   );
@@ -1551,8 +1551,8 @@
             </div>
 
             {/* 方位（下） */}
-            <div style={{display:"flex",justifyContent:"center",marginTop:2}}>
-              <span style={{fontSize:9,color:"#9CA3AF"}}>↑ 北　　　　　　南 ↓　　　★=主要大都市あり</span>
+            <div style={{display:"flex",justifyContent:"center",marginTop:6}}>
+              <span style={{fontSize:12,color:"#94A3B8"}}>↑ 北　　　　南 ↓　　　★=主要大都市あり</span>
             </div>
           </div>
 
@@ -1732,9 +1732,9 @@
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border p-5">
+                <div className="bg-white rounded-xl shadow-sm border p-5 lg:col-span-2" style={{gridColumn:"1/-1"}}>
                   <h3 className="font-bold text-lg mb-1" style={{ color: THEME.navy }}>📍 州を地図から選択</h3>
-                  <p className="text-xs text-gray-400 mb-3">州をタップして選択 / もう一度タップで解除。★は主要大都市あり。</p>
+                  <p className="text-sm text-gray-500 mb-3">州をタップして選択 / もう一度タップで解除。★は主要大都市あり。</p>
                   {/* クイック選択 */}
                   <div className="flex flex-wrap gap-2 mb-4">
                     {presets.map(p => (
