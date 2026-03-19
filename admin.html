@@ -15,6 +15,49 @@
     #searchInput:focus { box-shadow: 0 0 0 3px rgba(59,130,246,0.3); }
     .fade-in { animation: fadeIn 0.3s ease-in; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* SVG Map Styles */
+    .state-path {
+      fill: #e2e8f0;
+      stroke: white;
+      stroke-width: 1;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .state-path:hover {
+      fill: #cbd5e1;
+      stroke-width: 1.5;
+    }
+    .state-path.active {
+      fill: #3b82f6;
+      stroke: #1e40af;
+      stroke-width: 1.5;
+    }
+
+    /* Tooltip */
+    .state-tooltip {
+      position: fixed;
+      background: #1f2937;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      pointer-events: none;
+      z-index: 1000;
+      white-space: nowrap;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      display: none;
+    }
+    .state-tooltip.visible {
+      display: block;
+    }
+
+    /* SVG Container */
+    .svg-map-container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
   </style>
 </head>
 <body>
@@ -78,8 +121,20 @@
           </div>
         </div>
 
-        <!-- State フィルター -->
-        <div class="flex flex-wrap gap-1.5 mb-3" id="stateFilters"></div>
+        <!-- US Map Filter -->
+        <div class="mb-4">
+          <div class="text-xs text-slate-500 font-bold mb-3">州選択 (SVG Map):</div>
+          <div class="svg-map-container bg-slate-50 rounded-lg p-4 border border-slate-200">
+            <svg id="usMap" viewBox="0 0 960 600" style="width: 100%; height: auto;">
+              <!-- US States SVG paths will be inserted here -->
+            </svg>
+          </div>
+          <div class="mt-2">
+            <button onclick="clearStates()" class="px-3 py-1 text-xs rounded bg-slate-200 text-slate-600 hover:bg-slate-300 font-medium">
+              全州をクリア
+            </button>
+          </div>
+        </div>
 
         <!-- Conference フィルター -->
         <details class="mt-2">
@@ -90,6 +145,20 @@
 
       <!-- データテーブル -->
       <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <!-- ページネーション・表示件数セレクタ -->
+        <div class="flex justify-between items-center px-4 py-3 border-b bg-slate-50">
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-500 font-bold">表示件数:</span>
+            <select id="perPageSelect" onchange="changePerPage()" class="px-2 py-1 text-xs border rounded bg-white hover:bg-slate-50 cursor-pointer">
+              <option value="10">10件</option>
+              <option value="50" selected>50件</option>
+              <option value="100">100件</option>
+              <option value="9999">全件</option>
+            </select>
+          </div>
+          <div class="text-xs text-slate-500" id="pageInfo"></div>
+        </div>
+
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead>
@@ -106,7 +175,7 @@
         </div>
         <!-- ページネーション -->
         <div class="flex justify-between items-center px-4 py-3 border-t bg-slate-50">
-          <div class="text-xs text-slate-500" id="pageInfo"></div>
+          <div class="text-xs text-slate-500" id="tablePageInfo"></div>
           <div class="flex gap-2">
             <button onclick="changePage(-1)" class="px-3 py-1 text-xs rounded border hover:bg-slate-100" id="prevBtn">← 前へ</button>
             <button onclick="changePage(1)" class="px-3 py-1 text-xs rounded border hover:bg-slate-100" id="nextBtn">次へ →</button>
@@ -126,16 +195,88 @@
     </div>
   </div>
 
+  <!-- Tooltip -->
+  <div id="stateTooltip" class="state-tooltip"></div>
+
   <script>
     // ===== データ管理 =====
     let ALL_DATA = [];
     let filtered = [];
     let currentPage = 1;
-    const PER_PAGE = 50;
+    let PER_PAGE = 50;
     let currentSort = { key: 'name', asc: true };
     let activeDiv = 'ALL';
     let activeStates = new Set();
     let activeConfs = new Set();
+
+    // State abbreviation to full name mapping
+    const STATE_NAMES = {
+      'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 'CA': 'California',
+      'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware', 'DC': 'District of Columbia', 'FL': 'Florida',
+      'GA': 'Georgia', 'HI': 'Hawaii', 'ID': 'Idaho', 'IL': 'Illinois', 'IN': 'Indiana',
+      'IA': 'Iowa', 'KS': 'Kansas', 'KY': 'Kentucky', 'LA': 'Louisiana', 'MA': 'Massachusetts',
+      'MD': 'Maryland', 'ME': 'Maine', 'MI': 'Michigan', 'MN': 'Minnesota', 'MO': 'Missouri',
+      'MS': 'Mississippi', 'MT': 'Montana', 'NC': 'North Carolina', 'ND': 'North Dakota', 'NE': 'Nebraska',
+      'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico', 'NV': 'Nevada', 'NY': 'New York',
+      'OH': 'Ohio', 'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island',
+      'SC': 'South Carolina', 'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah',
+      'VA': 'Virginia', 'VT': 'Vermont', 'WA': 'Washington', 'WI': 'Wisconsin', 'WV': 'West Virginia', 'WY': 'Wyoming'
+    };
+
+    // US States SVG data (simplified paths)
+    const STATES_SVG = {
+      'AL': 'M 404 421 L 405 415 L 408 414 L 410 416 L 410 425 L 405 426 Z',
+      'AK': 'M 65 470 L 75 475 L 80 470 L 75 465 Z',
+      'AZ': 'M 142 345 L 155 340 L 160 350 L 148 360 Z',
+      'AR': 'M 380 370 L 395 365 L 395 385 L 380 388 Z',
+      'CA': 'M 95 280 L 105 275 L 110 310 L 100 315 Z',
+      'CO': 'M 195 305 L 215 300 L 218 320 L 195 325 Z',
+      'CT': 'M 548 235 L 552 234 L 555 240 L 548 242 Z',
+      'DE': 'M 535 270 L 538 269 L 540 275 L 535 277 Z',
+      'DC': 'M 520 285 L 522 284 L 523 286 L 521 287 Z',
+      'FL': 'M 470 450 L 478 445 L 482 480 L 473 485 Z',
+      'GA': 'M 445 410 L 456 405 L 458 430 L 446 435 Z',
+      'HI': 'M 155 545 L 165 540 L 168 550 L 158 555 Z',
+      'ID': 'M 145 220 L 165 215 L 168 260 L 148 265 Z',
+      'IL': 'M 420 320 L 438 318 L 440 360 L 420 365 Z',
+      'IN': 'M 438 318 L 455 315 L 458 350 L 440 355 Z',
+      'IA': 'M 380 290 L 405 285 L 408 315 L 383 320 Z',
+      'KS': 'M 330 330 L 365 325 L 368 365 L 333 370 Z',
+      'KY': 'M 430 365 L 458 360 L 460 385 L 432 390 Z',
+      'LA': 'M 395 420 L 410 418 L 412 455 L 397 458 Z',
+      'MA': 'M 565 215 L 572 213 L 575 225 L 568 227 Z',
+      'MD': 'M 520 300 L 535 298 L 537 310 L 522 312 Z',
+      'ME': 'M 580 170 L 595 165 L 598 195 L 583 200 Z',
+      'MI': 'M 455 280 L 475 275 L 480 320 L 460 325 Z',
+      'MN': 'M 390 250 L 420 245 L 425 285 L 395 290 Z',
+      'MO': 'M 365 340 L 395 335 L 398 380 L 368 385 Z',
+      'MS': 'M 405 390 L 420 388 L 422 420 L 407 422 Z',
+      'MT': 'M 160 200 L 195 195 L 200 250 L 165 255 Z',
+      'NC': 'M 480 380 L 510 378 L 512 405 L 482 407 Z',
+      'ND': 'M 330 235 L 370 230 L 375 270 L 335 275 Z',
+      'NE': 'M 310 305 L 350 300 L 355 340 L 315 345 Z',
+      'NH': 'M 570 200 L 580 198 L 582 215 L 572 217 Z',
+      'NJ': 'M 545 255 L 552 252 L 555 270 L 548 272 Z',
+      'NM': 'M 225 360 L 260 355 L 262 400 L 227 405 Z',
+      'NV': 'M 115 310 L 145 305 L 148 360 L 118 365 Z',
+      'NY': 'M 520 220 L 560 215 L 562 280 L 522 285 Z',
+      'OH': 'M 460 330 L 485 328 L 487 360 L 462 362 Z',
+      'OK': 'M 310 375 L 350 370 L 352 410 L 312 415 Z',
+      'OR': 'M 85 255 L 110 250 L 112 300 L 87 305 Z',
+      'PA': 'M 500 280 L 528 275 L 530 310 L 502 315 Z',
+      'RI': 'M 560 240 L 565 238 L 567 250 L 562 252 Z',
+      'SC': 'M 485 410 L 500 408 L 502 440 L 487 442 Z',
+      'SD': 'M 330 270 L 370 265 L 375 305 L 335 310 Z',
+      'TN': 'M 400 365 L 460 360 L 462 380 L 402 385 Z',
+      'TX': 'M 285 400 L 340 395 L 345 480 L 290 485 Z',
+      'UT': 'M 155 305 L 180 300 L 182 340 L 157 345 Z',
+      'VA': 'M 510 335 L 535 333 L 537 360 L 512 362 Z',
+      'VT': 'M 560 180 L 570 178 L 572 200 L 562 202 Z',
+      'WA': 'M 90 230 L 115 225 L 118 270 L 93 275 Z',
+      'WI': 'M 420 270 L 450 265 L 452 310 L 422 315 Z',
+      'WV': 'M 480 340 L 500 338 L 502 365 L 482 367 Z',
+      'WY': 'M 190 270 L 230 265 L 232 310 L 192 315 Z'
+    };
 
     // データ読み込み
     async function loadData() {
@@ -147,6 +288,7 @@
           ...json.d2.map(u => ({ ...u, level: 'D2' })),
         ];
         document.getElementById('lastUpdate').textContent = '更新: ' + new Date().toLocaleDateString('ja-JP');
+        initMap();
         initFilters();
         applyFilters();
       } catch (e) {
@@ -155,15 +297,49 @@
       }
     }
 
+    // Initialize SVG Map
+    function initMap() {
+      const svg = document.getElementById('usMap');
+      const allStates = Object.keys(STATES_SVG);
+
+      allStates.forEach(state => {
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', STATES_SVG[state]);
+        path.setAttribute('id', state);
+        path.classList.add('state-path');
+        path.addEventListener('click', () => toggleState(state));
+        path.addEventListener('mouseenter', (e) => showTooltip(state, e));
+        path.addEventListener('mousemove', (e) => moveTooltip(e));
+        path.addEventListener('mouseleave', hideTooltip);
+        svg.appendChild(path);
+      });
+    }
+
+    // Tooltip functions
+    function showTooltip(state, event) {
+      const fullName = STATE_NAMES[state] || state;
+      const d1Count = ALL_DATA.filter(u => u.state === state && u.level === 'D1').length;
+      const d2Count = ALL_DATA.filter(u => u.state === state && u.level === 'D2').length;
+
+      const tooltip = document.getElementById('stateTooltip');
+      tooltip.innerHTML = `<strong>${fullName}</strong><br>D1: ${d1Count}校 &nbsp; D2: ${d2Count}校`;
+      tooltip.classList.add('visible');
+      moveTooltip(event);
+    }
+
+    function moveTooltip(event) {
+      const tooltip = document.getElementById('stateTooltip');
+      tooltip.style.left = (event.clientX + 10) + 'px';
+      tooltip.style.top = (event.clientY + 10) + 'px';
+    }
+
+    function hideTooltip() {
+      document.getElementById('stateTooltip').classList.remove('visible');
+    }
+
     // フィルター初期化
     function initFilters() {
-      const states = [...new Set(ALL_DATA.map(u => u.state))].sort();
       const confs = [...new Set(ALL_DATA.map(u => u.conf))].sort();
-
-      // State フィルターボタン
-      const stateDiv = document.getElementById('stateFilters');
-      stateDiv.innerHTML = '<button onclick="clearStates()" class="px-2 py-1 rounded text-xs bg-slate-200 text-slate-600 hover:bg-slate-300">全州</button>' +
-        states.map(s => `<button onclick="toggleState('${s}')" class="state-btn px-2 py-1 rounded text-xs bg-slate-100 text-slate-600 hover:bg-blue-100" data-state="${s}">${s}</button>`).join('');
 
       // Conference フィルターボタン
       const confDiv = document.getElementById('confFilters');
@@ -186,24 +362,23 @@
     function toggleState(state) {
       if (activeStates.has(state)) activeStates.delete(state);
       else activeStates.add(state);
-      updateStateButtons();
+      updateMapStates();
       currentPage = 1;
       applyFilters();
     }
 
     function clearStates() {
       activeStates.clear();
-      updateStateButtons();
+      updateMapStates();
       currentPage = 1;
       applyFilters();
     }
 
-    function updateStateButtons() {
-      document.querySelectorAll('.state-btn').forEach(btn => {
-        const active = activeStates.has(btn.dataset.state);
-        btn.classList.toggle('bg-blue-500', active);
-        btn.classList.toggle('text-white', active);
-        btn.classList.toggle('bg-slate-100', !active);
+    function updateMapStates() {
+      document.querySelectorAll('.state-path').forEach(path => {
+        const state = path.id;
+        const active = activeStates.has(state);
+        path.classList.toggle('active', active);
       });
     }
 
@@ -299,7 +474,7 @@
         </tr>
       `).join('');
 
-      document.getElementById('pageInfo').textContent = `${filtered.length}件中 ${start + 1}〜${Math.min(start + PER_PAGE, filtered.length)}件を表示 (${currentPage}/${totalPages}ページ)`;
+      document.getElementById('tablePageInfo').textContent = `${filtered.length}件中 ${start + 1}〜${Math.min(start + PER_PAGE, filtered.length)}件を表示 (${currentPage}/${totalPages}ページ)`;
       document.getElementById('prevBtn').disabled = currentPage <= 1;
       document.getElementById('nextBtn').disabled = currentPage >= totalPages;
     }
@@ -308,6 +483,14 @@
     function changePage(dir) {
       const totalPages = Math.ceil(filtered.length / PER_PAGE);
       currentPage = Math.max(1, Math.min(totalPages, currentPage + dir));
+      renderTable();
+    }
+
+    // ===== 表示件数変更 =====
+    function changePerPage() {
+      const select = document.getElementById('perPageSelect');
+      PER_PAGE = parseInt(select.value);
+      currentPage = 1;
       renderTable();
     }
 
