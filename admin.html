@@ -18,21 +18,25 @@
 
     /* Grid Map */
     .grid-map-wrap {
-      position: relative; border-radius: 12px; padding: 16px; overflow: hidden;
-      background: url('us-bg.svg') center/cover no-repeat;
+      position: relative; border-radius: 12px; padding: 20px; overflow: hidden;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     }
-    .grid-map { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; max-width: 700px; position: relative; z-index: 1; }
+    .grid-map-bg {
+      position: absolute; inset: 0; opacity: 0.12;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/1/1a/Blank_US_Map_%28states_only%29.svg') center 55%/85% no-repeat;
+      filter: brightness(3) contrast(0.5);
+    }
+    .grid-map { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; max-width: 660px; position: relative; z-index: 1; }
     .grid-cell {
       aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700; color: #64748b; background: rgba(255,255,255,0.75);
-      border-radius: 5px; cursor: pointer; transition: all 0.15s; user-select: none;
-      position: relative; border: 1.5px solid rgba(148,163,184,0.3);
-      backdrop-filter: blur(2px);
+      font-size: 10px; font-weight: 700; color: #94a3b8; background: rgba(30,41,59,0.7);
+      border-radius: 4px; cursor: pointer; transition: all 0.15s; user-select: none;
+      border: 1px solid rgba(71,85,105,0.4);
     }
-    .grid-cell:hover { background: rgba(255,255,255,0.95); transform: scale(1.15); z-index: 2; box-shadow: 0 3px 12px rgba(0,0,0,0.2); border-color: #3b82f6; }
-    .grid-cell.active { background: #2563eb; color: #fff; border-color: #1e40af; box-shadow: 0 3px 10px rgba(37,99,235,0.5); }
-    .grid-cell.has-data { background: rgba(219,234,254,0.9); border-color: rgba(96,165,250,0.5); color: #1e40af; }
-    .grid-cell.has-data:hover { background: rgba(191,219,254,0.95); }
+    .grid-cell:hover { background: rgba(51,65,85,0.9); color: #e2e8f0; transform: scale(1.15); z-index: 2; box-shadow: 0 0 12px rgba(96,165,250,0.3); border-color: #60a5fa; }
+    .grid-cell.active { background: #2563eb; color: #fff; border-color: #3b82f6; box-shadow: 0 0 10px rgba(59,130,246,0.5); }
+    .grid-cell.has-data { background: rgba(30,58,95,0.8); border-color: rgba(59,130,246,0.4); color: #93c5fd; }
+    .grid-cell.has-data:hover { background: rgba(30,64,115,0.95); color: #bfdbfe; }
     .grid-cell.has-data.active { background: #1d4ed8; color: #fff; }
     .grid-cell.empty { visibility: hidden; pointer-events: none; }
 
@@ -123,7 +127,8 @@
               <button onclick="clearStates()" class="px-3 py-1 text-xs rounded-full font-medium bg-slate-200 text-slate-600 hover:bg-slate-300 transition">全州クリア</button>
             </div>
           </div>
-          <div class="grid-map-wrap border shadow-sm">
+          <div class="grid-map-wrap shadow-lg">
+            <div class="grid-map-bg"></div>
             <div id="gridMap" class="grid-map mx-auto"></div>
           </div>
           <div id="selectedBadges" class="sel-badges mt-2"></div>
@@ -223,9 +228,9 @@
       ['OR','ID','MT','ND','MN','IL','MI',null,'NY','MA',null,null],
       ['CA','NV','WY','SD','IA','IN','OH','PA','NJ','CT','RI',null],
       [null,'UT','CO','NE','MO','KY','WV','VA','MD','DE',null,null],
-      ['AK','AZ','NM','KS','AR','TN','NC','SC','DC',null,null,null],
-      ['HI',null,null,'OK','LA','MS','AL','GA',null,null,null,null],
-      [null,null,null,'TX',null,null,null,'FL',null,null,null,null],
+      [null,'AZ','NM','KS','AR','TN','NC','SC','DC',null,null,null],
+      [null,null,null,'OK','LA','MS','AL','GA',null,null,null,null],
+      ['AK',null,'HI','TX',null,null,null,'FL',null,null,null,null],
     ];
 
     // データ読み込み
