@@ -159,13 +159,18 @@
           <table class="w-full text-sm">
             <thead>
               <tr class="bg-slate-50 border-b">
-                <th class="text-left px-3 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('name')">大学名 ↕</th>
-                <th class="text-center px-2 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('level')">Div</th>
-                <th class="text-left px-2 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('conf')">Conference</th>
-                <th class="text-center px-2 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('state')">St</th>
-                <th class="text-left px-2 py-2 text-xs font-bold text-slate-500">HC</th>
-                <th class="text-left px-2 py-2 text-xs font-bold text-slate-500">Email</th>
-                <th class="text-center px-2 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('coaches')">他</th>
+                <th class="text-left px-3 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800 whitespace-nowrap" onclick="sortBy('name')">大学名 ↕</th>
+                <th class="text-center px-1 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('level')">Div</th>
+                <th class="text-left px-1 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('conf')">Conf</th>
+                <th class="text-center px-1 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('state')">St</th>
+                <th class="text-left px-1 py-2 text-xs font-bold text-slate-500 whitespace-nowrap" onclick="sortBy('hcName')">HC名</th>
+                <th class="text-left px-1 py-2 text-xs font-bold text-slate-500">Email</th>
+                <th class="text-center px-1 py-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800" onclick="sortBy('coaches')">他</th>
+                <th class="text-left px-1 py-2 text-xs font-bold text-slate-500">Merge</th>
+                <th class="text-left px-1 py-2 text-xs font-bold text-slate-500">202603</th>
+                <th class="text-left px-1 py-2 text-xs font-bold text-slate-500">2026</th>
+                <th class="text-center px-1 py-2 text-xs font-bold text-slate-500" onclick="sortBy('ranking')">Rank</th>
+                <th class="text-left px-1 py-2 text-xs font-bold text-slate-500">戦績</th>
               </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -263,18 +268,28 @@
           if (!uni) return;
           const key = uni + '|' + div;
           if (!uniMap[key]) uniMap[key] = { name: uni, level: div, conf, state, coachList: [], ranking, record };
-          uniMap[key].coachList.push({ fname, lname, email, merge });
+          const r2603 = r.c[9]?.v || '';
+          const r2026 = r.c[10]?.v || '';
+          const verify = r.c[11]?.v || '';
+          uniMap[key].coachList.push({ fname, lname, email, merge, r2603, r2026, verify });
           // ranking/recordは最初のデータで上書き
           if (ranking && !uniMap[key].ranking) uniMap[key].ranking = ranking;
           if (record && !uniMap[key].record) uniMap[key].record = record;
         });
-        ALL_DATA = Object.values(uniMap).map(u => ({
-          ...u,
-          coaches: u.coachList.length,
-          hcName: u.coachList[0] ? `${u.coachList[0].fname} ${u.coachList[0].lname}`.trim() : '-',
-          hcEmail: u.coachList[0]?.email || '',
-          otherCount: Math.max(0, u.coachList.length - 1),
-        }));
+        ALL_DATA = Object.values(uniMap).map(u => {
+          const hc = u.coachList[0] || {};
+          return {
+            ...u,
+            coaches: u.coachList.length,
+            hcName: hc.fname ? `${hc.fname} ${hc.lname}`.trim() : '-',
+            hcEmail: hc.email || '',
+            hcMerge: hc.merge || '',
+            hcR2603: hc.r2603 || '',
+            hcR2026: hc.r2026 || '',
+            hcVerify: hc.verify || '',
+            otherCount: Math.max(0, u.coachList.length - 1),
+          };
+        });
 
         // Division一覧を動的に取得してボタン生成
         const divs = [...new Set(ALL_DATA.map(u => u.level))].sort();
@@ -514,26 +529,38 @@
       const totalPages = Math.ceil(filtered.length / PER_PAGE);
 
       const DIV_BADGE = { D1:'bg-red-100 text-red-700', D2:'bg-blue-100 text-blue-800', D3:'bg-green-100 text-green-700', NAIA:'bg-amber-100 text-amber-700', HBCUD1:'bg-purple-100 text-purple-700', HBCUD2:'bg-purple-50 text-purple-600' };
+      const MERGE_BADGE = { 'EMAIL_SENT':'text-green-600', 'EMAIL_OPENED':'text-blue-600', 'EMAIL_CLICKED':'text-orange-500', 'BOUNCED':'text-red-500', 'RESPONDED':'text-emerald-600', 'SCHEDULED':'text-slate-500' };
       const tbody = document.getElementById('tableBody');
       tbody.innerHTML = page.map((u, i) => {
         const badge = DIV_BADGE[u.level] || 'bg-slate-100 text-slate-700';
-        const hcDisplay = u.hcName && u.hcName !== '-' ? u.hcName : '<span class="text-slate-300">-</span>';
-        const emailDisplay = u.hcEmail ? `<span class="text-blue-500 text-xs">${u.hcEmail}</span>` : '<span class="text-slate-300 text-xs">-</span>';
-        const otherDisplay = u.otherCount > 0 ? `<span class="text-xs font-bold text-slate-500">+${u.otherCount}</span>` : '<span class="text-xs text-slate-300">-</span>';
-        const note = u.ranking || u.record || '';
-        const noteRow = note ? `<span class="text-slate-400">${note}</span>` : '';
+        const hc = u.hcName && u.hcName !== '-' ? u.hcName : '<span class="text-slate-300">-</span>';
+        const email = u.hcEmail ? `<span class="text-blue-500">${u.hcEmail}</span>` : '<span class="text-slate-300">-</span>';
+        const other = u.otherCount > 0 ? `<span class="font-bold text-slate-500">+${u.otherCount}</span>` : '<span class="text-slate-300">-</span>';
+        const mColor = MERGE_BADGE[u.hcMerge] || 'text-slate-400';
+        const mLabel = u.hcMerge ? `<span class="${mColor} font-medium">${u.hcMerge.replace('EMAIL_','')}</span>` : '<span class="text-slate-300">-</span>';
+        const r2603 = u.hcR2603 && u.hcR2603 !== '202603 result' ? u.hcR2603 : '<span class="text-slate-300">-</span>';
+        const r2026 = u.hcR2026 && u.hcR2026 !== '2026 result' ? u.hcR2026 : '<span class="text-slate-300">-</span>';
+        const rank = u.ranking || '<span class="text-slate-300">-</span>';
+        const record = u.record || '<span class="text-slate-300">-</span>';
+        // 2行目: 検証ステータス
+        const verifyText = u.hcVerify || (u.coachList && u.coachList.some(c => c.verify) ? u.coachList.find(c => c.verify)?.verify : '');
         return `
-        <tr class="table-row border-b border-slate-100 fade-in align-top">
-          <td class="px-3 py-2">
-            <div class="font-medium text-slate-800 text-sm leading-tight">${u.name}</div>
-            ${noteRow ? `<div class="text-xs mt-0.5 leading-tight truncate max-w-xs" title="${note}">${noteRow}</div>` : ''}
+        <tr class="table-row border-b border-slate-50 fade-in align-top" style="font-size:11px">
+          <td class="px-3 py-1.5">
+            <div class="font-semibold text-slate-800 text-xs leading-tight">${u.name}</div>
+            ${verifyText ? `<div class="text-xs mt-0.5 leading-tight text-amber-600 truncate max-w-xs" title="${verifyText}">📋 ${verifyText}</div>` : '<div class="text-xs mt-0.5 text-slate-200">-</div>'}
           </td>
-          <td class="px-2 py-2 text-center"><span class="px-1.5 py-0.5 rounded text-xs font-bold ${badge}">${u.level}</span></td>
-          <td class="px-2 py-2 text-xs text-slate-600">${u.conf}</td>
-          <td class="px-2 py-2 text-center"><span class="text-xs font-medium text-slate-600">${u.state}</span></td>
-          <td class="px-2 py-2 text-xs text-slate-800">${hcDisplay}</td>
-          <td class="px-2 py-2">${emailDisplay}</td>
-          <td class="px-2 py-2 text-center">${otherDisplay}</td>
+          <td class="px-1 py-1.5 text-center"><span class="px-1 py-0.5 rounded text-xs font-bold ${badge}" style="font-size:10px">${u.level}</span></td>
+          <td class="px-1 py-1.5 text-slate-600">${u.conf}</td>
+          <td class="px-1 py-1.5 text-center text-slate-600">${u.state}</td>
+          <td class="px-1 py-1.5 text-slate-800 whitespace-nowrap">${hc}</td>
+          <td class="px-1 py-1.5 truncate max-w-[180px]">${email}</td>
+          <td class="px-1 py-1.5 text-center">${other}</td>
+          <td class="px-1 py-1.5">${mLabel}</td>
+          <td class="px-1 py-1.5 text-slate-500">${r2603}</td>
+          <td class="px-1 py-1.5 text-slate-500">${r2026}</td>
+          <td class="px-1 py-1.5 text-center text-slate-600">${rank}</td>
+          <td class="px-1 py-1.5 text-slate-500">${record}</td>
         </tr>`;
       }).join('');
 
@@ -559,8 +586,8 @@
 
     // ===== エクスポート =====
     function exportCSV() {
-      const header = 'Name,Division,Conference,State,Coaches';
-      const rows = filtered.map(u => `"${u.name}",${u.level},"${u.conf}",${u.state},${u.coaches || ''}`);
+      const header = 'Name,Division,Conference,State,HC Name,HC Email,Coaches,Merge Status,202603,2026,Ranking,Record,Verify';
+      const rows = filtered.map(u => `"${u.name}","${u.level}","${u.conf}","${u.state}","${u.hcName}","${u.hcEmail}",${u.coaches},"${u.hcMerge}","${u.hcR2603}","${u.hcR2026}","${u.ranking||''}","${u.record||''}","${u.hcVerify||''}"`);
       const csv = [header, ...rows].join('\n');
       downloadFile(csv, 'athletegate_data.csv', 'text/csv');
     }
