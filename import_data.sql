@@ -4161,5 +4161,6 @@ ON CONFLICT DO NOTHING;
 INSERT INTO coaches (university_id, first_name, last_name, full_name, email, role)
 VALUES ((SELECT id FROM universities WHERE name='California State University, Monterey Bay' LIMIT 1), 'Derek', 'Bell', 'Derek Bell', 'dbell@csumb.edu', 'Head Coach')
 ON CONFLICT DO NOTHING;
-INSERT INTO universities (external_id, name, true_name, division_id, state_id, data_source)
--- Import completeCOMMIT;
+
+-- Import complete
+COMMIT;
