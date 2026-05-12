@@ -1521,10 +1521,40 @@
   ],
   "d2": [
     {
+      "name": "Adams State",
+      "state": "CO",
+      "conf": "RMAC",
+      "coaches": 0
+    },
+    {
+      "name": "Adelphi",
+      "state": "NY",
+      "conf": "NE-10",
+      "coaches": 0
+    },
+    {
+      "name": "Alabama-Huntsville",
+      "state": "AL",
+      "conf": "Gulf South",
+      "coaches": 0
+    },
+    {
       "name": "Albany State",
       "conf": "SIAC",
       "coaches": 3,
       "state": "GA"
+    },
+    {
+      "name": "American International",
+      "state": "MA",
+      "conf": "NE-10",
+      "coaches": 0
+    },
+    {
+      "name": "Anderson",
+      "state": "SC",
+      "conf": "SAC",
+      "coaches": 0
     },
     {
       "name": "Angelo State",
@@ -1539,10 +1569,34 @@
       "state": "AR"
     },
     {
+      "name": "Arkansas-Fort Smith",
+      "state": "AR",
+      "conf": "MIAA",
+      "coaches": 0
+    },
+    {
+      "name": "Arkansas-Monticello",
+      "state": "AR",
+      "conf": "GAC",
+      "coaches": 0
+    },
+    {
+      "name": "Ashland",
+      "state": "OH",
+      "conf": "G-MAC",
+      "coaches": 0
+    },
+    {
       "name": "Assumption",
       "conf": "NE-10 (Northeast-10)",
       "coaches": 1,
       "state": "MA"
+    },
+    {
+      "name": "Auburn Montgomery",
+      "state": "AL",
+      "conf": "Gulf South",
+      "coaches": 0
     },
     {
       "name": "Augustana",
@@ -1551,10 +1605,40 @@
       "state": "SD"
     },
     {
+      "name": "Azusa Pacific",
+      "state": "CA",
+      "conf": "PacWest",
+      "coaches": 0
+    },
+    {
+      "name": "Barry",
+      "state": "FL",
+      "conf": "SSC",
+      "coaches": 0
+    },
+    {
+      "name": "Barton",
+      "state": "NC",
+      "conf": "Carolinas",
+      "coaches": 0
+    },
+    {
       "name": "Belmont Abbey",
       "conf": "Conf. Carolinas",
       "coaches": 3,
       "state": "NC"
+    },
+    {
+      "name": "Bemidji State",
+      "state": "MN",
+      "conf": "NSIC",
+      "coaches": 0
+    },
+    {
+      "name": "Benedict",
+      "state": "SC",
+      "conf": "SIAC",
+      "coaches": 0
     },
     {
       "name": "Bentley",
@@ -1563,10 +1647,64 @@
       "state": "MA"
     },
     {
+      "name": "Biola",
+      "state": "CA",
+      "conf": "PacWest",
+      "coaches": 0
+    },
+    {
+      "name": "Bloomsburg",
+      "state": "PA",
+      "conf": "PSAC",
+      "coaches": 0
+    },
+    {
+      "name": "Bluefield State",
+      "state": "WV",
+      "conf": "Independent",
+      "coaches": 0
+    },
+    {
+      "name": "Bridgeport",
+      "state": "CT",
+      "conf": "CACC",
+      "coaches": 0
+    },
+    {
+      "name": "CS Pueblo",
+      "conf": "RMAC",
+      "coaches": 1,
+      "state": "CO"
+    },
+    {
+      "name": "CSU Pueblo",
+      "state": "CO",
+      "conf": "RMAC",
+      "coaches": 0
+    },
+    {
       "name": "Cal Poly Pomona",
       "conf": "CCAA (California Collegiate)",
       "coaches": 2,
       "state": "CA"
+    },
+    {
+      "name": "Cal State Dominguez Hills",
+      "state": "CA",
+      "conf": "CCAA",
+      "coaches": 0
+    },
+    {
+      "name": "Cal State East Bay",
+      "state": "CA",
+      "conf": "CCAA",
+      "coaches": 0
+    },
+    {
+      "name": "Cal State Los Angeles",
+      "state": "CA",
+      "conf": "CCAA",
+      "coaches": 0
     },
     {
       "name": "Cal State Monterey Bay",
@@ -1575,10 +1713,58 @@
       "state": "CA"
     },
     {
+      "name": "Cal State San Bernardino",
+      "state": "CA",
+      "conf": "CCAA",
+      "coaches": 0
+    },
+    {
+      "name": "Cal State San Marcos",
+      "state": "CA",
+      "conf": "CCAA",
+      "coaches": 0
+    },
+    {
+      "name": "Cal State Stanislaus",
+      "state": "CA",
+      "conf": "CCAA",
+      "coaches": 0
+    },
+    {
+      "name": "Caldwell",
+      "state": "NJ",
+      "conf": "CACC",
+      "coaches": 0
+    },
+    {
+      "name": "California (PA)",
+      "state": "PA",
+      "conf": "PSAC",
+      "coaches": 0
+    },
+    {
+      "name": "Cameron",
+      "state": "OK",
+      "conf": "Lone Star",
+      "coaches": 0
+    },
+    {
+      "name": "Carson-Newman",
+      "state": "TN",
+      "conf": "SAC",
+      "coaches": 0
+    },
+    {
       "name": "Catawba",
       "conf": "SAC (South Atlantic)",
       "coaches": 3,
       "state": "NC"
+    },
+    {
+      "name": "Cedarville",
+      "state": "OH",
+      "conf": "G-MAC",
+      "coaches": 0
     },
     {
       "name": "Central Missouri",
@@ -1599,10 +1785,22 @@
       "state": "WA"
     },
     {
+      "name": "Chaminade",
+      "state": "HI",
+      "conf": "PacWest",
+      "coaches": 0
+    },
+    {
       "name": "Charleston (WV)",
       "conf": "MEC (Mountain East)",
       "coaches": 3,
       "state": "WV"
+    },
+    {
+      "name": "Chestnut Hill",
+      "state": "PA",
+      "conf": "CACC",
+      "coaches": 0
     },
     {
       "name": "Chico State",
@@ -1611,10 +1809,58 @@
       "state": "CA"
     },
     {
+      "name": "Chowan",
+      "state": "NC",
+      "conf": "Carolinas",
+      "coaches": 0
+    },
+    {
+      "name": "Christian Brothers",
+      "state": "TN",
+      "conf": "Gulf South",
+      "coaches": 0
+    },
+    {
+      "name": "Claflin",
+      "state": "SC",
+      "conf": "Peach Belt",
+      "coaches": 0
+    },
+    {
+      "name": "Clarion",
+      "state": "PA",
+      "conf": "PSAC",
+      "coaches": 0
+    },
+    {
+      "name": "Clark Atlanta",
+      "state": "GA",
+      "conf": "SIAC",
+      "coaches": 0
+    },
+    {
+      "name": "Coker",
+      "state": "SC",
+      "conf": "SAC",
+      "coaches": 0
+    },
+    {
+      "name": "Colorado Christian",
+      "state": "CO",
+      "conf": "RMAC",
+      "coaches": 0
+    },
+    {
       "name": "Colorado Mesa",
       "conf": "RMAC",
       "coaches": 2,
       "state": "CO"
+    },
+    {
+      "name": "Colorado Mines",
+      "state": "CO",
+      "conf": "RMAC",
+      "coaches": 0
     },
     {
       "name": "Columbus State",
@@ -1629,10 +1875,10 @@
       "state": "WV"
     },
     {
-      "name": "CS Pueblo",
-      "conf": "RMAC",
-      "coaches": 1,
-      "state": "CO"
+      "name": "D'Youville",
+      "state": "NY",
+      "conf": "ECC",
+      "coaches": 0
     },
     {
       "name": "Davenport",
@@ -1641,10 +1887,34 @@
       "state": "MI"
     },
     {
+      "name": "Davis & Elkins",
+      "state": "WV",
+      "conf": "MEC",
+      "coaches": 0
+    },
+    {
       "name": "Delta State",
       "conf": "GSC (Gulf South)",
       "coaches": 1,
       "state": "MS"
+    },
+    {
+      "name": "Dominican (NY)",
+      "state": "NY",
+      "conf": "CACC",
+      "coaches": 0
+    },
+    {
+      "name": "Drury",
+      "state": "MO",
+      "conf": "GLVC",
+      "coaches": 0
+    },
+    {
+      "name": "East Central",
+      "state": "OK",
+      "conf": "GAC",
+      "coaches": 0
     },
     {
       "name": "East Stroudsburg",
@@ -1653,10 +1923,82 @@
       "state": "PA"
     },
     {
+      "name": "Eastern New Mexico",
+      "state": "NM",
+      "conf": "Lone Star",
+      "coaches": 0
+    },
+    {
+      "name": "Eckerd",
+      "state": "FL",
+      "conf": "SSC",
+      "coaches": 0
+    },
+    {
+      "name": "Edward Waters",
+      "state": "FL",
+      "conf": "SIAC",
+      "coaches": 0
+    },
+    {
+      "name": "Embry-Riddle",
+      "state": "FL",
+      "conf": "SSC",
+      "coaches": 0
+    },
+    {
+      "name": "Emmanuel",
+      "state": "GA",
+      "conf": "Carolinas",
+      "coaches": 0
+    },
+    {
+      "name": "Emory & Henry",
+      "state": "VA",
+      "conf": "SAC",
+      "coaches": 0
+    },
+    {
+      "name": "Emporia State",
+      "state": "KS",
+      "conf": "MIAA",
+      "coaches": 0
+    },
+    {
+      "name": "Erskine",
+      "state": "SC",
+      "conf": "Carolinas",
+      "coaches": 0
+    },
+    {
+      "name": "Fairmont State",
+      "state": "WV",
+      "conf": "MEC",
+      "coaches": 0
+    },
+    {
       "name": "Felician",
       "conf": "CACC",
       "coaches": 3,
       "state": "NJ"
+    },
+    {
+      "name": "Ferrum",
+      "state": "VA",
+      "conf": "Carolinas",
+      "coaches": 0
+    },
+    {
+      "name": "Findlay",
+      "state": "OH",
+      "conf": "G-MAC",
+      "coaches": 0
+    },
+    {
+      "name": "Flagler",
+      "state": "FL",
+      "conf": "Peach Belt",
+      "coaches": 0
     },
     {
       "name": "Florida Southern",
@@ -1665,16 +2007,76 @@
       "state": "FL"
     },
     {
+      "name": "Florida Tech",
+      "state": "FL",
+      "conf": "SSC",
+      "coaches": 0
+    },
+    {
+      "name": "Fort Hays State",
+      "state": "KS",
+      "conf": "MIAA",
+      "coaches": 0
+    },
+    {
       "name": "Francis Marion",
       "conf": "Conf. Carolinas",
       "coaches": 3,
       "state": "SC"
     },
     {
+      "name": "Franklin Pierce",
+      "state": "NH",
+      "conf": "NE-10",
+      "coaches": 0
+    },
+    {
+      "name": "Fresno Pacific",
+      "state": "CA",
+      "conf": "PacWest",
+      "coaches": 0
+    },
+    {
       "name": "Frostburg State",
       "conf": "MEC (Mountain East)",
       "coaches": 1,
       "state": "MD"
+    },
+    {
+      "name": "Gannon",
+      "state": "PA",
+      "conf": "PSAC",
+      "coaches": 0
+    },
+    {
+      "name": "Georgia College",
+      "state": "GA",
+      "conf": "Peach Belt",
+      "coaches": 0
+    },
+    {
+      "name": "Georgia Southwestern State",
+      "state": "GA",
+      "conf": "Peach Belt",
+      "coaches": 0
+    },
+    {
+      "name": "Georgian Court",
+      "state": "NJ",
+      "conf": "CACC",
+      "coaches": 0
+    },
+    {
+      "name": "Glenville State",
+      "state": "WV",
+      "conf": "MEC",
+      "coaches": 0
+    },
+    {
+      "name": "Goldey-Beacom",
+      "state": "DE",
+      "conf": "CACC",
+      "coaches": 0
     },
     {
       "name": "Grand Valley State",
@@ -1689,10 +2091,40 @@
       "state": "AR"
     },
     {
+      "name": "Hawaii Hilo",
+      "state": "HI",
+      "conf": "PacWest",
+      "coaches": 0
+    },
+    {
       "name": "Hawaii Pacific",
       "conf": "PacWest",
       "coaches": 2,
       "state": "HI"
+    },
+    {
+      "name": "Henderson State",
+      "state": "AR",
+      "conf": "GAC",
+      "coaches": 0
+    },
+    {
+      "name": "Hillsdale",
+      "state": "MI",
+      "conf": "G-MAC",
+      "coaches": 0
+    },
+    {
+      "name": "Holy Family",
+      "state": "PA",
+      "conf": "CACC",
+      "coaches": 0
+    },
+    {
+      "name": "IUP",
+      "state": "PA",
+      "conf": "PSAC",
+      "coaches": 0
     },
     {
       "name": "Illinois Springfield",
@@ -1707,10 +2139,52 @@
       "state": "IN"
     },
     {
+      "name": "Jamestown",
+      "state": "ND",
+      "conf": "NSIC",
+      "coaches": 0
+    },
+    {
       "name": "Jefferson",
       "conf": "CACC",
       "coaches": 1,
       "state": "PA"
+    },
+    {
+      "name": "Jessup",
+      "state": "CA",
+      "conf": "PacWest",
+      "coaches": 0
+    },
+    {
+      "name": "Kentucky State",
+      "state": "KY",
+      "conf": "SIAC",
+      "coaches": 0
+    },
+    {
+      "name": "Kentucky Wesleyan",
+      "state": "KY",
+      "conf": "G-MAC",
+      "coaches": 0
+    },
+    {
+      "name": "King",
+      "state": "TN",
+      "conf": "Carolinas",
+      "coaches": 0
+    },
+    {
+      "name": "Kutztown",
+      "state": "PA",
+      "conf": "PSAC",
+      "coaches": 0
+    },
+    {
+      "name": "Lake Erie",
+      "state": "OH",
+      "conf": "G-MAC",
+      "coaches": 0
     },
     {
       "name": "Lander",
@@ -1719,10 +2193,58 @@
       "state": "SC"
     },
     {
+      "name": "Lane",
+      "state": "TN",
+      "conf": "SIAC",
+      "coaches": 0
+    },
+    {
+      "name": "LeMoyne-Owen",
+      "state": "TN",
+      "conf": "SIAC",
+      "coaches": 0
+    },
+    {
+      "name": "Lee",
+      "state": "TN",
+      "conf": "Gulf South",
+      "coaches": 0
+    },
+    {
       "name": "Lenoir-Rhyne",
       "conf": "SAC (South Atlantic)",
       "coaches": 3,
       "state": "NC"
+    },
+    {
+      "name": "Lewis",
+      "state": "IL",
+      "conf": "GLVC",
+      "coaches": 0
+    },
+    {
+      "name": "Lincoln (MO)",
+      "state": "MO",
+      "conf": "GLVC",
+      "coaches": 0
+    },
+    {
+      "name": "Lincoln (PA)",
+      "state": "PA",
+      "conf": "CACC",
+      "coaches": 0
+    },
+    {
+      "name": "Lincoln Memorial",
+      "state": "TN",
+      "conf": "SAC",
+      "coaches": 0
+    },
+    {
+      "name": "Lock Haven",
+      "state": "PA",
+      "conf": "PSAC",
+      "coaches": 0
     },
     {
       "name": "Lubbock Christian",
@@ -1731,16 +2253,76 @@
       "state": "TX"
     },
     {
+      "name": "Lynn",
+      "state": "FL",
+      "conf": "SSC",
+      "coaches": 0
+    },
+    {
+      "name": "Malone",
+      "state": "OH",
+      "conf": "G-MAC",
+      "coaches": 0
+    },
+    {
+      "name": "Mansfield",
+      "state": "PA",
+      "conf": "PSAC",
+      "coaches": 0
+    },
+    {
+      "name": "Mars Hill",
+      "state": "NC",
+      "conf": "SAC",
+      "coaches": 0
+    },
+    {
       "name": "Maryville",
       "conf": "GLVC",
       "coaches": 2,
       "state": "MO"
     },
     {
+      "name": "McKendree",
+      "state": "IL",
+      "conf": "GLVC",
+      "coaches": 0
+    },
+    {
+      "name": "Menlo",
+      "state": "CA",
+      "conf": "PacWest",
+      "coaches": 0
+    },
+    {
+      "name": "Mercy",
+      "state": "NY",
+      "conf": "ECC",
+      "coaches": 0
+    },
+    {
       "name": "Metro State Denver",
       "conf": "RMAC",
       "coaches": 1,
       "state": "CO"
+    },
+    {
+      "name": "Metropolitan State",
+      "state": "CO",
+      "conf": "RMAC",
+      "coaches": 0
+    },
+    {
+      "name": "Middle Georgia",
+      "state": "GA",
+      "conf": "Peach Belt",
+      "coaches": 0
+    },
+    {
+      "name": "Miles",
+      "state": "AL",
+      "conf": "SIAC",
+      "coaches": 0
     },
     {
       "name": "Millersville",
@@ -1755,16 +2337,94 @@
       "state": "MN"
     },
     {
+      "name": "Minnesota-Crookston",
+      "state": "MN",
+      "conf": "NSIC",
+      "coaches": 0
+    },
+    {
+      "name": "Minnesota-Duluth",
+      "state": "MN",
+      "conf": "NSIC",
+      "coaches": 0
+    },
+    {
+      "name": "Minot State",
+      "state": "ND",
+      "conf": "NSIC",
+      "coaches": 0
+    },
+    {
       "name": "Mississippi College",
       "conf": "GSC (Gulf South)",
       "coaches": 1,
       "state": "MS"
     },
     {
+      "name": "Missouri S&T",
+      "state": "MO",
+      "conf": "GLVC",
+      "coaches": 0
+    },
+    {
+      "name": "Missouri Southern",
+      "state": "MO",
+      "conf": "MIAA",
+      "coaches": 0
+    },
+    {
+      "name": "Missouri Western",
+      "state": "MO",
+      "conf": "MIAA",
+      "coaches": 0
+    },
+    {
       "name": "Molloy",
       "conf": "ECC (East Coast)",
       "coaches": 1,
       "state": "NY"
+    },
+    {
+      "name": "Montana State-Billings",
+      "state": "MT",
+      "conf": "GNAC",
+      "coaches": 0
+    },
+    {
+      "name": "Montevallo",
+      "state": "AL",
+      "conf": "Gulf South",
+      "coaches": 0
+    },
+    {
+      "name": "Morehouse",
+      "state": "GA",
+      "conf": "SIAC",
+      "coaches": 0
+    },
+    {
+      "name": "Mount Olive",
+      "state": "NC",
+      "conf": "Carolinas",
+      "coaches": 0
+    },
+    {
+      "name": "New Mexico Highlands",
+      "state": "NM",
+      "conf": "RMAC",
+      "coaches": 0
+    },
+    {
+      "name": "Newberry",
+      "state": "SC",
+      "conf": "SAC",
+      "coaches": 0
+    },
+    {
+      "name": "Newman",
+      "state": "KS",
+      "conf": "MIAA",
+      "coaches": 0
     },
     {
       "name": "North Georgia",
@@ -1779,16 +2439,94 @@
       "state": "SC"
     },
     {
+      "name": "Northeastern State",
+      "state": "OK",
+      "conf": "MIAA",
+      "coaches": 0
+    },
+    {
+      "name": "Northern State",
+      "state": "SD",
+      "conf": "NSIC",
+      "coaches": 0
+    },
+    {
+      "name": "Northwest Missouri State",
+      "state": "MO",
+      "conf": "MIAA",
+      "coaches": 0
+    },
+    {
       "name": "Northwest Nazarene",
       "conf": "GNAC (Great Northwest)",
       "coaches": 1,
       "state": "ID"
     },
     {
+      "name": "Northwestern Oklahoma State",
+      "state": "OK",
+      "conf": "GAC",
+      "coaches": 0
+    },
+    {
       "name": "Northwood",
       "conf": "G-MAC (Great Midwest)",
       "coaches": 1,
       "state": "MI"
+    },
+    {
+      "name": "Nova Southeastern",
+      "state": "FL",
+      "conf": "SSC",
+      "coaches": 0
+    },
+    {
+      "name": "Ohio Dominican",
+      "state": "OH",
+      "conf": "G-MAC",
+      "coaches": 0
+    },
+    {
+      "name": "Oklahoma Baptist",
+      "state": "OK",
+      "conf": "GAC",
+      "coaches": 0
+    },
+    {
+      "name": "Oklahoma Christian",
+      "state": "OK",
+      "conf": "Lone Star",
+      "coaches": 0
+    },
+    {
+      "name": "Ouachita Baptist",
+      "state": "AR",
+      "conf": "GAC",
+      "coaches": 0
+    },
+    {
+      "name": "Pace",
+      "state": "NY",
+      "conf": "NE-10",
+      "coaches": 0
+    },
+    {
+      "name": "Palm Beach Atlantic",
+      "state": "FL",
+      "conf": "SSC",
+      "coaches": 0
+    },
+    {
+      "name": "Parkside",
+      "state": "WI",
+      "conf": "GLIAC",
+      "coaches": 0
+    },
+    {
+      "name": "Pitt-Johnstown",
+      "state": "PA",
+      "conf": "PSAC",
+      "coaches": 0
     },
     {
       "name": "Pittsburg State",
@@ -1803,10 +2541,52 @@
       "state": "CA"
     },
     {
+      "name": "Point Park",
+      "state": "PA",
+      "conf": "MEC",
+      "coaches": 0
+    },
+    {
       "name": "Post",
       "conf": "CACC",
       "coaches": 1,
       "state": "CT"
+    },
+    {
+      "name": "Purdue Northwest",
+      "state": "IN",
+      "conf": "GLIAC",
+      "coaches": 0
+    },
+    {
+      "name": "Queens (NY)",
+      "state": "NY",
+      "conf": "ECC",
+      "coaches": 0
+    },
+    {
+      "name": "Quincy",
+      "state": "IL",
+      "conf": "GLVC",
+      "coaches": 0
+    },
+    {
+      "name": "Regis",
+      "state": "CO",
+      "conf": "RMAC",
+      "coaches": 0
+    },
+    {
+      "name": "Rockhurst",
+      "state": "MO",
+      "conf": "GLVC",
+      "coaches": 0
+    },
+    {
+      "name": "Rogers State",
+      "state": "OK",
+      "conf": "MIAA",
+      "coaches": 0
     },
     {
       "name": "Rollins",
@@ -1815,10 +2595,100 @@
       "state": "FL"
     },
     {
+      "name": "Roosevelt",
+      "state": "IL",
+      "conf": "GLIAC",
+      "coaches": 0
+    },
+    {
+      "name": "Saginaw Valley State",
+      "state": "MI",
+      "conf": "GLIAC",
+      "coaches": 0
+    },
+    {
+      "name": "Saint Anselm",
+      "state": "NH",
+      "conf": "NE-10",
+      "coaches": 0
+    },
+    {
+      "name": "Saint Leo",
+      "state": "FL",
+      "conf": "SSC",
+      "coaches": 0
+    },
+    {
+      "name": "Saint Martin's",
+      "state": "WA",
+      "conf": "GNAC",
+      "coaches": 0
+    },
+    {
+      "name": "Saint Michael's",
+      "state": "VT",
+      "conf": "NE-10",
+      "coaches": 0
+    },
+    {
+      "name": "Salem",
+      "state": "WV",
+      "conf": "Independent",
+      "coaches": 0
+    },
+    {
+      "name": "San Francisco State",
+      "state": "CA",
+      "conf": "CCAA",
+      "coaches": 0
+    },
+    {
+      "name": "Savannah State",
+      "state": "GA",
+      "conf": "SIAC",
+      "coaches": 0
+    },
+    {
       "name": "Seton Hill",
       "conf": "PSAC",
       "coaches": 3,
       "state": "PA"
+    },
+    {
+      "name": "Shepherd",
+      "state": "WV",
+      "conf": "PSAC",
+      "coaches": 0
+    },
+    {
+      "name": "Shippensburg",
+      "state": "PA",
+      "conf": "PSAC",
+      "coaches": 0
+    },
+    {
+      "name": "Shorter",
+      "state": "GA",
+      "conf": "Carolinas",
+      "coaches": 0
+    },
+    {
+      "name": "Sioux Falls",
+      "state": "SD",
+      "conf": "NSIC",
+      "coaches": 0
+    },
+    {
+      "name": "Slippery Rock",
+      "state": "PA",
+      "conf": "PSAC",
+      "coaches": 0
+    },
+    {
+      "name": "Southeastern Oklahoma State",
+      "state": "OK",
+      "conf": "GAC",
+      "coaches": 0
     },
     {
       "name": "Southern Arkansas",
@@ -1827,10 +2697,46 @@
       "state": "AR"
     },
     {
+      "name": "Southern Connecticut",
+      "state": "CT",
+      "conf": "NE-10",
+      "coaches": 0
+    },
+    {
+      "name": "Southern Nazarene",
+      "state": "OK",
+      "conf": "GAC",
+      "coaches": 0
+    },
+    {
       "name": "Southern New Hampshire",
       "conf": "NE-10 (Northeast-10)",
       "coaches": 2,
       "state": "NH"
+    },
+    {
+      "name": "Southern Wesleyan",
+      "state": "SC",
+      "conf": "Carolinas",
+      "coaches": 0
+    },
+    {
+      "name": "Southwest Baptist",
+      "state": "MO",
+      "conf": "GLVC",
+      "coaches": 0
+    },
+    {
+      "name": "Southwestern Oklahoma State",
+      "state": "OK",
+      "conf": "GAC",
+      "coaches": 0
+    },
+    {
+      "name": "Spring Hill",
+      "state": "AL",
+      "conf": "SIAC",
+      "coaches": 0
     },
     {
       "name": "St. Cloud State",
@@ -1839,10 +2745,58 @@
       "state": "MN"
     },
     {
+      "name": "St. Edward's",
+      "state": "TX",
+      "conf": "Lone Star",
+      "coaches": 0
+    },
+    {
+      "name": "St. Mary's (TX)",
+      "state": "TX",
+      "conf": "Lone Star",
+      "coaches": 0
+    },
+    {
+      "name": "St. Thomas Aquinas",
+      "state": "NY",
+      "conf": "ECC",
+      "coaches": 0
+    },
+    {
+      "name": "Staten Island",
+      "state": "NY",
+      "conf": "ECC",
+      "coaches": 0
+    },
+    {
+      "name": "Sul Ross State",
+      "state": "TX",
+      "conf": "Lone Star",
+      "coaches": 0
+    },
+    {
       "name": "Tampa",
       "conf": "SSC (Sunshine State)",
       "coaches": 4,
       "state": "FL"
+    },
+    {
+      "name": "Texas A&M International",
+      "state": "TX",
+      "conf": "Lone Star",
+      "coaches": 0
+    },
+    {
+      "name": "Texas A&M-Kingsville",
+      "state": "TX",
+      "conf": "Lone Star",
+      "coaches": 0
+    },
+    {
+      "name": "Thomas More",
+      "state": "KY",
+      "conf": "G-MAC",
+      "coaches": 0
     },
     {
       "name": "Tiffin",
@@ -1851,16 +2805,112 @@
       "state": "OH"
     },
     {
+      "name": "Trevecca Nazarene",
+      "state": "TN",
+      "conf": "Gulf South",
+      "coaches": 0
+    },
+    {
+      "name": "Truman",
+      "state": "MO",
+      "conf": "GLVC",
+      "coaches": 0
+    },
+    {
+      "name": "Tusculum",
+      "state": "TN",
+      "conf": "SAC",
+      "coaches": 0
+    },
+    {
       "name": "Tuskegee",
       "conf": "SIAC",
       "coaches": 1,
       "state": "AL"
     },
     {
+      "name": "UCCS",
+      "state": "CO",
+      "conf": "RMAC",
+      "coaches": 0
+    },
+    {
+      "name": "UIS",
+      "state": "IL",
+      "conf": "GLVC",
+      "coaches": 0
+    },
+    {
+      "name": "UMSL",
+      "state": "MO",
+      "conf": "GLVC",
+      "coaches": 0
+    },
+    {
+      "name": "UNC Pembroke",
+      "state": "NC",
+      "conf": "Carolinas",
+      "coaches": 0
+    },
+    {
+      "name": "USC Aiken",
+      "state": "SC",
+      "conf": "Peach Belt",
+      "coaches": 0
+    },
+    {
+      "name": "USC Beaufort",
+      "state": "SC",
+      "conf": "Peach Belt",
+      "coaches": 0
+    },
+    {
+      "name": "UT Dallas",
+      "state": "TX",
+      "conf": "Lone Star",
+      "coaches": 0
+    },
+    {
+      "name": "UT Permian Basin",
+      "state": "TX",
+      "conf": "Lone Star",
+      "coaches": 0
+    },
+    {
       "name": "UT Tyler",
       "conf": "LSC (Lone Star)",
       "coaches": 4,
       "state": "TX"
+    },
+    {
+      "name": "UVA Wise",
+      "state": "VA",
+      "conf": "SAC",
+      "coaches": 0
+    },
+    {
+      "name": "Union",
+      "state": "TN",
+      "conf": "Gulf South",
+      "coaches": 0
+    },
+    {
+      "name": "Upper Iowa",
+      "state": "IA",
+      "conf": "GLVC",
+      "coaches": 0
+    },
+    {
+      "name": "Valdosta State",
+      "state": "GA",
+      "conf": "Gulf South",
+      "coaches": 0
+    },
+    {
+      "name": "Vanguard",
+      "state": "CA",
+      "conf": "PacWest",
+      "coaches": 0
     },
     {
       "name": "Virginia State",
@@ -1875,16 +2925,52 @@
       "state": "OH"
     },
     {
+      "name": "Washburn",
+      "state": "KS",
+      "conf": "MIAA",
+      "coaches": 0
+    },
+    {
       "name": "Wayne State",
       "conf": "GLIAC",
       "coaches": 3,
       "state": "MI"
     },
     {
+      "name": "West Alabama",
+      "state": "AL",
+      "conf": "Gulf South",
+      "coaches": 0
+    },
+    {
+      "name": "West Chester",
+      "state": "PA",
+      "conf": "PSAC",
+      "coaches": 0
+    },
+    {
       "name": "West Florida",
       "conf": "GSC (Gulf South)",
       "coaches": 3,
       "state": "FL"
+    },
+    {
+      "name": "West Liberty",
+      "state": "WV",
+      "conf": "MEC",
+      "coaches": 0
+    },
+    {
+      "name": "West Texas A&M",
+      "state": "TX",
+      "conf": "Lone Star",
+      "coaches": 0
+    },
+    {
+      "name": "West Virginia Wesleyan",
+      "state": "WV",
+      "conf": "MEC",
+      "coaches": 0
     },
     {
       "name": "Western Oregon",
@@ -1899,10 +2985,40 @@
       "state": "CA"
     },
     {
+      "name": "Wheeling",
+      "state": "WV",
+      "conf": "MEC",
+      "coaches": 0
+    },
+    {
+      "name": "William Jewell",
+      "state": "MO",
+      "conf": "GLVC",
+      "coaches": 0
+    },
+    {
+      "name": "Wilmington",
+      "state": "DE",
+      "conf": "CACC",
+      "coaches": 0
+    },
+    {
       "name": "Wingate",
       "conf": "SAC (South Atlantic)",
       "coaches": 2,
       "state": "NC"
+    },
+    {
+      "name": "Winona State",
+      "state": "MN",
+      "conf": "NSIC",
+      "coaches": 0
+    },
+    {
+      "name": "Young Harris",
+      "state": "GA",
+      "conf": "Carolinas",
+      "coaches": 0
     }
   ]
 }
